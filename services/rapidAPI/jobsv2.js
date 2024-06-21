@@ -13,8 +13,8 @@ async function fetchJobData(keywords, locationId, datePosted, sort) {
           sort,
         },
         headers: {
-          "x-rapidapi-key": process.env.RAPIDAPI_KEY,
-          "x-rapidapi-host": process.env.RAPIDAPI_HOST,
+          "x-rapidapi-key": process.env.RAPIDAPI_KEY_JOB,
+          "x-rapidapi-host": process.env.RAPIDAPI_HOST_JOB,
         },
       }
     );
