@@ -1,2 +1,22 @@
-# Advanced-AI-Outbound
-An automated tool finds job postings, identifies relevant contacts at hiring companies, and sends personalised emails offering hiring assistance. It collects data, finds contacts, creates templates, sends emails, and tracks performance. The project involves various steps with different time estimates and requires ongoing improvement.
+# README
+
+This README would normally document whatever steps are necessary to get your application up and running.
+
+### What is this repository for?
+
+- Provide backend support for HQ Sourcing Web and chrome ext
+
+### How do I get set up?
+
+- Setup NodeJs environment (https://nodejs.org/en/)
+- Install Required package by running `npm install` cmd
+- Run project by running `npm run` cmd
+
+### Contribution guidelines
+
+- Writing tests
+- Code review
+
+### Who do I talk to?
+
+- Repo owner
