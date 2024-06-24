@@ -1,5 +1,5 @@
 /**
- * Backend Server startup file, handles incoming api's
+ * Backend Server startup file, handles incoming APIs
  */
 "use strict";
 require("dotenv").config();
@@ -17,32 +17,25 @@ const redisClient = require("./services/redis/index");
 
 const app = express();
 
+// Set EJS as the templating engine
+app.set("view engine", "ejs");
+// Optional: Specify the directory for EJS templates, default is /views
+app.set("views", "./views");
+
 mongoose.set("strictQuery", false);
 const database = process.env.DATABASE;
 
 /**
- *
- * Setting Up the headers for incoming requests
+ * Middleware to set headers for incoming requests
  */
 app.use(function (req, res, next) {
-  // Website you wish to allow to connect
-
   res.setHeader("Access-Control-Allow-Origin", "*");
-
-  // Request methods you wish to allow
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
   );
-
-  // Request headers you wish to allow
   res.setHeader("Access-Control-Allow-Headers", "*");
-
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
   res.setHeader("Access-Control-Allow-Credentials", true);
-
-  // Pass to next layer of middleware
   next();
 });
 
@@ -58,26 +51,18 @@ app.use((req, res, next) => {
 
     transaction.setName(dateString);
   }
-  if (req.originalUrl === "/payment/handle-checkout") {
-    express.raw({ type: "application/json" })(req, res, next);
-  } else {
-    express.urlencoded({ extended: true, limit: "500mb" });
-    express.json({ limit: "500mb" })(req, res, next);
-  }
+  express.urlencoded({ extended: true, limit: "500mb" });
+  express.json({ limit: "500mb" })(req, res, next);
 });
 
 /**
- * Setting Up the routers
+ * Routers Setup
  */
 app.use("/", healthRouter);
+
 /**
  * Server Configuration
  */
-// setInterval(() => {
-//   const memoryUsage = process.memoryUsage();
-//   console.log("***** Javascript Memory Usage", memoryUsage);
-// }, 60000);
-
 const db = mongoose.connection;
 app.listen(port, function () {
   logtail.info(
@@ -94,9 +79,6 @@ app.listen(port, function () {
     useUnifiedTopology: true,
   });
 
-  // (async () => {
-  //   global.isPublicScrapperEnabled = "No";
-  // })();
   db.on("error", function (err) {
     db.close();
   });
@@ -111,20 +93,16 @@ app.listen(port, function () {
       .catch((error) => {
         console.error("Failed to connect to Redis:", error);
       });
-    messageBroker
-      .connect()
-      .then(() => {
-        logtail.info("AMQP:: Connected successfully with RabbitMQ");
-      })
-      .catch((err) => {
-        logtail.error(
-          JSON.stringify({
-            message: "Error while connecting with RabbitMQ:: ",
-            err,
-          })
-        );
-        console.log("Error while connecting with RabbitMQ:: ", err);
-      });
+
+    // Placeholder for message broker connection, if applicable
+    // /*
+    // messageBroker.connect().then(() => {
+    //   logtail.info("AMQP:: Connected successfully with RabbitMQ");
+    // }).catch((err) => {
+    //   logtail.error(JSON.stringify({ message: "Error while connecting with RabbitMQ:: ", err }));
+    //   console.log("Error while connecting with RabbitMQ:: ", err);
+    // });
+    // */
   });
 });
 
