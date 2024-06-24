@@ -5,3 +5,4 @@ hq-sourcing-firebase-adminsdk.json
 ignore
 .DS_Store
 services/calendly/calendly-config.json
+deploy.sh
