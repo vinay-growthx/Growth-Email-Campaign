@@ -20,7 +20,7 @@ const app = express();
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
-app.set("views", "./views");
+app.set("views", "./views/pages");
 
 mongoose.set("strictQuery", false);
 const database = process.env.DATABASE;
@@ -59,7 +59,9 @@ app.use((req, res, next) => {
  * Routers Setup
  */
 app.use("/", healthRouter);
-
+app.get("/find-jobs", (req, res) => {
+  res.render("findJob", { title: "Find the Best LinkedIn Jobs Available" });
+});
 /**
  * Server Configuration
  */
