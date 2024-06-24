@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Search Results</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f7f7f7;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+        font-size: 2em;
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .job-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        padding: 20px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+      .job-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+      .job-title {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #333;
+      }
+      .company-name {
+        font-size: 1.2em;
+        color: #777;
+      }
+      .job-details {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+      }
+      .job-detail {
+        margin-bottom: 10px;
+      }
+      .job-detail span {
+        font-weight: bold;
+        color: #555;
+      }
+      .job-description {
+        line-height: 1.6;
+        color: #555;
+        margin-bottom: 20px;
+      }
+      .apply-link {
+        display: inline-block;
+        padding: 10px 15px;
+        background-color: #0073e6;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        text-align: center;
+      }
+      .apply-link:hover {
+        background-color: #005bb5;
+      }
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+      }
+      ul li {
+        margin-bottom: 10px;
+        padding-left: 1.5em;
+        position: relative;
+      }
+      ul li::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: #0073e6;
+        font-size: 1.2em;
+        line-height: 1;
+      }
+      .job-select {
+        margin-right: 20px;
+      }
+      .create-persona-btn {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 15px;
+        background-color: #0073e6;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        text-align: center;
+        width: fit-content;
+      }
+      .create-persona-btn:hover {
+        background-color: #005bb5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Job Search Results</h1>
+      <% results.data.forEach(function(job, index) { %>
+      <div class="job-card">
+        <div class="job-select">
+          <input
+            type="checkbox"
+            id="job<%= index %>"
+            name="jobSelect"
+            value="<%= index %>"
+          />
+        </div>
+        <div style="flex-grow: 1">
+          <div class="job-header">
+            <div>
+              <div class="job-title"><%= job.job_title %></div>
+              <div class="company-name"><%= job.employer_name %></div>
+            </div>
+          </div>
+          <div class="job-details">
+            <div class="job-detail">
+              <span>Location:</span> <%= job.job_city %>, <%= job.job_state %>,
+              <%= job.job_country %>
+            </div>
+            <div class="job-detail">
+              <span>Type:</span> <%= job.job_employment_type %>
+            </div>
+            <div class="job-detail">
+              <span>Posted:</span> <%= new
+              Date(job.job_posted_at_datetime_utc).toLocaleDateString() %>
+            </div>
+            <div class="job-detail">
+              <span>Salary Range:</span> <%= job.salaryRange %>
+            </div>
+          </div>
+          <div class="job-description">
+            <% if (job.job_description.includes('Qualifications:')) { %>
+            <h2>Responsibilities/Job Duties:</h2>
+            <ul>
+              <%
+              job.job_description.split('Qualifications:')[0].trim().split('•').forEach(function(duty)
+              { %> <% if (duty.trim() !== '') { %>
+              <li><%= duty.trim() %></li>
+              <% } %> <% }); %>
+            </ul>
+            <h2>Qualifications:</h2>
+            <ul>
+              <%
+              job.job_description.split('Qualifications:')[1].trim().split('•').forEach(function(qualification)
+              { %> <% if (qualification.trim() !== '') { %>
+              <li><%= qualification.trim() %></li>
+              <% } %> <% }); %>
+            </ul>
+            <% } else { %>
+            <h2>Description:</h2>
+            <p><%= job.job_description.trim() %></p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+      <a href="#" class="create-persona-btn" onclick="createPersona()"
+        >Create Persona</a
+      >
+    </div>
+
+    <script>
+      function createPersona() {
+        const selectedJobs = Array.from(
+          document.querySelectorAll('input[name="jobSelect"]:checked')
+        ).map((checkbox) => checkbox.value);
+        // Add your logic to create persona based on the selected jobs
+        alert("Creating persona for selected jobs: " + selectedJobs.join(", "));
+      }
+    </script>
+  </body>
+</html>
