@@ -13,6 +13,7 @@ const healthRouter = require("./api/health/routes")();
 const logtail = require("./services/logtail");
 const { Sentry } = require("./services/sentry");
 const redisClient = require("./services/redis/index");
+const { searchPeople } = require("./services/ApolloAPI/searchPeople");
 const axios = require("axios");
 const app = express();
 
@@ -62,6 +63,27 @@ app.use((req, res, next) => {
 app.use("/", healthRouter);
 app.get("/find-jobs", (req, res) => {
   res.render("findJob", { title: "Find the Best LinkedIn Jobs Available" });
+});
+app.get("/persona-reachout", (req, res) => {
+  const people = JSON.parse(decodeURIComponent(req.query.people));
+  res.render("personaReachout", { people });
+});
+
+app.post("/create-persona", async (req, res) => {
+  try {
+    const { locations, companyNames } = req.body;
+
+    console.log("Received locations:", locations);
+    console.log("Received company names:", companyNames);
+
+    // Call the searchPeople function
+    const people = await searchPeople(locations, companyNames);
+    console.log("people", people);
+    res.render("personaReachout", { people: people.people });
+  } catch (error) {
+    console.error("Error creating persona:", error);
+    res.status(500).json({ error: "Failed to create persona" });
+  }
 });
 
 app.post("/search-jobs", async (req, res) => {

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Persona Reachout</title>
+    <style>
+      body {
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        background-color: #f7f7f7;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+        font-size: 2.5em;
+        color: #333;
+        margin-bottom: 40px;
+      }
+      .person-card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+        padding: 20px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        transition: transform 0.3s ease;
+      }
+      .person-card:hover {
+        transform: translateY(-10px);
+      }
+      .person-photo {
+        border-radius: 50%;
+        margin-right: 20px;
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+      }
+      .person-details {
+        flex-grow: 1;
+      }
+      .person-name {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+      }
+      .person-title {
+        font-size: 1.4em;
+        color: #777;
+        margin-bottom: 5px;
+      }
+      .person-organization {
+        font-size: 1.2em;
+        color: #555;
+        margin-bottom: 15px;
+      }
+      .person-contact {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .contact-icon {
+        margin-right: 5px;
+      }
+      .linkedin-url,
+      .email {
+        color: #0073e6;
+        text-decoration: none;
+        margin-right: 20px;
+      }
+      .linkedin-url:hover,
+      .email:hover {
+        text-decoration: underline;
+      }
+      .employment-history {
+        margin-top: 20px;
+      }
+      .employment-history h3 {
+        font-size: 1.4em;
+        color: #333;
+        margin-bottom: 10px;
+      }
+      .employment-history ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      .employment-history li {
+        background-color: #f0f0f0;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 5px;
+      }
+      .select-checkbox {
+        margin-right: 20px;
+      }
+      .submit-btn {
+        display: block;
+        margin: 20px auto;
+        padding: 12px 25px;
+        background-color: #0073e6;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.2em;
+        transition: background-color 0.3s ease;
+      }
+      .submit-btn:hover {
+        background-color: #005bb5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Persona Reachout</h1>
+      <form id="personaForm">
+        <% if (people && people.length > 0) { %> <%
+        people.forEach(function(person, index) { %>
+        <div class="person-card">
+          <input
+            type="checkbox"
+            class="select-checkbox"
+            name="selectedPeople"
+            value="<%= index %>"
+          />
+          <img
+            src="<%= person.photo_url %>"
+            alt="<%= person.name %>"
+            class="person-photo"
+          />
+          <div class="person-details">
+            <div class="person-name"><%= person.name %></div>
+            <div class="person-title"><%= person.title %></div>
+            <div class="person-organization">
+              <%= person.organization.name %>
+            </div>
+            <div class="person-contact">
+              <span class="contact-icon">📧</span>
+              <a href="mailto:<%= person.email %>" class="email"
+                ><%= person.email %></a
+              >
+            </div>
+            <div class="person-contact">
+              <span class="contact-icon">🔗</span>
+              <a
+                href="<%= person.linkedin_url %>"
+                class="linkedin-url"
+                target="_blank"
+                >LinkedIn Profile</a
+              >
+            </div>
+            <div class="employment-history">
+              <h3>Employment History</h3>
+              <ul>
+                <% person.employment_history.forEach(function(job) { %>
+                <li>
+                  <strong>Title:</strong> <%= job.title %><br />
+                  <strong>Organization:</strong> <%= job.organization_name %><br />
+                  <strong>Start Date:</strong> <%= job.start_date %><br />
+                  <strong>End Date:</strong> <%= job.end_date ? job.end_date :
+                  'Present' %>
+                </li>
+                <% }); %>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <% }); %> <% } else { %>
+        <p>No personas found.</p>
+        <% } %>
+        <button
+          type="button"
+          class="submit-btn"
+          onclick="submitSelectedPeople()"
+        >
+          Submit Selected
+        </button>
+      </form>
+    </div>
+
+    <script>
+      function submitSelectedPeople() {
+        const selectedPeople = Array.from(document.querySelectorAll('input[name="selectedPeople"]:checked')).map(checkbox => checkbox.value);
+
+        if (selectedPeople.length === 0) {
+          alert('Please select at least one person.');
+          return;
+        }
+
+        const peopleData = JSON.parse('<%- JSON.stringify(people).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') %>');
+
+        const selectedPersonData = selectedPeople.map(index => {
+          return peopleData[index];
+        });
+
+        // Send selectedPersonData to another endpoint or process it as needed.
+        console.log(selectedPersonData);
+        alert('Selected personas: ' + JSON.stringify(selectedPersonData, null, 2));
+      }
+    </script>
+  </body>
+</html>

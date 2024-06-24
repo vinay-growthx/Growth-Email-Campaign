@@ -179,18 +179,62 @@
         </div>
       </div>
       <% }); %>
-      <a href="#" class="create-persona-btn" onclick="createPersona()"
-        >Create Persona</a
-      >
+      <button class="create-persona-btn" onclick="createPersona()">
+        Create Persona
+      </button>
     </div>
 
     <script>
-      function createPersona() {
+      async function createPersona() {
         const selectedJobs = Array.from(
           document.querySelectorAll('input[name="jobSelect"]:checked')
-        ).map((checkbox) => checkbox.value);
-        // Add your logic to create persona based on the selected jobs
-        alert("Creating persona for selected jobs: " + selectedJobs.join(", "));
+        )
+          .map((checkbox) => {
+            const index = checkbox.value;
+            const jobCard = document
+              .getElementById("job" + index)
+              .closest(".job-card");
+            if (!jobCard) return null;
+
+            return {
+              location: jobCard
+                .querySelector(".job-detail")
+                .textContent.split("Location: ")[1]
+                .split("Type:")[0]
+                .trim(),
+              company_name: jobCard.querySelector(".company-name")
+                ? jobCard.querySelector(".company-name").textContent
+                : "",
+            };
+          })
+          .filter((job) => job !== null); // Filter out any null values
+
+        // Separate arrays for locations and company names
+        const locations = selectedJobs.map((job) => job.location);
+        const companyNames = selectedJobs.map((job) => job.company_name);
+
+        try {
+          const response = await fetch("/create-persona", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ locations, companyNames }),
+          });
+
+          if (response.ok) {
+            const result = await response.text();
+            document.open();
+            document.write(result);
+            document.close();
+          } else {
+            const data = await response.json();
+            alert("Failed to create persona: " + data.error);
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Failed to create persona");
+        }
       }
     </script>
   </body>
