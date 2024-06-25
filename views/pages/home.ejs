@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Advanced AI Outbound</title>
+    <title>Advanced Job Search</title>
     <style>
       body {
         font-family: "Helvetica Neue", Arial, sans-serif;
@@ -18,86 +18,193 @@
         padding: 20px;
         text-align: center;
       }
-      .container {
-        max-width: 1200px;
-        margin: 20px auto;
+      main {
+        max-width: 800px;
+        margin: 0 auto;
         padding: 20px;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        text-align: center;
+        font-family: "Arial", sans-serif;
       }
       h1 {
-        font-size: 2.5em;
-        margin-bottom: 20px;
-      }
-      .intro {
-        font-size: 1.2em;
-        line-height: 1.6;
-        margin-bottom: 40px;
-      }
-      .intro p {
-        margin-bottom: 20px;
-      }
-      .intro ul {
-        list-style-type: none;
-        padding: 0;
-      }
-      .intro ul li {
-        font-size: 1.2em;
-        margin-bottom: 10px;
-      }
-      .cta-button {
-        display: inline-block;
-        padding: 15px 30px;
-        background-color: #0073e6;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 1.2em;
-        transition: background-color 0.3s ease;
-        margin-bottom: 40px;
-      }
-      .cta-button:hover {
-        background-color: #005bb5;
-      }
-      footer {
         text-align: center;
-        padding: 10px 0;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      label {
+        display: block;
+        font-weight: bold;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+      button {
         background-color: #0056b3;
         color: white;
+        border: none;
+        padding: 10px 20px;
+        text-transform: uppercase;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 20px;
+      }
+      button:hover {
+        background-color: #004494;
       }
     </style>
   </head>
   <body>
     <header>
-      <h1>Welcome to Advanced AI Outbound</h1>
+      <h1>Advanced Job Search</h1>
     </header>
-    <div class="container">
-      <section class="intro">
-        <p>Advanced AI Outbound tool:</p>
-        <p>
-          Advanced AI Outbound automatically finds job openings on LinkedIn,
-          gets contact info, and sends personalized emails to help companies
-          fill positions.
-        </p>
-        <p>Here's a step-by-step breakdown of the process:</p>
-        <ul>
-          <li>Identify job opportunities on LinkedIn</li>
-          <li>Find relevant personas through Apollo</li>
-          <li>Enrich their emails (i.e., gather email addresses)</li>
-          <li>
-            Send personalized outreach emails stating, "I saw you are hiring for
-            ABCD job and we can help."
-          </li>
-          <li>Use this tool to differentiate and grow revenue</li>
-        </ul>
-      </section>
-      <a href="/find-jobs" class="cta-button">Find Jobs</a>
-    </div>
-    <footer>
-      <p>&copy; 2024 Advanced AI Outbound. All rights reserved.</p>
-    </footer>
+    <main>
+      <form action="/search-jobs" method="POST">
+        <!-- Query Input -->
+        <div>
+          <label for="query">Job Title and Location:</label>
+          <input
+            type="text"
+            id="query"
+            name="query"
+            placeholder="e.g., Python developer in Texas, USA"
+            required
+          />
+        </div>
+
+        <!-- Page Input -->
+        <div>
+          <label for="page">Page Number:</label>
+          <input
+            type="number"
+            id="page"
+            name="page"
+            min="1"
+            max="100"
+            value="1"
+          />
+        </div>
+
+        <!-- Number of Pages Input -->
+        <div>
+          <label for="num_pages">Number of Pages:</label>
+          <input
+            type="number"
+            id="num_pages"
+            name="num_pages"
+            min="1"
+            max="20"
+            value="1"
+          />
+        </div>
+
+        <!-- Date Posted Selection -->
+        <div>
+          <label for="date_posted">Date Posted:</label>
+          <select id="date_posted" name="date_posted">
+            <option value="all">All</option>
+            <option value="today">Today</option>
+            <option value="3days">Past 3 Days</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+          </select>
+        </div>
+
+        <!-- Remote Jobs Only Checkbox -->
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              id="remote_jobs_only"
+              name="remote_jobs_only"
+            />
+            Remote Jobs Only
+          </label>
+        </div>
+
+        <!-- Employment Types Dropdown -->
+        <div>
+          <label for="employment_types">Employment Types:</label>
+          <select id="employment_types" name="employment_types">
+            <option value="">Select Employment Type</option>
+            <option value="FULLTIME">Full-time</option>
+            <option value="CONTRACTOR">Contractor</option>
+            <option value="PARTTIME">Part-time</option>
+            <option value="INTERN">Intern</option>
+          </select>
+        </div>
+
+        <!-- Job Requirements -->
+        <div>
+          <label for="job_requirements">Job Requirements:</label>
+          <input
+            type="text"
+            id="job_requirements"
+            name="job_requirements"
+            placeholder="under_3_years_experience, more_than_3_years_experience, no_experience, no_degree"
+          />
+        </div>
+
+        <!-- Job Titles -->
+        <div>
+          <label for="job_titles">Job Titles:</label>
+          <input
+            type="text"
+            id="job_titles"
+            name="job_titles"
+            placeholder="e.g., Backend developer"
+          />
+        </div>
+
+        <!-- Company Types -->
+        <div>
+          <label for="company_types">Company Types:</label>
+          <input
+            type="text"
+            id="company_types"
+            name="company_types"
+            placeholder="e.g., startup"
+          />
+        </div>
+
+        <!-- Actively Hiring Checkbox -->
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              id="actively_hiring"
+              name="actively_hiring"
+            />
+            Actively Hiring
+          </label>
+        </div>
+
+        <!-- Radius for Job Location -->
+        <div>
+          <label for="radius">Radius (km):</label>
+          <input type="number" id="radius" name="radius" min="0" value="27" />
+        </div>
+
+        <!-- Exclude Job Publishers -->
+        <div>
+          <label for="exclude_job_publishers">Exclude Job Publishers:</label>
+          <input
+            type="text"
+            id="exclude_job_publishers"
+            name="exclude_job_publishers"
+            placeholder="e.g., BeeBe,Dice"
+          />
+        </div>
+
+        <button type="submit">Search Jobs</button>
+      </form>
+    </main>
+    <!-- <%- include('../partials/footer') %> -->
   </body>
 </html>
