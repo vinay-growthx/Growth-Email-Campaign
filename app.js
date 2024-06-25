@@ -17,6 +17,7 @@ const { searchPeople } = require("./services/ApolloAPI/searchPeople");
 const { getEmailByLinkedInUrl } = require("./services/ApolloAPI/emailEnrich");
 const axios = require("axios");
 const app = express();
+const { smtpTransport } = require("./services/ses");
 
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
@@ -176,6 +177,128 @@ app.post("/email-enrich", async (req, res) => {
   }
 });
 
+app.post("/send-email", async (req, res) => {
+  const { enrichedData, emailTemplate } = req.body;
+
+  if (!enrichedData || !emailTemplate) {
+    return res
+      .status(400)
+      .json({ error: "Enriched data and email template are required" });
+  }
+
+  try {
+    const sendEmailPromises = enrichedData.map((person) => {
+      const mailOptions = {
+        to: person.email,
+        from: "EasySource <no-reply@hirequotient.com>",
+        bcc: "easysource-support@hirequotient.com",
+        subject: subject,
+        html: emailTemplate
+          .replace("{{name}}", person.name)
+          .replace("{{title}}", person.employment_history[0].title)
+          .replace(
+            "{{companyName}}",
+            person.employment_history[0].organization_name
+          ),
+      };
+
+      return smtpTransport.sendMail(mailOptions);
+    });
+
+    await Promise.all(sendEmailPromises);
+
+    res.status(200).json({ message: "Emails sent successfully" });
+  } catch (error) {
+    console.error("Error sending emails:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to send emails", details: error.message });
+  }
+});
+
+// app.post("/send-email", async (req, res) => {
+//   const { enrichedData, emailTemplate } = req.body;
+
+//   if (!enrichedData || !emailTemplate) {
+//     return res
+//       .status(400)
+//       .json({ error: "Enriched data and email template are required" });
+//   }
+
+//   try {
+//     // Create a transporter object using the default SMTP transport
+//     const transporter = nodemailer.createTransport({
+//       service: "gmail",
+//       auth: {
+//         user: process.env.EMAIL_USER, // Your email address
+//         pass: process.env.EMAIL_PASS, // Your email password or app password
+//       },
+//     });
+
+//     // Send an email to each enriched data entry
+//     const sendEmailPromises = enrichedData.map((person) => {
+//       const latestJob = person.employment_history[0];
+//       const mailOptions = {
+//         from: process.env.EMAIL_USER,
+//         to: person.email,
+//         subject: "Collaboration Opportunity",
+//         text: emailTemplate
+//           .replace("{{name}}", person.name)
+//           .replace("{{title}}", latestJob.title)
+//           .replace("{{companyName}}", latestJob.organization_name),
+//       };
+
+//       return transporter.sendMail(mailOptions);
+//     });
+
+//     await Promise.all(sendEmailPromises);
+
+//     res.status(200).json({ message: "Emails sent successfully" });
+//   } catch (error) {
+//     console.error("Error sending emails:", error);
+//     res
+//       .status(500)
+//       .json({ error: "Failed to send emails", details: error.message });
+//   }
+// });
+app.post("/send-email", async (req, res) => {
+  const { enrichedData, emailTemplate, emailSubject } = req.body;
+
+  if (!enrichedData || !emailTemplate) {
+    return res
+      .status(400)
+      .json({ error: "Enriched data and email template are required" });
+  }
+
+  try {
+    // Send an email to each enriched data entry
+    const sendEmailPromises = enrichedData.map((person) => {
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: person.email,
+        subject: emailSubject,
+        text: emailTemplate
+          .replace("{{name}}", person.name)
+          .replace("{{title}}", person.employment_history[0].title)
+          .replace(
+            "{{companyName}}",
+            person.employment_history[0].organization_name
+          ),
+      };
+
+      return transporter.sendMail(mailOptions);
+    });
+
+    await Promise.all(sendEmailPromises);
+
+    res.status(200).json({ message: "Emails sent successfully" });
+  } catch (error) {
+    console.error("Error sending emails:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to send emails", details: error.message });
+  }
+});
 async function searchJobs(
   query,
   page,
