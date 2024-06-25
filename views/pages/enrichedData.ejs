@@ -106,13 +106,14 @@
         text-align: center;
         margin: 20px 0;
       }
-      .email-textarea {
+      .email-textarea,
+      .email-subject {
         width: 100%;
-        height: 150px;
         border-radius: 5px;
         padding: 10px;
         font-size: 1em;
         border: 1px solid #ccc;
+        margin-bottom: 10px;
       }
       .submit-btn {
         display: block;
@@ -199,6 +200,12 @@
         <p>No enriched data found.</p>
         <% } %>
         <div class="textarea-container">
+          <input
+            type="text"
+            id="emailSubject"
+            class="email-subject"
+            placeholder="Subject"
+          />
           <textarea
             id="emailContent"
             class="email-textarea"
@@ -221,9 +228,15 @@
           return;
         }
 
+        const emailSubject = document.getElementById("emailSubject").value;
+        if (!emailSubject) {
+          alert("Please enter a subject.");
+          return;
+        }
+
         const emailContent = document.getElementById("emailContent").value;
         if (!emailContent) {
-          alert("Please write an email content.");
+          alert("Please write email content.");
           return;
         }
 
@@ -233,7 +246,7 @@
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ selectedPeople, emailContent }),
+          body: JSON.stringify({ selectedPeople, emailSubject, emailContent }),
         })
           .then((response) => response.json())
           .then((data) => {
