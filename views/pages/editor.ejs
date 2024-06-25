@@ -2,26 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Trix Editor in EJS</title>
-    <!-- Include CSS for Trix Editor -->
+    <title>CKEditor 5 in EJS</title>
+    <!-- Include CSS for CKEditor 5 -->
     <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.css"
       rel="stylesheet"
-      type="text/css"
+      href="https://cdn.ckeditor.com/ckeditor5/34.1.0/classic/themes/lark.css"
     />
   </head>
   <body>
     <h1>Email Editor on EJS</h1>
     <!-- Create a div where the editor will be placed -->
-    <div>
-      <input id="editor" type="hidden" name="content" />
-      <trix-editor input="editor"></trix-editor>
-    </div>
+    <div id="editor">Type some text here...</div>
 
-    <!-- Include JS for Trix Editor -->
-    <script
-      type="text/javascript"
-      src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.js"
-    ></script>
+    <!-- Include JS for CKEditor 5 -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/34.1.0/classic/ckeditor.js"></script>
+    <script>
+      // Initialize the CKEditor on the div with id 'editor'
+      ClassicEditor.create(document.querySelector("#editor")).catch((error) => {
+        console.error(error);
+      });
+    </script>
   </body>
 </html>
