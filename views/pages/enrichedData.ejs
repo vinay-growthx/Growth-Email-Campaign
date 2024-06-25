@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Persona Reachout</title>
+    <title>Enriched Data</title>
     <style>
       body {
         font-family: "Helvetica Neue", Arial, sans-serif;
@@ -102,6 +102,18 @@
       .select-checkbox {
         margin-right: 20px;
       }
+      .textarea-container {
+        text-align: center;
+        margin: 20px 0;
+      }
+      .email-textarea {
+        width: 100%;
+        height: 150px;
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 1em;
+        border: 1px solid #ccc;
+      }
       .submit-btn {
         display: block;
         margin: 20px auto;
@@ -121,38 +133,46 @@
   </head>
   <body>
     <div class="container">
-      <h1>Persona Reachout</h1>
-      <form id="personaForm" onsubmit="submitSelectedPeople(event)">
+      <h1>Enriched Data</h1>
+      <form id="enrichedForm" onsubmit="submitEmail(event)">
         <% if (people && people.length > 0) { %> <%
-        people.forEach(function(person, index) { %>
+        people.forEach(function(enrichData) { %> <% if (enrichData.person) { %>
         <div class="person-card">
           <input
             type="checkbox"
             class="select-checkbox"
             name="selectedPeople"
-            value="<%= index %>"
+            value="<%= enrichData.person.linkedin_url %>"
           />
+          <% if (enrichData.person.photo_url) { %>
           <img
-            src="<%= person.photo_url %>"
-            alt="<%= person.name %>"
+            src="<%= enrichData.person.photo_url %>"
+            alt="<%= enrichData.person.name %>"
             class="person-photo"
           />
+          <% } else { %>
+          <img
+            src="https://via.placeholder.com/120"
+            alt="No Photo Available"
+            class="person-photo"
+          />
+          <% } %>
           <div class="person-details">
-            <div class="person-name"><%= person.name %></div>
-            <div class="person-title"><%= person.title %></div>
+            <div class="person-name"><%= enrichData.person.name %></div>
+            <div class="person-title"><%= enrichData.person.title %></div>
             <div class="person-organization">
-              <%= person.organization.name %>
+              <%= enrichData.person.organization.name %>
             </div>
             <div class="person-contact">
               <span class="contact-icon">📧</span>
-              <a href="mailto:<%= person.email %>" class="email"
-                ><%= person.email %></a
+              <a href="mailto:<%= enrichData.person.email %>" class="email"
+                ><%= enrichData.person.email %></a
               >
             </div>
             <div class="person-contact">
               <span class="contact-icon">🔗</span>
               <a
-                href="<%= person.linkedin_url %>"
+                href="<%= enrichData.person.linkedin_url %>"
                 class="linkedin-url"
                 target="_blank"
                 >LinkedIn Profile</a
@@ -161,7 +181,8 @@
             <div class="employment-history">
               <h3>Employment History</h3>
               <ul>
-                <% person.employment_history.forEach(function(job) { %>
+                <% enrichData.person.employment_history.forEach(function(job) {
+                %>
                 <li>
                   <strong>Title:</strong> <%= job.title %><br />
                   <strong>Organization:</strong> <%= job.organization_name %><br />
@@ -174,52 +195,54 @@
             </div>
           </div>
         </div>
-        <% }); %> <% } else { %>
-        <p>No personas found.</p>
+        <% } %> <% }); %> <% } else { %>
+        <p>No enriched data found.</p>
         <% } %>
-        <button type="submit" class="submit-btn">Submit Selected</button>
+        <div class="textarea-container">
+          <textarea
+            id="emailContent"
+            class="email-textarea"
+            placeholder="Write your email here..."
+          ></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Send Email</button>
       </form>
     </div>
 
     <script>
-      function submitSelectedPeople(event) {
+      function submitEmail(event) {
         event.preventDefault();
 
-        const selectedPeople = Array.from(document.querySelectorAll('input[name="selectedPeople"]:checked')).map(checkbox => checkbox.value);
+        const selectedPeople = Array.from(
+          document.querySelectorAll('input[name="selectedPeople"]:checked')
+        ).map((checkbox) => checkbox.value);
         if (selectedPeople.length === 0) {
-            alert('Please select at least one person.');
-            return;
+          alert("Please select at least one person.");
+          return;
         }
 
-        const peopleData = JSON.parse('<%- JSON.stringify(people).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') %>');
-        const selectedLinkedInUrls = selectedPeople.map(index => peopleData[index].linkedin_url);
+        const emailContent = document.getElementById("emailContent").value;
+        if (!emailContent) {
+          alert("Please write an email content.");
+          return;
+        }
 
         // Use fetch API to send data to your server
-        fetch('/email-enrich', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ linkedinUrls: selectedLinkedInUrls })
+        fetch("/send-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ selectedPeople, emailContent }),
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => { throw new Error(text) });
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Data successfully enriched:', data);
-            // Redirect to the enriched data page with the enriched data
-            const url = new URL(window.location.href);
-            url.pathname = '/enriched-data';
-            url.searchParams.set('data', JSON.stringify(data.data));
-            window.location.href = url.toString();
-        })
-        .catch(error => {
-            console.error('Error during email enrichment:', error);
-            alert('Failed to enrich emails: ' + error.message);
-        });
+          .then((response) => response.json())
+          .then((data) => {
+            alert("Email sent successfully!");
+          })
+          .catch((error) => {
+            console.error("Error during email sending:", error);
+            alert("Failed to send email: " + error.message);
+          });
       }
     </script>
   </body>

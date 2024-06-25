@@ -14,6 +14,7 @@ const logtail = require("./services/logtail");
 const { Sentry } = require("./services/sentry");
 const redisClient = require("./services/redis/index");
 const { searchPeople } = require("./services/ApolloAPI/searchPeople");
+const { getEmailByLinkedInUrl } = require("./services/ApolloAPI/emailEnrich");
 const axios = require("axios");
 const app = express();
 
@@ -143,6 +144,35 @@ app.post("/search-jobs", async (req, res) => {
     res.render("showJob", { results }); // Send back the results to the client
   } catch (error) {
     res.status(500).send(error.toString());
+  }
+});
+app.get("/enriched-data", (req, res) => {
+  const people = JSON.parse(req.query.data);
+  res.render("enrichedData", { people });
+});
+
+app.post("/email-enrich", async (req, res) => {
+  try {
+    const { linkedinUrls } = req.body;
+    const enrichedData = [];
+
+    for (let i = 0; i < linkedinUrls.length; i++) {
+      const emailEnrich = await getEmailByLinkedInUrl(linkedinUrls[i]);
+      enrichedData.push(emailEnrich);
+    }
+
+    console.log("Enriched Data:", enrichedData); // Log the enriched data for debugging
+    res.status(200).json({
+      message: "Data successfully enriched",
+      data: enrichedData,
+    });
+    // res.render("enrichedData", { people: enrichedData });
+  } catch (error) {
+    console.error("Error during email enrichment:", error);
+    res.status(500).json({
+      error: "Failed to enrich emails",
+      details: error.message,
+    });
   }
 });
 
