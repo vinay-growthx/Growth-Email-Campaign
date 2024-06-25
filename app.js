@@ -59,6 +59,9 @@ app.use((req, res, next) => {
   express.json({ limit: "500mb" })(req, res, next);
 });
 
+app.get("/editor", (req, res) => {
+  res.render("editor");
+});
 /**
  * Routers Setup
  */

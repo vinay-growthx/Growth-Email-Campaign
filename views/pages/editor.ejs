@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Froala Editor in EJS</title>
+    <!-- Include CSS for Froala Editor -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/froala-editor/css/froala_editor.pkgd.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/froala-editor/css/froala_style.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+  </head>
+  <body>
+    <h1>Email Editor on EJS</h1>
+    <!-- Create a div where the editor will be placed -->
+    <div id="editor">Type some text here...</div>
+
+    <!-- Include JS for Froala Editor -->
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/froala-editor/js/froala_editor.pkgd.min.js"
+    ></script>
+    <script>
+      // Initialize the Froala Editor on the div with id 'editor'
+      new FroalaEditor("#editor");
+    </script>
+  </body>
+</html>
