@@ -215,6 +215,9 @@ app.post("/send-email", async (req, res) => {
       .json({ error: "Failed to send emails", details: error.message });
   }
 });
+app.get("/", (req, res) => {
+  res.render("home");
+});
 
 // app.post("/send-email", async (req, res) => {
 //   const { enrichedData, emailTemplate } = req.body;
