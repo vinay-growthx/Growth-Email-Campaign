@@ -109,16 +109,14 @@
       </label>
     </div>
 
-    <!-- Employment Types -->
+    <!-- Employment Types Dropdown -->
     <div>
       <label for="employment_types" style="display: block; font-weight: bold"
         >Employment Types:</label
       >
-      <input
-        type="text"
+      <select
         id="employment_types"
         name="employment_types"
-        placeholder="FULLTIME, CONTRACTOR, PARTTIME, INTERN"
         style="
           width: 100%;
           padding: 8px;
@@ -126,7 +124,12 @@
           border-radius: 4px;
           border: 1px solid #ccc;
         "
-      />
+      >
+        <option value="FULLTIME">FULLTIME</option>
+        <option value="CONTRACTOR">CONTRACTOR</option>
+        <option value="PARTTIME">PARTTIME</option>
+        <option value="INTERN">INTERN</option>
+      </select>
     </div>
 
     <!-- Job Requirements -->
@@ -189,26 +192,6 @@
       />
     </div>
 
-    <!-- Employer -->
-    <!-- <div>
-      <label for="employer" style="display: block; font-weight: bold"
-        >Employer:</label
-      >
-      <input
-        type="text"
-        id="employer"
-        name="employer"
-        placeholder="e.g., L2cvMTFoMTV4eHhydDpJbmZpbml0eSBDb25zdWx0aW5n,L2cvMTFmMDEzOXIxbjpDeWJlckNvZGVycw=="
-        style="
-          width: 100%;
-          padding: 8px;
-          font-size: 16px;
-          border-radius: 4px;
-          border: 1px solid #ccc;
-        "
-      />
-    </div> -->
-
     <!-- Actively Hiring Checkbox -->
     <div>
       <label style="font-weight: bold">
@@ -250,6 +233,13 @@
         id="exclude_job_publishers"
         name="exclude_job_publishers"
         placeholder="e.g., BeeBe,Dice"
+        style="
+          width: 100%;
+          padding: 8px;
+          font-size: 16px;
+          border-radius: 4px;
+          border: 1px solid #ccc;
+        "
       />
     </div>
 
@@ -271,5 +261,3 @@
     </button>
   </form>
 </main>
-
-<!-- <%- include('../partials/footer') %> -->
