@@ -120,62 +120,70 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.js"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', (event) => {
-        // Retrieve the emails from the server-side rendered data
-        const emails = <%- JSON.stringify(emails) %>;
-
-        const emailsContainer = document.getElementById('emailsContainer');
-
-        if (emails.length > 0) {
-          emails.forEach(email => {
-            const emailSpan = document.createElement('span');
-            emailSpan.textContent = email;
-            emailsContainer.appendChild(emailSpan);
-          });
-        } else {
-          emailsContainer.textContent = 'No emails selected. Please go back and select at least one email.';
-        }
-
-        // Store emails in localStorage for use in form submission
-        localStorage.setItem('selectedEmails', JSON.stringify(emails));
+            document.addEventListener('DOMContentLoaded', (event) => {
+          try {
+              const emails = JSON.parse(sessionStorage.getItem('emails'));
+              console.log(emails);
+          } catch (error) {
+              console.error('Error parsing emails:', error);
+          }
       });
+            document.addEventListener('DOMContentLoaded', (event) => {
+              // Retrieve the emails from the server-side rendered data
+              const emails = <%- JSON.stringify(emails) %>;
 
-      document.getElementById("emailForm").onsubmit = function (event) {
-        event.preventDefault(); // Prevent the default form submission
+              const emailsContainer = document.getElementById('emailsContainer');
 
-        const subject = document.getElementById("emailSubject").value;
-        const body = document
-          .querySelector("trix-editor")
-          .editor.getDocument()
-          .toString()
-          .trim();
+              if (emails.length > 0) {
+                emails.forEach(email => {
+                  const emailSpan = document.createElement('span');
+                  emailSpan.textContent = email;
+                  emailsContainer.appendChild(emailSpan);
+                });
+              } else {
+                emailsContainer.textContent = 'No emails selected. Please go back and select at least one email.';
+              }
 
-        // Retrieve emails from localStorage
-        const emails = JSON.parse(localStorage.getItem('selectedEmails'));
+              // Store emails in localStorage for use in form submission
+              localStorage.setItem('selectedEmails', JSON.stringify(emails));
+            });
 
-        if (!subject || !body || emails.length === 0) {
-          alert("Please fill in the subject, body, and ensure emails are selected.");
-          return;
-        }
+            document.getElementById("emailForm").onsubmit = function (event) {
+              event.preventDefault(); // Prevent the default form submission
 
-        // Use fetch API to send data to your server
-        fetch("/send-email", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ subject: subject, body: body, emails: emails }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            alert("Email sent successfully!");
-            console.log(data);
-          })
-          .catch((error) => {
-            console.error("Error during email sending:", error);
-            alert("Failed to send email: " + error.message);
-          });
-      };
+              const subject = document.getElementById("emailSubject").value;
+              const body = document
+                .querySelector("trix-editor")
+                .editor.getDocument()
+                .toString()
+                .trim();
+
+              // Retrieve emails from localStorage
+              const emails = JSON.parse(localStorage.getItem('selectedEmails'));
+
+              if (!subject || !body || emails.length === 0) {
+                alert("Please fill in the subject, body, and ensure emails are selected.");
+                return;
+              }
+
+              // Use fetch API to send data to your server
+              fetch("/send-email", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ subject: subject, body: body, emails: emails }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  alert("Email sent successfully!");
+                  console.log(data);
+                })
+                .catch((error) => {
+                  console.error("Error during email sending:", error);
+                  alert("Failed to send email: " + error.message);
+                });
+            };
     </script>
   </body>
 </html>

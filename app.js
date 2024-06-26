@@ -72,7 +72,6 @@ app.get("/persona-reachout", (req, res) => {
 });
 app.get("/send-email", (req, res) => {
   const enrichedData = JSON.parse(req.query.data);
-  console.log("enriched data ===>", enrichedData);
   const emails = enrichedData.map((item) => item.person.email);
   res.render("sendEmail", { emails });
 });
@@ -124,7 +123,6 @@ app.post("/search-jobs", async (req, res) => {
       radius,
       exclude_job_publishers,
     } = req.body;
-    console.log(req.body);
     const results = await searchJobs(
       query,
       page,
@@ -196,7 +194,22 @@ app.post("/email-enrich", async (req, res) => {
     });
   }
 });
-
+app.post("/email-enrich-new", async (req, res) => {
+  try {
+    console.log("req.body", req.body);
+    const emails = req.body.emails;
+    res.status(200).json({
+      message: "Data successfully enriched",
+    });
+    res.render("sendEmail", { emails });
+  } catch (error) {
+    console.error("Error during email enrichment:", error);
+    res.status(500).json({
+      error: "Failed to enrich emails",
+      details: error.message,
+    });
+  }
+});
 app.post("/send-email", async (req, res) => {
   const { enrichedData, emailTemplate } = req.body;
 
