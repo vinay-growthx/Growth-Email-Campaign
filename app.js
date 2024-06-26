@@ -71,8 +71,10 @@ app.get("/persona-reachout", (req, res) => {
   res.render("personaReachout", { people });
 });
 app.get("/send-email", (req, res) => {
-  const enrichedData = JSON.parse(decodeURIComponent(req.query.data));
-  res.render("sendEmail", { enrichedData });
+  const enrichedData = JSON.parse(req.query.data);
+  console.log("enriched data ===>", enrichedData);
+  const emails = enrichedData.map((item) => item.person.email);
+  res.render("sendEmail", { emails });
 });
 
 app.post("/create-persona", async (req, res) => {

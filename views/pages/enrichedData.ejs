@@ -183,9 +183,18 @@
       function submitEmail(event) {
         event.preventDefault();
 
+        // Collect checked LinkedIn URLs
         const selectedPeople = Array.from(
           document.querySelectorAll('input[name="selectedPeople"]:checked')
         ).map((checkbox) => checkbox.value);
+
+        // Collect email addresses associated with the selected LinkedIn URLs
+        const emails = Array.from(
+          document.querySelectorAll('input[name="selectedPeople"]:checked')
+        ).map((checkbox) =>
+          checkbox.closest(".person-card").querySelector(".email").href.slice(7)
+        ); // Remove 'mailto:'
+
         if (selectedPeople.length === 0) {
           alert("Please select at least one person.");
           return;
@@ -197,7 +206,10 @@
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ linkedinUrls: selectedPeople }),
+          body: JSON.stringify({
+            linkedinUrls: selectedPeople,
+            emails: emails,
+          }),
         })
           .then((response) => {
             if (!response.ok) {
