@@ -224,6 +224,8 @@
 
           if (response.ok) {
             const result = await response.text();
+            // Update URL to reflect the new persona
+            history.pushState(null, "", "/persona-reachout");
             document.open();
             document.write(result);
             document.close();
