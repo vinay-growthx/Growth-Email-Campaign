@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reachout People</title>
+    <title>Enriched People</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
       rel="stylesheet"
@@ -134,7 +134,7 @@
             type="checkbox"
             class="select-checkbox"
             name="selectedPeople"
-            value="<%= enrichData.person.linkedin_url %>"
+            value="<%= enrichData.person.email %>"
           />
           <% if (enrichData.person.photo_url) { %>
           <img
@@ -183,54 +183,21 @@
       function submitEmail(event) {
         event.preventDefault();
 
-        // Collect checked LinkedIn URLs
-        const selectedPeople = Array.from(
+        // Collect selected email addresses
+        const selectedEmails = Array.from(
           document.querySelectorAll('input[name="selectedPeople"]:checked')
         ).map((checkbox) => checkbox.value);
 
-        // Collect email addresses associated with the selected LinkedIn URLs
-        const emails = Array.from(
-          document.querySelectorAll('input[name="selectedPeople"]:checked')
-        ).map((checkbox) =>
-          checkbox.closest(".person-card").querySelector(".email").href.slice(7)
-        ); // Remove 'mailto:'
-
-        if (selectedPeople.length === 0) {
+        if (selectedEmails.length === 0) {
           alert("Please select at least one person.");
           return;
         }
 
-        // Fetch the enriched data and then redirect to the send-email page
-        fetch("/email-enrich", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            linkedinUrls: selectedPeople,
-            emails: emails,
-          }),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              return response.text().then((text) => {
-                throw new Error(text);
-              });
-            }
-            return response.json();
-          })
-          .then((data) => {
-            console.log("Data successfully enriched:", data);
-            // Redirect to the send-email page with the enriched data
-            const url = new URL(window.location.href);
-            url.pathname = "/send-email";
-            url.searchParams.set("data", JSON.stringify(data.data));
-            window.location.href = url.toString();
-          })
-          .catch((error) => {
-            console.error("Error during email enrichment:", error);
-            alert("Failed to enrich emails: " + error.message);
-          });
+        // Redirect to the send-email page with the selected email addresses
+        const url = new URL(window.location.href);
+        url.pathname = "/send-email";
+        url.searchParams.set("emails", JSON.stringify(selectedEmails));
+        window.location.href = url.toString();
       }
     </script>
   </body>
