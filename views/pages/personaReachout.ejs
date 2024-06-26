@@ -4,37 +4,46 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Persona Reachout</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       body {
-        font-family: "Helvetica Neue", Arial, sans-serif;
+        font-family: "Nunito", sans-serif;
         background-color: #f7f7f7;
         margin: 0;
         padding: 20px;
+        color: #333;
       }
       .container {
         max-width: 1200px;
         margin: 0 auto;
         padding: 20px;
+        background: #ffffff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
       }
       h1 {
         text-align: center;
         font-size: 2.5em;
-        color: #333;
+        color: #274060;
         margin-bottom: 40px;
       }
       .person-card {
         background-color: #fff;
         border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        margin-bottom: 30px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
         padding: 20px;
         display: flex;
         flex-direction: row;
         align-items: center;
-        transition: transform 0.3s ease;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
       }
       .person-card:hover {
-        transform: translateY(-10px);
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
       }
       .person-photo {
         border-radius: 50%;
@@ -49,18 +58,16 @@
       .person-name {
         font-size: 1.8em;
         font-weight: bold;
-        color: #333;
-        margin-bottom: 10px;
+        color: #274060;
       }
       .person-title {
         font-size: 1.4em;
         color: #777;
-        margin-bottom: 5px;
       }
       .person-organization {
         font-size: 1.2em;
         color: #555;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
       }
       .person-contact {
         margin-top: 10px;
@@ -69,11 +76,11 @@
         flex-wrap: wrap;
       }
       .contact-icon {
-        margin-right: 5px;
+        margin-right: 10px;
       }
       .linkedin-url,
       .email {
-        color: #0073e6;
+        color: #0056b3;
         text-decoration: none;
         margin-right: 20px;
       }
@@ -87,7 +94,6 @@
       .employment-history h3 {
         font-size: 1.4em;
         color: #333;
-        margin-bottom: 10px;
       }
       .employment-history ul {
         list-style-type: none;
@@ -98,9 +104,6 @@
         margin-bottom: 10px;
         padding: 10px;
         border-radius: 5px;
-      }
-      .select-checkbox {
-        margin-right: 20px;
       }
       .submit-btn {
         display: block;

@@ -18,7 +18,7 @@ const { getEmailByLinkedInUrl } = require("./services/ApolloAPI/emailEnrich");
 const axios = require("axios");
 const app = express();
 const { smtpTransport } = require("./services/ses");
-
+const { searchCompanyApollo } = require("./services/ApolloAPI/orgSearch");
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
@@ -59,9 +59,6 @@ app.use((req, res, next) => {
   express.json({ limit: "500mb" })(req, res, next);
 });
 
-app.get("/editor", (req, res) => {
-  res.render("editor");
-});
 /**
  * Routers Setup
  */
@@ -73,6 +70,10 @@ app.get("/persona-reachout", (req, res) => {
   const people = JSON.parse(decodeURIComponent(req.query.people));
   res.render("personaReachout", { people });
 });
+app.get("/send-email", (req, res) => {
+  const enrichedData = JSON.parse(decodeURIComponent(req.query.data));
+  res.render("sendEmail", { enrichedData });
+});
 
 app.post("/create-persona", async (req, res) => {
   try {
@@ -80,11 +81,24 @@ app.post("/create-persona", async (req, res) => {
 
     console.log("Received locations:", locations);
     console.log("Received company names:", companyNames);
+    // const company = await searchCompanyApollo(companyNames);
+    // // Call the searchPeople function
+    // const people = await searchPeople(locations, companyNames);
+    // console.log("people", people);
+    // res.render("personaReachout", { people: people.people });
+    const allPeople = [];
 
-    // Call the searchPeople function
-    const people = await searchPeople(locations, companyNames);
-    console.log("people", people);
-    res.render("personaReachout", { people: people.people });
+    // Process each company name one by one
+    for (const name of companyNames) {
+      const company = await searchCompanyApollo(name);
+      console.log("company", company);
+
+      const people = await searchPeople(locations, company.name);
+
+      allPeople.push(...people.people);
+    }
+    console.log("All people", allPeople);
+    res.render("personaReachout", { people: allPeople });
   } catch (error) {
     console.error("Error creating persona:", error);
     res.status(500).json({ error: "Failed to create persona" });
@@ -150,6 +164,7 @@ app.post("/search-jobs", async (req, res) => {
     res.status(500).send(error.toString());
   }
 });
+
 app.get("/enriched-data", (req, res) => {
   const people = JSON.parse(req.query.data);
   res.render("enrichedData", { people });
