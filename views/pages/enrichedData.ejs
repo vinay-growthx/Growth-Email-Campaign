@@ -256,6 +256,90 @@
           transform: scale(1);
         }
       }
+      .select-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 25px;
+        height: 25px;
+        border: 2px solid #3498db;
+        border-radius: 5px;
+        outline: none;
+        transition: all 0.3s;
+        position: relative;
+        cursor: pointer;
+        margin-right: 20px;
+      }
+
+      .select-checkbox:checked {
+        background-color: #3498db;
+        animation: pulse 0.5s;
+      }
+
+      .select-checkbox:checked::before {
+        content: "✔";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 16px;
+      }
+      .checkbox-container {
+        display: inline-block;
+        position: relative;
+        padding-left: 35px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-size: 22px;
+        user-select: none;
+      }
+
+      .checkbox-container input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+      }
+
+      .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 25px;
+        width: 25px;
+        background-color: #fff;
+        border: 2px solid #3498db;
+        border-radius: 5px;
+      }
+
+      .checkbox-container:hover input ~ .checkmark {
+        background-color: #ccc;
+      }
+
+      .checkbox-container input:checked ~ .checkmark {
+        background-color: #3498db;
+      }
+
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+      }
+
+      .checkbox-container input:checked ~ .checkmark:after {
+        display: block;
+      }
+
+      .checkbox-container .checkmark:after {
+        left: 9px;
+        top: 5px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        transform: rotate(45deg);
+      }
     </style>
   </head>
   <body>
@@ -275,12 +359,15 @@
           people.forEach(function(enrichData, index) { %> <% if
           (enrichData.person) { %>
           <div class="person-card" style="animation-delay: <%= index * 0.1 %>s">
-            <input
-              type="checkbox"
-              class="select-checkbox"
-              name="selectedPeople"
-              value="<%= enrichData.person.email %>"
-            />
+            <label class="checkbox-container">
+              <input
+                type="checkbox"
+                class="select-checkbox"
+                name="selectedPeople"
+                value="<%= enrichData.person.email %>"
+              />
+              <span class="checkmark"></span>
+            </label>
             <% if (enrichData.person.photo_url) { %>
             <img
               src="<%= enrichData.person.photo_url %>"

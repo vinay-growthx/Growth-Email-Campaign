@@ -67,7 +67,16 @@ app.get("/find-jobs", (req, res) => {
   res.render("findJob", { title: "Find the Best LinkedIn Jobs Available" });
 });
 app.get("/persona-reachout", (req, res) => {
-  const people = JSON.parse(decodeURIComponent(req.query.people));
+  let people = [];
+
+  try {
+    if (req.query.people) {
+      people = JSON.parse(decodeURIComponent(req.query.people));
+    }
+  } catch (error) {
+    console.error("Error parsing people data:", error);
+  }
+
   res.render("personaReachout", { people });
 });
 app.get("/send-email", (req, res) => {
@@ -281,7 +290,7 @@ app.post("/send-email", async (req, res) => {
   }
 });
 app.get("/", (req, res) => {
-  res.render("find-jobs");
+  res.render("findJob");
 });
 
 // app.post("/send-email", async (req, res) => {
