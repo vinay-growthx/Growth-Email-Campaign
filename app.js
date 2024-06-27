@@ -281,7 +281,7 @@ app.post("/send-email", async (req, res) => {
   }
 });
 app.get("/", (req, res) => {
-  res.render("home");
+  res.render("find-jobs");
 });
 
 // app.post("/send-email", async (req, res) => {
