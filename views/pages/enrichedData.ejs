@@ -256,34 +256,7 @@
           transform: scale(1);
         }
       }
-      .select-checkbox {
-        appearance: none;
-        -webkit-appearance: none;
-        width: 25px;
-        height: 25px;
-        border: 2px solid #3498db;
-        border-radius: 5px;
-        outline: none;
-        transition: all 0.3s;
-        position: relative;
-        cursor: pointer;
-        margin-right: 20px;
-      }
 
-      .select-checkbox:checked {
-        background-color: #3498db;
-        animation: pulse 0.5s;
-      }
-
-      .select-checkbox:checked::before {
-        content: "✔";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: white;
-        font-size: 16px;
-      }
       .checkbox-container {
         display: inline-block;
         position: relative;
@@ -340,6 +313,46 @@
         border-width: 0 3px 3px 0;
         transform: rotate(45deg);
       }
+      .select-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 25px;
+        height: 25px;
+        border: 2px solid #3498db;
+        border-radius: 5px;
+        outline: none;
+        transition: all 0.3s;
+        position: relative;
+        cursor: pointer;
+        margin-right: 30px;
+      }
+
+      .select-checkbox:checked {
+        background-color: #3498db;
+        animation: pulse 0.5s;
+      }
+
+      .select-checkbox:checked::before {
+        content: "✔";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 16px;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
     </style>
   </head>
   <body>
@@ -359,15 +372,17 @@
           people.forEach(function(enrichData, index) { %> <% if
           (enrichData.person) { %>
           <div class="person-card" style="animation-delay: <%= index * 0.1 %>s">
-            <label class="checkbox-container">
-              <input
-                type="checkbox"
-                class="select-checkbox"
-                name="selectedPeople"
-                value="<%= enrichData.person.email %>"
-              />
-              <span class="checkmark"></span>
-            </label>
+            <input
+              type="checkbox"
+              class="select-checkbox"
+              name="selectedPeople"
+              value="<%= index %>"
+              id="person<%= index %>"
+            />
+            <label
+              for="person<%= index %>"
+              class="select-checkbox-label"
+            ></label>
             <% if (enrichData.person.photo_url) { %>
             <img
               src="<%= enrichData.person.photo_url %>"
@@ -492,6 +507,20 @@
         link.click();
         document.body.removeChild(link);
       }
+      function handleCheckboxChange(checkbox) {
+        if (checkbox.checked) {
+          checkbox.nextElementSibling.style.backgroundColor = "#3498db";
+        } else {
+          checkbox.nextElementSibling.style.backgroundColor = "transparent";
+        }
+      }
+
+      // Add this to your existing DOMContentLoaded event listener
+      document.querySelectorAll(".select-checkbox").forEach((checkbox) => {
+        checkbox.addEventListener("change", function () {
+          handleCheckboxChange(this);
+        });
+      });
     </script>
   </body>
 </html>
