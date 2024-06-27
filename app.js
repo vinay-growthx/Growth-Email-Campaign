@@ -76,6 +76,38 @@ app.get("/send-email", (req, res) => {
   res.render("sendEmail", { emails });
 });
 
+app.post("/send-email", async (req, res) => {
+  const { subject, body, emails } = req.body;
+
+  try {
+    const sendEmailPromises = emails.map((email) => {
+      const mailOptions = {
+        //  to: person.email,
+        to: "vinay.prajapati@hirequotient.com",
+        from: "EasySource <no-reply@hirequotient.com>",
+        subject: subject,
+        html: body,
+        // .replace("{{name}}", person.name)
+        // .replace("{{title}}", person.employment_history[0].title)
+        // .replace(
+        //   "{{companyName}}",
+        //   person.employment_history[0].organization_name
+        // ),
+      };
+
+      return smtpTransport.sendMail(mailOptions);
+    });
+
+    await Promise.all(sendEmailPromises);
+
+    res.status(200).json({ message: "Emails sent successfully" });
+  } catch (error) {
+    console.error("Error sending emails:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to send emails", details: error.message });
+  }
+});
 app.post("/create-persona", async (req, res) => {
   try {
     const { locations, companyNames } = req.body;
