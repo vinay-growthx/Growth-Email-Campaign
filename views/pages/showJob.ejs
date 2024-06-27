@@ -4,50 +4,112 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Job Search Results</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f7f7f7;
+      body,
+      html {
+        font-family: "Poppins", Arial, sans-serif;
+        background: linear-gradient(135deg, #f6f9fc 0%, #e9f2f9 100%);
         margin: 0;
-        padding: 20px;
+        padding: 0;
+        overflow-x: hidden;
       }
-      .container {
+
+      .parallax-container {
+        perspective: 1px;
+        height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+      .parallax-layer {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+      .parallax-background {
+        transform: translateZ(-1px) scale(2);
+        background: url("https://source.unsplash.com/random/1920x1080?abstract")
+          no-repeat center center fixed;
+        background-size: cover;
+        z-index: -1;
+      }
+      .content {
+        transform: translateZ(0);
+        position: relative;
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        margin: 20px auto;
+        padding: 40px;
         max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
       }
       h1 {
         text-align: center;
-        font-size: 2em;
+        font-size: 3em;
         color: #333;
-        margin-bottom: 20px;
+        margin-bottom: 40px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        animation: slideDown 1s ease-out;
+      }
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
       .job-card {
         background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
-        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+        padding: 30px;
         display: flex;
         flex-direction: row;
         align-items: center;
+        transition: all 0.3s ease;
+        animation: slideIn 0.5s ease-out forwards;
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+      @keyframes slideIn {
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      .job-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
       }
       .job-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 1px solid #e0e0e0;
-        padding-bottom: 10px;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 20px;
         margin-bottom: 20px;
       }
       .job-title {
-        font-size: 1.5em;
-        font-weight: bold;
-        color: #333;
+        font-size: 1.8em;
+        font-weight: 600;
+        color: #2c3e50;
+        transition: color 0.3s ease;
+      }
+      .job-card:hover .job-title {
+        color: #3498db;
       }
       .company-name {
-        font-size: 1.2em;
-        color: #777;
+        font-size: 1.4em;
+        color: #7f8c8d;
       }
       .job-details {
         display: flex;
@@ -55,29 +117,44 @@
         margin-bottom: 20px;
       }
       .job-detail {
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+        transition: transform 0.3s ease;
+      }
+      .job-card:hover .job-detail {
+        transform: translateX(5px);
       }
       .job-detail span {
-        font-weight: bold;
-        color: #555;
+        font-weight: 600;
+        color: #34495e;
       }
       .job-description {
-        line-height: 1.6;
+        line-height: 1.8;
         color: #555;
         margin-bottom: 20px;
+        max-height: 150px;
+        overflow: hidden;
+        transition: max-height 0.5s ease;
+      }
+      .job-card:hover .job-description {
+        max-height: 1000px;
       }
       .apply-link {
         display: inline-block;
-        padding: 10px 15px;
-        background-color: #0073e6;
+        padding: 12px 25px;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
         color: #fff;
         text-decoration: none;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
+        border-radius: 30px;
+        transition: all 0.3s ease;
         text-align: center;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
       }
       .apply-link:hover {
-        background-color: #005bb5;
+        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
       }
       ul {
         margin: 0;
@@ -85,103 +162,344 @@
         list-style-type: none;
       }
       ul li {
-        margin-bottom: 10px;
-        padding-left: 1.5em;
+        margin-bottom: 15px;
+        padding-left: 1.8em;
         position: relative;
+        transition: transform 0.3s ease;
+      }
+      ul li:hover {
+        transform: translateX(5px);
       }
       ul li::before {
-        content: "•";
+        content: "●";
         position: absolute;
         left: 0;
-        color: #0073e6;
+        color: #3498db;
         font-size: 1.2em;
         line-height: 1;
       }
       .job-select {
-        margin-right: 20px;
+        margin-right: 30px;
+      }
+      .job-select input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 25px;
+        height: 25px;
+        border: 2px solid #3498db;
+        border-radius: 5px;
+        outline: none;
+        transition: all 0.3s;
+        position: relative;
+        cursor: pointer;
+      }
+      .job-select input[type="checkbox"]:checked {
+        background-color: #3498db;
+        animation: pulse 0.5s;
+      }
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .job-select input[type="checkbox"]:checked::before {
+        content: "✔";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 16px;
       }
       .create-persona-btn {
         display: block;
-        margin: 20px auto;
-        padding: 10px 15px;
-        background-color: #0073e6;
+        margin: 40px auto;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
         color: #fff;
         text-decoration: none;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
+        border-radius: 30px;
+        transition: all 0.3s ease;
         text-align: center;
         width: fit-content;
+        font-size: 1.2em;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        animation: float 3s ease-in-out infinite;
+      }
+      @keyframes float {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
       }
       .create-persona-btn:hover {
-        background-color: #005bb5;
+        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+      }
+
+      #selectAll {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 25px;
+        height: 25px;
+        border: 2px solid #3498db;
+        border-radius: 5px;
+        outline: none;
+        transition: all 0.3s;
+        position: relative;
+        cursor: pointer;
+      }
+      #selectAll:checked {
+        background-color: #3498db;
+        animation: pulse 0.5s;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .select-all-container {
+        display: flex;
+        align-items: center;
+        animation: fadeIn 1s ease-out;
+      }
+
+      .select-all-label {
+        font-size: 1.1em;
+        margin-left: 10px;
+        color: #2c3e50;
+      }
+
+      #selectAll:checked::before {
+        content: "✔";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 16px;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .job-description-points {
+        max-height: 200px;
+        overflow-y: auto;
+        padding-right: 10px;
+      }
+
+      .description-point {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 10px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.5s ease forwards;
+      }
+
+      .point-bullet {
+        color: #3498db;
+        margin-right: 10px;
+        font-size: 1.2em;
+      }
+
+      .point-text {
+        flex: 1;
+      }
+
+      @keyframes fadeInUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Customizing scrollbar */
+      .job-description-points::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .job-description-points::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+
+      .job-description-points::-webkit-scrollbar-thumb {
+        background: #3498db;
+        border-radius: 10px;
+      }
+
+      .job-description-points::-webkit-scrollbar-thumb:hover {
+        background: #2980b9;
+      }
+      .point-bullet {
+        color: #3498db;
+        margin-right: 10px;
+        font-size: 1.2em;
+        flex-shrink: 0;
+      }
+
+      .point-text {
+        flex: 1;
+      }
+      .download-btn {
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: #fff;
+        text-decoration: none;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+        text-align: center;
+        font-size: 1.2em;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        animation: float 3s ease-in-out infinite;
+      }
+      .download-container {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .download-btn:hover {
+        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <h1>Job Search Results</h1>
-      <% results.data.forEach(function(job, index) { %>
-      <div class="job-card">
-        <div class="job-select">
-          <input
-            type="checkbox"
-            id="job<%= index %>"
-            name="jobSelect"
-            value="<%= index %>"
-          />
+    <div class="parallax-container">
+      <div class="parallax-layer parallax-background"></div>
+      <div class="parallax-layer content">
+        <h1>Job Search Results</h1>
+        <div class="results-header">
+          <div class="select-all-container">
+            <input type="checkbox" id="selectAll" />
+            <label for="selectAll" class="select-all-label">Select All</label>
+          </div>
+          <button class="download-btn" onclick="downloadCSV()">Download</button>
         </div>
-        <div style="flex-grow: 1">
-          <div class="job-header">
-            <div>
-              <div class="job-title"><%= job.job_title %></div>
-              <div class="company-name"><%= job.employer_name %></div>
-            </div>
+        <% results.data.forEach(function(job, index) { %>
+        <div class="job-card" style="animation-delay: <%= index * 0.1 %>s">
+          <div class="job-select">
+            <input
+              type="checkbox"
+              id="job<%= index %>"
+              name="jobSelect"
+              value="<%= index %>"
+            />
           </div>
-          <div class="job-details">
-            <div class="job-detail">
-              <span>Location:</span> <%= job.job_city %>, <%= job.job_state %>,
-              <%= job.job_country %>
+          <div style="flex-grow: 1">
+            <div class="job-header">
+              <div>
+                <div class="job-title"><%= job.job_title %></div>
+                <div class="company-name"><%= job.employer_name %></div>
+              </div>
             </div>
-            <div class="job-detail">
-              <span>Type:</span> <%= job.job_employment_type %>
+            <div class="job-details">
+              <div class="job-detail">
+                <span>Location:</span> <%= job.job_city %>, <%= job.job_state
+                %>, <%= job.job_country %>
+              </div>
+              <div class="job-detail">
+                <span>Type:</span> <%= job.job_employment_type %>
+              </div>
+              <div class="job-detail">
+                <span>Posted:</span> <%= new
+                Date(job.job_posted_at_datetime_utc).toLocaleDateString() %>
+              </div>
+              <div class="job-detail">
+                <span>Salary Range:</span> <%= job.salaryRange %>
+              </div>
             </div>
-            <div class="job-detail">
-              <span>Posted:</span> <%= new
-              Date(job.job_posted_at_datetime_utc).toLocaleDateString() %>
+            <div class="job-description">
+              <% if (job.job_description.includes('Qualifications:')) { %>
+              <h2>Responsibilities/Job Duties:</h2>
+              <ul class="scrollable-list">
+                <%
+                job.job_description.split('Qualifications:')[0].trim().split(/[•·]/).forEach(function(duty)
+                { %> <% if (duty.trim() !== '') { %>
+                <li><%= duty.trim() %></li>
+                <% } %> <% }); %>
+              </ul>
+              <h2>Qualifications:</h2>
+              <ul class="scrollable-list">
+                <%
+                job.job_description.split('Qualifications:')[1].trim().split(/[•·]/).forEach(function(qualification)
+                { %> <% if (qualification.trim() !== '') { %>
+                <li><%= qualification.trim() %></li>
+                <% } %> <% }); %>
+              </ul>
+              <% } else { %>
+              <h2>Description:</h2>
+              <ul class="job-description-points">
+                <% job.job_description.trim().split(/[•·]/).filter(point =>
+                point.trim() !== '').forEach((point, index) => { %>
+                <li
+                  class="description-point"
+                  style="animation-delay: <%= index * 0.1 %>s"
+                >
+                  <%= point.trim() %>
+                </li>
+                <% }); %>
+              </ul>
+              <% } %>
             </div>
-            <div class="job-detail">
-              <span>Salary Range:</span> <%= job.salaryRange %>
-            </div>
-          </div>
-          <div class="job-description">
-            <% if (job.job_description.includes('Qualifications:')) { %>
-            <h2>Responsibilities/Job Duties:</h2>
-            <ul>
-              <%
-              job.job_description.split('Qualifications:')[0].trim().split('•').forEach(function(duty)
-              { %> <% if (duty.trim() !== '') { %>
-              <li><%= duty.trim() %></li>
-              <% } %> <% }); %>
-            </ul>
-            <h2>Qualifications:</h2>
-            <ul>
-              <%
-              job.job_description.split('Qualifications:')[1].trim().split('•').forEach(function(qualification)
-              { %> <% if (qualification.trim() !== '') { %>
-              <li><%= qualification.trim() %></li>
-              <% } %> <% }); %>
-            </ul>
-            <% } else { %>
-            <h2>Description:</h2>
-            <p><%= job.job_description.trim() %></p>
-            <% } %>
           </div>
         </div>
+        <% }); %>
+        <button class="create-persona-btn" onclick="createPersona()">
+          Create Persona
+        </button>
       </div>
-      <% }); %>
-      <button class="create-persona-btn" onclick="createPersona()">
-        Create Persona
-      </button>
     </div>
 
     <script>
@@ -207,9 +525,8 @@
                 : "",
             };
           })
-          .filter((job) => job !== null); // Filter out any null values
+          .filter((job) => job !== null);
 
-        // Separate arrays for locations and company names
         const locations = selectedJobs.map((job) => job.location);
         const companyNames = selectedJobs.map((job) => job.company_name);
 
@@ -224,7 +541,6 @@
 
           if (response.ok) {
             const result = await response.text();
-            // Update URL to reflect the new persona
             history.pushState(null, "", "/persona-reachout");
             document.open();
             document.write(result);
@@ -237,6 +553,124 @@
           console.error("Error:", error);
           alert("Failed to create persona");
         }
+      }
+
+      // Add staggered animation to job cards
+      document.addEventListener("DOMContentLoaded", (event) => {
+        const jobCards = document.querySelectorAll(".job-card");
+        jobCards.forEach((card, index) => {
+          card.style.animationDelay = `${index * 0.1}s`;
+        });
+      });
+      document.addEventListener("DOMContentLoaded", (event) => {
+        const selectAllCheckbox = document.getElementById("selectAll");
+        const jobCheckboxes = document.querySelectorAll(
+          'input[name="jobSelect"]'
+        );
+
+        selectAllCheckbox.addEventListener("change", function () {
+          const isChecked = this.checked;
+          jobCheckboxes.forEach((checkbox) => {
+            checkbox.checked = isChecked;
+            if (isChecked) {
+              checkbox.parentElement.parentElement.classList.add("selected");
+            } else {
+              checkbox.parentElement.parentElement.classList.remove("selected");
+            }
+          });
+        });
+
+        jobCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", function () {
+            const allChecked = Array.from(jobCheckboxes).every(
+              (cb) => cb.checked
+            );
+            selectAllCheckbox.checked = allChecked;
+
+            if (this.checked) {
+              this.parentElement.parentElement.classList.add("selected");
+            } else {
+              this.parentElement.parentElement.classList.remove("selected");
+            }
+          });
+        });
+      });
+      async function downloadCSV() {
+        const selectedJobs = Array.from(
+          document.querySelectorAll('input[name="jobSelect"]:checked')
+        )
+          .map((checkbox) => {
+            const index = checkbox.value;
+            const jobCard = document
+              .getElementById("job" + index)
+              .closest(".job-card");
+            if (!jobCard) return null;
+
+            const jobDetails = jobCard.querySelectorAll(".job-detail");
+            const locationDetail = Array.from(jobDetails).find((detail) =>
+              detail.textContent.includes("Location:")
+            );
+            const typeDetail = Array.from(jobDetails).find((detail) =>
+              detail.textContent.includes("Type:")
+            );
+            const postedDateDetail = Array.from(jobDetails).find((detail) =>
+              detail.textContent.includes("Posted:")
+            );
+            const salaryRangeDetail = Array.from(jobDetails).find((detail) =>
+              detail.textContent.includes("Salary Range:")
+            );
+
+            return {
+              job_title: jobCard.querySelector(".job-title").textContent,
+              company_name: jobCard.querySelector(".company-name")
+                ? jobCard.querySelector(".company-name").textContent
+                : "",
+              location: locationDetail
+                ? locationDetail.textContent
+                    .split("Location: ")[1]
+                    .split("Type:")[0]
+                    .trim()
+                : "",
+              type: typeDetail
+                ? typeDetail.textContent
+                    .split("Type: ")[1]
+                    .split("Posted:")[0]
+                    .trim()
+                : "",
+              posted_date: postedDateDetail
+                ? postedDateDetail.textContent
+                    .split("Posted: ")[1]
+                    .split("Salary Range:")[0]
+                    .trim()
+                : "",
+              salary_range: salaryRangeDetail
+                ? salaryRangeDetail.textContent
+                    .split("Salary Range: ")[1]
+                    .trim()
+                : "",
+            };
+          })
+          .filter((job) => job !== null);
+
+        if (selectedJobs.length === 0) {
+          alert("Please select at least one job to download.");
+          return;
+        }
+
+        const csvContent =
+          "data:text/csv;charset=utf-8," +
+          [
+            Object.keys(selectedJobs[0]).join(","),
+            ...selectedJobs.map((job) => Object.values(job).join(",")),
+          ].join("\n");
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "job_data.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       }
     </script>
   </body>

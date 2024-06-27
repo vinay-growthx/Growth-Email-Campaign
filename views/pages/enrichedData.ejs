@@ -5,40 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Enriched People</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
       rel="stylesheet"
     />
     <style>
-      body {
-        font-family: "Roboto", Arial, sans-serif;
-        background-color: #f0f2f5;
+      body,
+      html {
+        font-family: "Poppins", Arial, sans-serif;
+        background: linear-gradient(135deg, #f6f9fc 0%, #e9f2f9 100%);
         margin: 0;
-        padding: 20px;
+        padding: 0;
+        overflow-x: hidden;
       }
-      .container {
+
+      .parallax-container {
+        perspective: 1px;
+        height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+      .parallax-layer {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+      .parallax-background {
+        transform: translateZ(-1px) scale(2);
+        background: url("https://source.unsplash.com/random/1920x1080?abstract")
+          no-repeat center center fixed;
+        background-size: cover;
+        z-index: -1;
+      }
+      .content {
+        transform: translateZ(0);
+        position: relative;
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        margin: 20px auto;
+        padding: 40px;
         max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
       }
       h1 {
         text-align: center;
         font-size: 3em;
         color: #333;
         margin-bottom: 40px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        animation: slideDown 1s ease-out;
+      }
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
       .person-card {
-        background-color: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         margin-bottom: 30px;
-        padding: 20px;
+        padding: 30px;
         display: flex;
         flex-direction: row;
         align-items: center;
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease;
+        animation: slideIn 0.5s ease-out forwards;
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+      @keyframes slideIn {
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
       }
       .person-card:hover {
-        transform: translateY(-10px);
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
       }
       .person-photo {
         border-radius: 50%;
@@ -51,18 +101,22 @@
         flex-grow: 1;
       }
       .person-name {
-        font-size: 2em;
-        font-weight: bold;
-        color: #333;
+        font-size: 1.8em;
+        font-weight: 600;
+        color: #2c3e50;
         margin-bottom: 10px;
+        transition: color 0.3s ease;
+      }
+      .person-card:hover .person-name {
+        color: #3498db;
       }
       .person-title {
-        font-size: 1.6em;
-        color: #777;
+        font-size: 1.4em;
+        color: #7f8c8d;
         margin-bottom: 5px;
       }
       .person-organization {
-        font-size: 1.4em;
+        font-size: 1.2em;
         color: #555;
         margin-bottom: 15px;
       }
@@ -77,113 +131,203 @@
       }
       .linkedin-url,
       .email {
-        color: #0073e6;
+        color: #3498db;
         text-decoration: none;
         margin-right: 20px;
+        transition: color 0.3s ease;
       }
       .linkedin-url:hover,
       .email:hover {
-        text-decoration: underline;
-      }
-      .employment-history {
-        margin-top: 20px;
-      }
-      .employment-history h3 {
-        font-size: 1.6em;
-        color: #333;
-        margin-bottom: 10px;
-      }
-      .employment-history ul {
-        list-style-type: none;
-        padding: 0;
-      }
-      .employment-history li {
-        background-color: #f0f0f0;
-        margin-bottom: 10px;
-        padding: 10px;
-        border-radius: 5px;
+        color: #2980b9;
       }
       .select-checkbox {
         margin-right: 20px;
       }
       .submit-btn {
         display: block;
-        margin: 20px auto;
+        margin: 40px auto;
         padding: 15px 30px;
-        background-color: #0073e6;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
         color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
+        text-decoration: none;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+        text-align: center;
+        width: fit-content;
         font-size: 1.2em;
-        transition: background-color 0.3s ease;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        animation: float 3s ease-in-out infinite;
+      }
+      @keyframes float {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
       }
       .submit-btn:hover {
-        background-color: #005bb5;
+        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+      }
+      .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .select-all-container {
+        display: flex;
+        align-items: center;
+        animation: fadeIn 1s ease-out;
+      }
+      .select-all-label {
+        font-size: 1.1em;
+        margin-left: 10px;
+        color: #2c3e50;
+      }
+      #selectAll {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 25px;
+        height: 25px;
+        border: 2px solid #3498db;
+        border-radius: 5px;
+        outline: none;
+        transition: all 0.3s;
+        position: relative;
+        cursor: pointer;
+      }
+      #selectAll:checked {
+        background-color: #3498db;
+        animation: pulse 0.5s;
+      }
+      #selectAll:checked::before {
+        content: "✔";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 16px;
+      }
+      .download-btn {
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: #fff;
+        text-decoration: none;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+        text-align: center;
+        font-size: 1.2em;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+      }
+      .download-btn:hover {
+        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <h1>Enriched Data</h1>
-      <form id="enrichedForm" onsubmit="submitEmail(event)">
-        <% if (people && people.length > 0) { %> <%
-        people.forEach(function(enrichData) { %> <% if (enrichData.person) { %>
-        <div class="person-card">
-          <input
-            type="checkbox"
-            class="select-checkbox"
-            name="selectedPeople"
-            value="<%= enrichData.person.email %>"
-          />
-          <% if (enrichData.person.photo_url) { %>
-          <img
-            src="<%= enrichData.person.photo_url %>"
-            alt="<%= enrichData.person.name %>"
-            class="person-photo"
-          />
-          <% } else { %>
-          <img
-            src="https://via.placeholder.com/120"
-            alt="No Photo Available"
-            class="person-photo"
-          />
-          <% } %>
-          <div class="person-details">
-            <div class="person-name"><%= enrichData.person.name %></div>
-            <div class="person-title"><%= enrichData.person.title %></div>
-            <div class="person-organization">
-              <%= enrichData.person.organization.name %>
-            </div>
-            <div class="person-contact">
-              <span class="contact-icon">📧</span>
-              <a href="mailto:<%= enrichData.person.email %>" class="email"
-                ><%= enrichData.person.email %></a
-              >
-            </div>
-            <div class="person-contact">
-              <span class="contact-icon">🔗</span>
-              <a
-                href="<%= enrichData.person.linkedin_url %>"
-                class="linkedin-url"
-                target="_blank"
-                >LinkedIn Profile</a
-              >
-            </div>
+    <div class="parallax-container">
+      <div class="parallax-layer parallax-background"></div>
+      <div class="parallax-layer content">
+        <h1>Enriched Data</h1>
+        <div class="results-header">
+          <div class="select-all-container">
+            <input type="checkbox" id="selectAll" />
+            <label for="selectAll" class="select-all-label">Select All</label>
           </div>
+          <button class="download-btn" onclick="downloadCSV()">Download</button>
         </div>
-        <% } %> <% }); %> <% } else { %>
-        <p>No enriched data found.</p>
-        <% } %>
-        <button type="submit" class="submit-btn">Send Email</button>
-      </form>
+        <form id="enrichedForm" onsubmit="submitEmail(event)">
+          <% if (people && people.length > 0) { %>
+            <% people.forEach(function(enrichData, index) { %>
+              <% if (enrichData.person) { %>
+                <div class="person-card" style="animation-delay: <%= index * 0.1 %>s">
+                  <input
+                    type="checkbox"
+                    class="select-checkbox"
+                    name="selectedPeople"
+                    value="<%= enrichData.person.email %>"
+                  />
+                  <% if (enrichData.person.photo_url) { %>
+                    <img
+                      src="<%= enrichData.person.photo_url %>"
+                      alt="<%= enrichData.person.name %>"
+                      class="person-photo"
+                    />
+                  <% } else { %>
+                    <img
+                      src="https://via.placeholder.com/120"
+                      alt="No Photo Available"
+                      class="person-photo"
+                    />
+                  <% } %>
+                  <div class="person-details">
+                    <div class="person-name"><%= enrichData.person.name %></div>
+                    <div class="person-title"><%= enrichData.person.title %></div>
+                    <div class="person-organization">
+                      <%= enrichData.person.organization.name %>
+                    </div>
+                    <div class="person-contact">
+                      <span class="contact-icon">📧</span>
+                      <a href="mailto:<%= enrichData.person.email %>" class="email"><%= enrichData.person.email %></a>
+                    </div>
+                    <div class="person-contact">
+                      <span class="contact-icon">🔗</span>
+                      
+                        href="<%= enrichData.person.linkedin_url %>"
+                        class="linkedin-url"
+                        target="_blank"
+                      >LinkedIn Profile</a>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+            <% }); %>
+          <% } else { %>
+            <p>No enriched data found.</p>
+          <% } %>
+          <button type="submit" class="submit-btn">Send Email</button>
+        </form>
+      </div>
     </div>
 
     <script>
       function submitEmail(event) {
         event.preventDefault();
 
-        // Collect selected email addresses
         const selectedEmails = Array.from(
           document.querySelectorAll('input[name="selectedPeople"]:checked')
         ).map((checkbox) => checkbox.value);
@@ -193,11 +337,70 @@
           return;
         }
 
-        // Redirect to the send-email page with the selected email addresses
         const url = new URL(window.location.href);
         url.pathname = "/send-email";
         url.searchParams.set("emails", JSON.stringify(selectedEmails));
         window.location.href = url.toString();
+      }
+
+      document.addEventListener("DOMContentLoaded", (event) => {
+        const selectAllCheckbox = document.getElementById("selectAll");
+        const personCheckboxes = document.querySelectorAll('.select-checkbox');
+
+        selectAllCheckbox.addEventListener("change", function () {
+          const isChecked = this.checked;
+          personCheckboxes.forEach((checkbox) => {
+            checkbox.checked = isChecked;
+          });
+        });
+
+        personCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", function () {
+            const allChecked = Array.from(personCheckboxes).every(
+              (cb) => cb.checked
+            );
+            selectAllCheckbox.checked = allChecked;
+          });
+        });
+      });
+
+      function downloadCSV() {
+        const selectedPeople = Array.from(
+          document.querySelectorAll('input[name="selectedPeople"]:checked')
+        )
+          .map((checkbox) => {
+            const personCard = checkbox.closest(".person-card");
+            if (!personCard) return null;
+
+            return {
+              name: personCard.querySelector(".person-name").textContent,
+              title: personCard.querySelector(".person-title").textContent,
+              organization: personCard.querySelector(".person-organization").textContent,
+              email: personCard.querySelector(".email").textContent,
+              linkedin_url: personCard.querySelector(".linkedin-url").href
+            };
+          })
+          .filter((person) => person !== null);
+
+        if (selectedPeople.length === 0) {
+          alert("Please select at least one person to download.");
+          return;
+        }
+
+        const csvContent =
+          "data:text/csv;charset=utf-8," +
+          [
+            Object.keys(selectedPeople[0]).join(","),
+            ...selectedPeople.map((person) => Object.values(person).join(","))
+          ].join("\n");
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "enriched_people_data.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       }
     </script>
   </body>
