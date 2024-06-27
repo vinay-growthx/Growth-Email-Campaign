@@ -271,53 +271,55 @@
           <button class="download-btn" onclick="downloadCSV()">Download</button>
         </div>
         <form id="enrichedForm" onsubmit="submitEmail(event)">
-          <% if (people && people.length > 0) { %>
-            <% people.forEach(function(enrichData, index) { %>
-              <% if (enrichData.person) { %>
-                <div class="person-card" style="animation-delay: <%= index * 0.1 %>s">
-                  <input
-                    type="checkbox"
-                    class="select-checkbox"
-                    name="selectedPeople"
-                    value="<%= enrichData.person.email %>"
-                  />
-                  <% if (enrichData.person.photo_url) { %>
-                    <img
-                      src="<%= enrichData.person.photo_url %>"
-                      alt="<%= enrichData.person.name %>"
-                      class="person-photo"
-                    />
-                  <% } else { %>
-                    <img
-                      src="https://via.placeholder.com/120"
-                      alt="No Photo Available"
-                      class="person-photo"
-                    />
-                  <% } %>
-                  <div class="person-details">
-                    <div class="person-name"><%= enrichData.person.name %></div>
-                    <div class="person-title"><%= enrichData.person.title %></div>
-                    <div class="person-organization">
-                      <%= enrichData.person.organization.name %>
-                    </div>
-                    <div class="person-contact">
-                      <span class="contact-icon">📧</span>
-                      <a href="mailto:<%= enrichData.person.email %>" class="email"><%= enrichData.person.email %></a>
-                    </div>
-                    <div class="person-contact">
-                      <span class="contact-icon">🔗</span>
-                      
-                        href="<%= enrichData.person.linkedin_url %>"
-                        class="linkedin-url"
-                        target="_blank"
-                      >LinkedIn Profile</a>
-                    </div>
-                  </div>
-                </div>
-              <% } %>
-            <% }); %>
-          <% } else { %>
-            <p>No enriched data found.</p>
+          <% if (people && people.length > 0) { %> <%
+          people.forEach(function(enrichData, index) { %> <% if
+          (enrichData.person) { %>
+          <div class="person-card" style="animation-delay: <%= index * 0.1 %>s">
+            <input
+              type="checkbox"
+              class="select-checkbox"
+              name="selectedPeople"
+              value="<%= enrichData.person.email %>"
+            />
+            <% if (enrichData.person.photo_url) { %>
+            <img
+              src="<%= enrichData.person.photo_url %>"
+              alt="<%= enrichData.person.name %>"
+              class="person-photo"
+            />
+            <% } else { %>
+            <img
+              src="https://via.placeholder.com/120"
+              alt="No Photo Available"
+              class="person-photo"
+            />
+            <% } %>
+            <div class="person-details">
+              <div class="person-name"><%= enrichData.person.name %></div>
+              <div class="person-title"><%= enrichData.person.title %></div>
+              <div class="person-organization">
+                <%= enrichData.person.organization.name %>
+              </div>
+              <div class="person-contact">
+                <span class="contact-icon">📧</span>
+                <a href="mailto:<%= enrichData.person.email %>" class="email"
+                  ><%= enrichData.person.email %></a
+                >
+              </div>
+              <div class="person-contact">
+                <span class="contact-icon">🔗</span>
+
+                <a
+                  href="<%= enrichData.person.linkedin_url %>"
+                  class="linkedin-url"
+                  target="_blank"
+                  >LinkedIn Profile</a
+                >
+              </div>
+            </div>
+          </div>
+          <% } %> <% }); %> <% } else { %>
+          <p>No enriched data found.</p>
           <% } %>
           <button type="submit" class="submit-btn">Send Email</button>
         </form>
@@ -345,7 +347,7 @@
 
       document.addEventListener("DOMContentLoaded", (event) => {
         const selectAllCheckbox = document.getElementById("selectAll");
-        const personCheckboxes = document.querySelectorAll('.select-checkbox');
+        const personCheckboxes = document.querySelectorAll(".select-checkbox");
 
         selectAllCheckbox.addEventListener("change", function () {
           const isChecked = this.checked;
@@ -375,9 +377,10 @@
             return {
               name: personCard.querySelector(".person-name").textContent,
               title: personCard.querySelector(".person-title").textContent,
-              organization: personCard.querySelector(".person-organization").textContent,
+              organization: personCard.querySelector(".person-organization")
+                .textContent,
               email: personCard.querySelector(".email").textContent,
-              linkedin_url: personCard.querySelector(".linkedin-url").href
+              linkedin_url: personCard.querySelector(".linkedin-url").href,
             };
           })
           .filter((person) => person !== null);
@@ -391,7 +394,7 @@
           "data:text/csv;charset=utf-8," +
           [
             Object.keys(selectedPeople[0]).join(","),
-            ...selectedPeople.map((person) => Object.values(person).join(","))
+            ...selectedPeople.map((person) => Object.values(person).join(",")),
           ].join("\n");
 
         const encodedUri = encodeURI(csvContent);

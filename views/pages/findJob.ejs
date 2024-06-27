@@ -1,263 +1,364 @@
-<main
-  style="
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: 'Arial', sans-serif;
-  "
->
-  <h1 style="text-align: center">Advanced Job Search</h1>
-  <form
-    action="/search-jobs"
-    method="POST"
-    style="display: flex; flex-direction: column; gap: 20px"
-  >
-    <!-- Query Input -->
-    <div>
-      <label for="query" style="display: block; font-weight: bold"
-        >Job Title and Location:</label
-      >
-      <input
-        type="text"
-        id="query"
-        name="query"
-        placeholder="e.g., Python developer in Texas, USA"
-        required
-        style="
-          width: 100%;
-          padding: 8px;
-          font-size: 16px;
-          border-radius: 4px;
-          border: 1px solid #ccc;
-        "
-      />
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advanced Job Search</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body,
+      html {
+        font-family: "Poppins", Arial, sans-serif;
+        background: linear-gradient(135deg, #f6f9fc 0%, #e9f2f9 100%);
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        color: #333;
+      }
 
-    <!-- Page Input -->
-    <div>
-      <label for="page" style="display: block; font-weight: bold"
-        >Page Number:</label
-      >
-      <input
-        type="number"
-        id="page"
-        name="page"
-        min="1"
-        max="100"
-        value="1"
-        style="
-          width: 100%;
-          padding: 8px;
-          font-size: 16px;
-          border-radius: 4px;
-          border: 1px solid #ccc;
-        "
-      />
-    </div>
+      .parallax-container {
+        perspective: 1px;
+        height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
 
-    <!-- Number of Pages Input -->
-    <div>
-      <label for="num_pages" style="display: block; font-weight: bold"
-        >Number of Pages:</label
-      >
-      <input
-        type="number"
-        id="num_pages"
-        name="num_pages"
-        min="1"
-        max="20"
-        value="1"
-        style="
-          width: 100%;
-          padding: 8px;
-          font-size: 16px;
-          border-radius: 4px;
-          border: 1px solid #ccc;
-        "
-      />
-    </div>
+      .parallax-layer {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
 
-    <!-- Date Posted Selection -->
-    <div>
-      <label for="date_posted" style="display: block; font-weight: bold"
-        >Date Posted:</label
-      >
-      <select
-        id="date_posted"
-        name="date_posted"
-        style="
-          width: 100%;
-          padding: 8px;
-          font-size: 16px;
-          border-radius: 4px;
-          border: 1px solid #ccc;
-        "
-      >
-        <option value="all">All</option>
-        <option value="today">Today</option>
-        <option value="3days">Past 3 Days</option>
-        <option value="week">This Week</option>
-        <option value="month">This Month</option>
-      </select>
-    </div>
+      .parallax-background {
+        transform: translateZ(-1px) scale(2);
+        background: url("https://source.unsplash.com/random/1920x1080?abstract")
+          no-repeat center center fixed;
+        background-size: cover;
+        z-index: -1;
+      }
 
-    <!-- Remote Jobs Only Checkbox -->
-    <div>
-      <label style="font-weight: bold">
-        <input type="checkbox" id="remote_jobs_only" name="remote_jobs_only" />
-        Remote Jobs Only
-      </label>
-    </div>
+      .content {
+        transform: translateZ(0);
+        position: relative;
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        margin: 20px auto;
+        padding: 40px;
+        max-width: 800px;
+      }
 
-    <!-- Employment Types Dropdown -->
-    <div>
-      <label for="employment_types" style="display: block; font-weight: bold"
-        >Employment Types:</label
-      >
-      <select
-        id="employment_types"
-        name="employment_types"
-        style="
-          width: 100%;
-          padding: 8px;
-          font-size: 16px;
-          border-radius: 4px;
-          border: 1px solid #ccc;
-        "
-      >
-        <option value="FULLTIME">FULLTIME</option>
-        <option value="CONTRACTOR">CONTRACTOR</option>
-        <option value="PARTTIME">PARTTIME</option>
-        <option value="INTERN">INTERN</option>
-      </select>
-    </div>
+      h1 {
+        text-align: center;
+        font-size: 3em;
+        color: #333;
+        margin-bottom: 40px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        animation: slideDown 1s ease-out;
+      }
 
-    <!-- Job Requirements -->
-    <div>
-      <label for="job_requirements" style="display: block; font-weight: bold"
-        >Job Requirements:</label
-      >
-      <input
-        type="text"
-        id="job_requirements"
-        name="job_requirements"
-        placeholder="under_3_years_experience, more_than_3_years_experience, no_experience, no_degree"
-        style="
-          width: 100%;
-          padding: 8px;
-          font-size: 16px;
-          border-radius: 4px;
-          border: 1px solid #ccc;
-        "
-      />
-    </div>
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-    <!-- Job Titles -->
-    <div>
-      <label for="job_titles" style="display: block; font-weight: bold"
-        >Job Titles:</label
-      >
-      <input
-        type="text"
-        id="job_titles"
-        name="job_titles"
-        placeholder="e.g., Backend developer"
-        style="
-          width: 100%;
-          padding: 8px;
-          font-size: 16px;
-          border-radius: 4px;
-          border: 1px solid #ccc;
-        "
-      />
-    </div>
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
 
-    <!-- Company Types -->
-    <div>
-      <label for="company_types" style="display: block; font-weight: bold"
-        >Company Types:</label
-      >
-      <input
-        type="text"
-        id="company_types"
-        name="company_types"
-        placeholder="e.g., startup"
-        style="
-          width: 100%;
-          padding: 8px;
-          font-size: 16px;
-          border-radius: 4px;
-          border: 1px solid #ccc;
-        "
-      />
-    </div>
+      .form-group {
+        margin-bottom: 20px;
+        animation: fadeIn 0.5s ease-out forwards;
+        opacity: 0;
+      }
 
-    <!-- Actively Hiring Checkbox -->
-    <div>
-      <label style="font-weight: bold">
-        <input type="checkbox" id="actively_hiring" name="actively_hiring" />
-        Actively Hiring
-      </label>
-    </div>
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
+      }
 
-    <!-- Radius for Job Location -->
-    <div>
-      <label for="radius" style="display: block; font-weight: bold"
-        >Radius (km):</label
-      >
-      <input
-        type="number"
-        id="radius"
-        name="radius"
-        min="0"
-        value="27"
-        style="
-          width: 100%;
-          padding: 8px;
-          font-size: 16px;
-          border-radius: 4px;
-          border: 1px solid #ccc;
-        "
-      />
-    </div>
+      label {
+        display: block;
+        font-size: 1.2em;
+        margin-bottom: 10px;
+        color: #2c3e50;
+        font-weight: bold;
+      }
 
-    <!-- Exclude Job Publishers -->
-    <div>
-      <label
-        for="exclude_job_publishers"
-        style="display: block; font-weight: bold"
-        >Exclude Job Publishers:</label
-      >
-      <input
-        type="text"
-        id="exclude_job_publishers"
-        name="exclude_job_publishers"
-        placeholder="e.g., BeeBe,Dice"
-        style="
-          width: 100%;
-          padding: 8px;
-          font-size: 16px;
-          border-radius: 4px;
-          border: 1px solid #ccc;
-        "
-      />
-    </div>
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 10px;
+        font-size: 1em;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        background-color: #f7f7f7;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+      }
 
-    <button
-      type="submit"
-      style="
-        background-color: #0056b3;
-        color: white;
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      select:focus {
+        border-color: #3498db;
+        background-color: #fff;
+        outline: none;
+        box-shadow: 0 0 10px rgba(52, 152, 219, 0.1);
+      }
+
+      input[type="checkbox"] {
+        margin-right: 10px;
+      }
+
+      button[type="submit"] {
+        display: block;
+        width: 100%;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: #fff;
         border: none;
-        padding: 10px 20px;
-        text-transform: uppercase;
-        border-radius: 4px;
+        border-radius: 30px;
         cursor: pointer;
-        font-size: 16px;
-        margin-top: 20px;
-      "
-    >
-      Search Jobs
-    </button>
-  </form>
-</main>
+        font-size: 1.2em;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        animation: float 3s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+
+      button[type="submit"]:hover {
+        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+      }
+      .checkbox-container {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        font-size: 1.1em;
+        user-select: none;
+        padding: 10px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .checkbox-container:hover {
+        background-color: rgba(52, 152, 219, 0.1);
+      }
+
+      .checkbox-container input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+      }
+
+      .checkmark {
+        height: 25px;
+        width: 25px;
+        background-color: #fff;
+        border: 2px solid #3498db;
+        border-radius: 5px;
+        margin-right: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .checkbox-container:hover input ~ .checkmark {
+        background-color: #eaf2f8;
+      }
+
+      .checkbox-container input:checked ~ .checkmark {
+        background-color: #3498db;
+      }
+
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        transform: rotate(45deg);
+      }
+
+      .checkbox-container input:checked ~ .checkmark:after {
+        display: block;
+      }
+
+      .checkbox-label {
+        color: #2c3e50;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="parallax-container">
+      <div class="parallax-layer parallax-background"></div>
+      <div class="parallax-layer content">
+        <h1>Advanced Job Search</h1>
+        <form action="/search-jobs" method="POST">
+          <div class="form-group" style="animation-delay: 0.1s">
+            <label for="query">Job Title and Location:</label>
+            <input
+              type="text"
+              id="query"
+              name="query"
+              placeholder="e.g., Python developer in Texas, USA"
+              required
+            />
+          </div>
+
+          <div class="form-group" style="animation-delay: 0.2s">
+            <label for="page">Page Number:</label>
+            <input
+              type="number"
+              id="page"
+              name="page"
+              min="1"
+              max="100"
+              value="1"
+            />
+          </div>
+
+          <div class="form-group" style="animation-delay: 0.3s">
+            <label for="num_pages">Number of Pages:</label>
+            <input
+              type="number"
+              id="num_pages"
+              name="num_pages"
+              min="1"
+              max="20"
+              value="1"
+            />
+          </div>
+
+          <div class="form-group" style="animation-delay: 0.4s">
+            <label for="date_posted">Date Posted:</label>
+            <select id="date_posted" name="date_posted">
+              <option value="all">All</option>
+              <option value="today">Today</option>
+              <option value="3days">Past 3 Days</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="animation-delay: 0.5s">
+            <label class="checkbox-container">
+              <input
+                type="checkbox"
+                id="remote_jobs_only"
+                name="remote_jobs_only"
+              />
+              <span class="checkmark"></span>
+              <span class="checkbox-label">Remote Jobs Only</span>
+            </label>
+          </div>
+          <div class="form-group" style="animation-delay: 0.6s">
+            <label for="employment_types">Employment Types:</label>
+            <select id="employment_types" name="employment_types">
+              <option value="FULLTIME">FULLTIME</option>
+              <option value="CONTRACTOR">CONTRACTOR</option>
+              <option value="PARTTIME">PARTTIME</option>
+              <option value="INTERN">INTERN</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="animation-delay: 0.7s">
+            <label for="job_requirements">Job Requirements:</label>
+            <input
+              type="text"
+              id="job_requirements"
+              name="job_requirements"
+              placeholder="under_3_years_experience, more_than_3_years_experience, no_experience, no_degree"
+            />
+          </div>
+
+          <div class="form-group" style="animation-delay: 0.8s">
+            <label for="job_titles">Job Titles:</label>
+            <input
+              type="text"
+              id="job_titles"
+              name="job_titles"
+              placeholder="e.g., Backend developer"
+            />
+          </div>
+
+          <div class="form-group" style="animation-delay: 0.9s">
+            <label for="company_types">Company Types:</label>
+            <input
+              type="text"
+              id="company_types"
+              name="company_types"
+              placeholder="e.g., startup"
+            />
+          </div>
+          <div class="form-group" style="animation-delay: 1s">
+            <label class="checkbox-container">
+              <input
+                type="checkbox"
+                id="actively_hiring"
+                name="actively_hiring"
+              />
+              <span class="checkmark"></span>
+              <span class="checkbox-label">Actively Hiring</span>
+            </label>
+          </div>
+
+          <div class="form-group" style="animation-delay: 1.1s">
+            <label for="radius">Radius (km):</label>
+            <input type="number" id="radius" name="radius" min="0" value="27" />
+          </div>
+
+          <div class="form-group" style="animation-delay: 1.2s">
+            <label for="exclude_job_publishers">Exclude Job Publishers:</label>
+            <input
+              type="text"
+              id="exclude_job_publishers"
+              name="exclude_job_publishers"
+              placeholder="e.g., BeeBe,Dice"
+            />
+          </div>
+
+          <button type="submit">Search Jobs</button>
+        </form>
+      </div>
+    </div>
+    <script src="https://unpkg.com/redux@4.2.1/dist/redux.min.js"></script>
+    <script src="https://unpkg.com/redux-thunk@2.4.2/dist/redux-thunk.min.js"></script>
+    <script src="/views/js/redux-setup.js"></script>
+  </body>
+</html>
