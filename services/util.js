@@ -1,7 +1,10 @@
+const mongoose = require("mongoose");
 const LinkedinJobRepository = require("../repository/LinkedinJobRepository");
 const linkedinJobRepository = new LinkedinJobRepository();
 const ApolloPersonaRepository = require("../repository/ApolloPersonaRepository");
 const apolloPersonaRepository = new ApolloPersonaRepository();
+const ApolloOrganizationRepository = require("../repository/ApolloOrganizationRepository");
+const apolloOrganizationRepository = new ApolloOrganizationRepository();
 async function saveJobData(jobData) {
   const jobEntries = jobData.map((job) => ({
     job_id: job.job_id || "",
@@ -242,5 +245,17 @@ async function updateContactDetails(personaData) {
     }
   }
 }
+async function saveOrganizationData(orgData) {
+  try {
+    await apolloOrganizationRepository.create(orgData[0]);
+  } catch (error) {
+    console.error("Failed to save organizations:", error);
+  }
+}
 
-module.exports = { saveJobData, savePersonaData, updateContactDetails };
+module.exports = {
+  saveJobData,
+  savePersonaData,
+  updateContactDetails,
+  saveOrganizationData,
+};

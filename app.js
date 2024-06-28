@@ -23,6 +23,7 @@ const {
   saveJobData,
   savePersonaData,
   updateContactDetails,
+  saveOrganizationData,
 } = require("./services/util");
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
@@ -134,8 +135,9 @@ app.post("/create-persona", async (req, res) => {
     for (const name of companyNames) {
       try {
         const company = await searchCompanyApollo(name);
-
+        console.log("company data ====>", JSON.stringify(company));
         if (company) {
+          saveOrganizationData([company]);
           const people = await searchPeople(locations, company.name);
           allPeople.push(...people.people);
         } else {
@@ -145,8 +147,8 @@ app.post("/create-persona", async (req, res) => {
         console.error(`Error processing company name ${name}:`, error);
       }
     }
-    console.log("person data ====>", JSON.stringify(allPeople[0]));
-    const personaSave = await savePersonaData(allPeople);
+    // console.log("person data ====>", JSON.stringify(allPeople[0]));
+    savePersonaData(allPeople);
     res.render("personaReachout", { people: allPeople });
   } catch (error) {
     console.error("Error creating persona:", error);
@@ -242,7 +244,6 @@ app.post("/email-enrich", async (req, res) => {
 });
 app.post("/email-enrich-new", async (req, res) => {
   try {
-    console.log("req.body", req.body);
     const emails = req.body.emails;
     res.status(200).json({
       message: "Data successfully enriched",
