@@ -182,6 +182,7 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
+        padding-bottom: 10px;
       }
       .select-all-container {
         display: flex;
@@ -219,6 +220,7 @@
         font-size: 16px;
       }
       .download-btn {
+        margin-top: 20px;
         padding: 15px 30px;
         background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
         color: #fff;
@@ -256,7 +258,34 @@
           transform: scale(1);
         }
       }
+      .select-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 25px;
+        height: 25px;
+        border: 2px solid #3498db;
+        border-radius: 5px;
+        outline: none;
+        transition: all 0.3s;
+        position: relative;
+        cursor: pointer;
+        margin-right: 20px;
+      }
 
+      .select-checkbox:checked {
+        background-color: #3498db;
+        animation: pulse 0.5s;
+      }
+
+      .select-checkbox:checked::before {
+        content: "✔";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 16px;
+      }
       .checkbox-container {
         display: inline-block;
         position: relative;
@@ -313,44 +342,53 @@
         border-width: 0 3px 3px 0;
         transform: rotate(45deg);
       }
-      .select-checkbox {
-        appearance: none;
-        -webkit-appearance: none;
-        width: 25px;
-        height: 25px;
-        border: 2px solid #3498db;
-        border-radius: 5px;
-        outline: none;
-        transition: all 0.3s;
-        position: relative;
-        cursor: pointer;
-        margin-right: 30px;
+      .selected-count-container {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 10px 0;
+        backdrop-filter: blur(5px);
+        border-bottom: 1px solid rgba(52, 152, 219, 0.3);
       }
 
-      .select-checkbox:checked {
-        background-color: #3498db;
-        animation: pulse 0.5s;
-      }
-
-      .select-checkbox:checked::before {
-        content: "✔";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: white;
-        font-size: 16px;
+      .selected-count {
+        font-size: 2em;
+        text-align: center;
+        color: #3498db;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        animation: pulse 1.5s infinite alternate;
       }
 
       @keyframes pulse {
-        0% {
+        from {
           transform: scale(1);
+        }
+        to {
+          transform: scale(1.05);
+        }
+      }
+
+      .selected-count.party {
+        animation: party 0.5s ease-in-out;
+      }
+
+      @keyframes party {
+        0% {
+          transform: rotate(0deg) scale(1);
+        }
+        25% {
+          transform: rotate(-5deg) scale(1.1);
         }
         50% {
-          transform: scale(1.1);
+          transform: rotate(5deg) scale(1.1);
+        }
+        75% {
+          transform: rotate(-5deg) scale(1.1);
         }
         100% {
-          transform: scale(1);
+          transform: rotate(0deg) scale(1);
         }
       }
     </style>
@@ -360,6 +398,11 @@
       <div class="parallax-layer parallax-background"></div>
       <div class="parallax-layer content">
         <h1>Enriched Data</h1>
+        <div id="selected-count-container" class="selected-count-container">
+          <div id="selected-count" class="selected-count">
+            0 People Selected
+          </div>
+        </div>
         <div class="results-header">
           <div class="select-all-container">
             <input type="checkbox" id="selectAll" />
@@ -446,16 +489,28 @@
         url.searchParams.set("emails", JSON.stringify(selectedEmails));
         window.location.href = url.toString();
       }
-
       document.addEventListener("DOMContentLoaded", (event) => {
         const selectAllCheckbox = document.getElementById("selectAll");
         const personCheckboxes = document.querySelectorAll(".select-checkbox");
+        const selectedCountElement = document.getElementById("selected-count");
+
+        function updateSelectedCount() {
+          const selectedCount = document.querySelectorAll(
+            'input[name="selectedPeople"]:checked'
+          ).length;
+          selectedCountElement.textContent = `${selectedCount} ${
+            selectedCount === 1 ? "Person" : "People"
+          } Selected`;
+          selectedCountElement.classList.add("party");
+          setTimeout(() => selectedCountElement.classList.remove("party"), 500);
+        }
 
         selectAllCheckbox.addEventListener("change", function () {
           const isChecked = this.checked;
           personCheckboxes.forEach((checkbox) => {
             checkbox.checked = isChecked;
           });
+          updateSelectedCount();
         });
 
         personCheckboxes.forEach((checkbox) => {
@@ -464,10 +519,12 @@
               (cb) => cb.checked
             );
             selectAllCheckbox.checked = allChecked;
+            updateSelectedCount();
           });
         });
-      });
 
+        updateSelectedCount(); // Initial count update
+      });
       function downloadCSV() {
         const selectedPeople = Array.from(
           document.querySelectorAll('input[name="selectedPeople"]:checked')
@@ -507,20 +564,6 @@
         link.click();
         document.body.removeChild(link);
       }
-      function handleCheckboxChange(checkbox) {
-        if (checkbox.checked) {
-          checkbox.nextElementSibling.style.backgroundColor = "#3498db";
-        } else {
-          checkbox.nextElementSibling.style.backgroundColor = "transparent";
-        }
-      }
-
-      // Add this to your existing DOMContentLoaded event listener
-      document.querySelectorAll(".select-checkbox").forEach((checkbox) => {
-        checkbox.addEventListener("change", function () {
-          handleCheckboxChange(this);
-        });
-      });
     </script>
   </body>
 </html>

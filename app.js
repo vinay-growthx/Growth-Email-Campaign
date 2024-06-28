@@ -19,6 +19,7 @@ const axios = require("axios");
 const app = express();
 const { smtpTransport } = require("./services/ses");
 const { searchCompanyApollo } = require("./services/ApolloAPI/orgSearch");
+const { saveJobData } = require("./services/util");
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
@@ -123,23 +124,24 @@ app.post("/create-persona", async (req, res) => {
 
     console.log("Received locations:", locations);
     console.log("Received company names:", companyNames);
-    // const company = await searchCompanyApollo(companyNames);
-    // // Call the searchPeople function
-    // const people = await searchPeople(locations, companyNames);
-    // console.log("people", people);
-    // res.render("personaReachout", { people: people.people });
     const allPeople = [];
 
     // Process each company name one by one
     for (const name of companyNames) {
-      const company = await searchCompanyApollo(name);
-      console.log("company", company);
+      try {
+        const company = await searchCompanyApollo(name);
 
-      const people = await searchPeople(locations, company.name);
-
-      allPeople.push(...people.people);
+        if (company) {
+          const people = await searchPeople(locations, company.name);
+          allPeople.push(...people.people);
+        } else {
+          console.warn(`No company found for name: ${name}`);
+        }
+      } catch (error) {
+        console.error(`Error processing company name ${name}:`, error);
+      }
     }
-    console.log("All people", allPeople);
+
     res.render("personaReachout", { people: allPeople });
   } catch (error) {
     console.error("Error creating persona:", error);
@@ -179,7 +181,6 @@ app.post("/search-jobs", async (req, res) => {
       radius,
       exclude_job_publishers
     );
-
     // Extract salary range in the backend
     results.data.forEach((job) => {
       let salaryRange = "N/A";
@@ -199,8 +200,8 @@ app.post("/search-jobs", async (req, res) => {
       }
       job.salaryRange = salaryRange;
     });
-
-    res.render("showJob", { results }); // Send back the results to the client
+    const resultData = await saveJobData(results.data);
+    res.render("showJob", { results });
   } catch (error) {
     res.status(500).send(error.toString());
   }

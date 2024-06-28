@@ -163,6 +163,16 @@
         color: #34495e;
       }
       .select-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 25px;
+        height: 25px;
+        border: 2px solid #3498db;
+        border-radius: 5px;
+        outline: none;
+        transition: all 0.3s;
+        position: relative;
+        cursor: pointer;
         margin-right: 30px;
       }
       .submit-btn {
@@ -260,10 +270,128 @@
         transform: translateY(-2px) scale(1.05);
         box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
       }
+      .select-checkbox:checked {
+        background-color: #3498db;
+        animation: pulse 0.5s;
+      }
+      .select-checkbox:checked::before {
+        content: "✔";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 16px;
+      }
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .selected-count {
+        font-size: 2em;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #3498db;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        animation: pulse 1.5s infinite alternate;
+      }
+
+      @keyframes pulse {
+        from {
+          transform: scale(1);
+        }
+        to {
+          transform: scale(1.1);
+        }
+      }
+
+      .selected-count.party {
+        animation: party 0.5s ease-in-out;
+      }
+
+      @keyframes party {
+        0% {
+          transform: rotate(0deg) scale(1);
+        }
+        25% {
+          transform: rotate(-10deg) scale(1.2);
+        }
+        50% {
+          transform: rotate(10deg) scale(1.2);
+        }
+        75% {
+          transform: rotate(-10deg) scale(1.2);
+        }
+        100% {
+          transform: rotate(0deg) scale(1);
+        }
+      }
+      .selected-count-container {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 10px 0;
+        backdrop-filter: blur(5px);
+        border-bottom: 1px solid rgba(52, 152, 219, 0.3);
+      }
+
+      .selected-count {
+        font-size: 2em;
+        text-align: center;
+        color: #3498db;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        animation: pulse 1.5s infinite alternate;
+      }
+
+      @keyframes pulse {
+        from {
+          transform: scale(1);
+        }
+        to {
+          transform: scale(1.05);
+        }
+      }
+
+      .selected-count.party {
+        animation: party 0.5s ease-in-out;
+      }
+
+      @keyframes party {
+        0% {
+          transform: rotate(0deg) scale(1);
+        }
+        25% {
+          transform: rotate(-5deg) scale(1.1);
+        }
+        50% {
+          transform: rotate(5deg) scale(1.1);
+        }
+        75% {
+          transform: rotate(-5deg) scale(1.1);
+        }
+        100% {
+          transform: rotate(0deg) scale(1);
+        }
+      }
     </style>
   </head>
   <body>
     <div class="parallax-container">
+      <div id="selected-count-container" class="selected-count-container">
+        <div id="selected-count" class="selected-count">
+          0 Personas Selected
+        </div>
+      </div>
       <div class="parallax-layer parallax-background"></div>
       <div class="parallax-layer content">
         <h1>Persona Reachout</h1>
@@ -337,111 +465,148 @@
     </div>
 
     <script>
-            function submitSelectedPeople(event) {
-              event.preventDefault();
+                  function submitSelectedPeople(event) {
+                    event.preventDefault();
 
-              const selectedPeople = Array.from(document.querySelectorAll('input[name="selectedPeople"]:checked')).map(checkbox => checkbox.value);
+                    const selectedPeople = Array.from(document.querySelectorAll('input[name="selectedPeople"]:checked')).map(checkbox => checkbox.value);
+                    if (selectedPeople.length === 0) {
+                      alert('Please select at least one person.');
+                      return;
+                    }
+
+                    const peopleData = JSON.parse('<%- JSON.stringify(people).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') %>');
+                    const selectedLinkedInUrls = selectedPeople.map(index => peopleData[index].linkedin_url);
+
+                    fetch('/email-enrich', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({ linkedinUrls: selectedLinkedInUrls })
+                    })
+                    .then(response => {
+                      if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text) });
+                      }
+                      return response.json();
+                    })
+                    .then(data => {
+                      console.log('Data successfully enriched:', data);
+                      const url = new URL(window.location.href);
+                      url.pathname = '/enriched-data';
+                      url.searchParams.set('data', JSON.stringify(data.data));
+                      window.location.href = url.toString();
+                    })
+                    .catch(error => {
+                      console.error('Error during email enrichment:', error);
+                      alert('Failed to enrich emails: ' + error.message);
+                    });
+                  }
+
+                  document.addEventListener("DOMContentLoaded", (event) => {
+                    const personCards = document.querySelectorAll(".person-card");
+                    personCards.forEach((card, index) => {
+                      card.style.animationDelay = `${index * 0.1}s`;
+                    });
+
+                    const selectAllCheckbox = document.getElementById("selectAll");
+                    const personCheckboxes = document.querySelectorAll('input[name="selectedPeople"]');
+
+                    selectAllCheckbox.addEventListener("change", function () {
+                      const isChecked = this.checked;
+                      personCheckboxes.forEach((checkbox) => {
+                        checkbox.checked = isChecked;
+                      });
+                    });
+                    personCheckboxes.forEach((checkbox) => {
+                      checkbox.addEventListener("change", function () {
+                        const allChecked = Array.from(personCheckboxes).every(
+                          (cb) => cb.checked
+                        );
+                        selectAllCheckbox.checked = allChecked;
+                      });
+                    });
+                  });
+                  function downloadCSV() {
+              const selectedPeople = Array.from(document.querySelectorAll('input[name="selectedPeople"]:checked'))
+                .map(checkbox => {
+                  const index = checkbox.value;
+                  const personCard = checkbox.closest(".person-card");
+                  if (!personCard) return null;
+
+                  const nameElement = personCard.querySelector(".person-name");
+                  const titleElement = personCard.querySelector(".person-title");
+                  const organizationElement = personCard.querySelector(".person-organization");
+                  const emailElement = personCard.querySelector(".email");
+                  const linkedinElement = personCard.querySelector(".linkedin-url");
+
+                  return {
+                    name: nameElement ? nameElement.textContent.trim() : '',
+                    title: titleElement ? titleElement.textContent.trim() : '',
+                    organization: organizationElement ? organizationElement.textContent.trim() : '',
+                    email: emailElement ? emailElement.textContent.trim() : '',
+                    linkedin_url: linkedinElement ? linkedinElement.href : ''
+                  };
+                })
+                .filter(person => person !== null);
+
               if (selectedPeople.length === 0) {
-                alert('Please select at least one person.');
+                alert("Please select at least one person to download.");
                 return;
               }
 
-              const peopleData = JSON.parse('<%- JSON.stringify(people).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') %>');
-              const selectedLinkedInUrls = selectedPeople.map(index => peopleData[index].linkedin_url);
+              const csvContent =
+                "data:text/csv;charset=utf-8," +
+                [
+                  Object.keys(selectedPeople[0]).join(","),
+                  ...selectedPeople.map((person) => Object.values(person).map(value => `"${value}"`).join(","))
+                ].join("\n");
 
-              fetch('/email-enrich', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ linkedinUrls: selectedLinkedInUrls })
-              })
-              .then(response => {
-                if (!response.ok) {
-                  return response.text().then(text => { throw new Error(text) });
-                }
-                return response.json();
-              })
-              .then(data => {
-                console.log('Data successfully enriched:', data);
-                const url = new URL(window.location.href);
-                url.pathname = '/enriched-data';
-                url.searchParams.set('data', JSON.stringify(data.data));
-                window.location.href = url.toString();
-              })
-              .catch(error => {
-                console.error('Error during email enrichment:', error);
-                alert('Failed to enrich emails: ' + error.message);
-              });
+              const encodedUri = encodeURI(csvContent);
+              const link = document.createElement("a");
+              link.setAttribute("href", encodedUri);
+              link.setAttribute("download", "persona_data.csv");
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
             }
-
             document.addEventListener("DOMContentLoaded", (event) => {
-              const personCards = document.querySelectorAll(".person-card");
-              personCards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-              });
+        const personCards = document.querySelectorAll(".person-card");
+        personCards.forEach((card, index) => {
+          card.style.animationDelay = `${index * 0.1}s`;
+        });
 
-              const selectAllCheckbox = document.getElementById("selectAll");
-              const personCheckboxes = document.querySelectorAll('input[name="selectedPeople"]');
+        const selectAllCheckbox = document.getElementById("selectAll");
+        const personCheckboxes = document.querySelectorAll('input[name="selectedPeople"]');
+        const selectedCountElement = document.getElementById("selected-count");
 
-              selectAllCheckbox.addEventListener("change", function () {
-                const isChecked = this.checked;
-                personCheckboxes.forEach((checkbox) => {
-                  checkbox.checked = isChecked;
-                });
-              });
-              personCheckboxes.forEach((checkbox) => {
-                checkbox.addEventListener("change", function () {
-                  const allChecked = Array.from(personCheckboxes).every(
-                    (cb) => cb.checked
-                  );
-                  selectAllCheckbox.checked = allChecked;
-                });
-              });
-            });
-            function downloadCSV() {
-        const selectedPeople = Array.from(document.querySelectorAll('input[name="selectedPeople"]:checked'))
-          .map(checkbox => {
-            const index = checkbox.value;
-            const personCard = checkbox.closest(".person-card");
-            if (!personCard) return null;
-
-            const nameElement = personCard.querySelector(".person-name");
-            const titleElement = personCard.querySelector(".person-title");
-            const organizationElement = personCard.querySelector(".person-organization");
-            const emailElement = personCard.querySelector(".email");
-            const linkedinElement = personCard.querySelector(".linkedin-url");
-
-            return {
-              name: nameElement ? nameElement.textContent.trim() : '',
-              title: titleElement ? titleElement.textContent.trim() : '',
-              organization: organizationElement ? organizationElement.textContent.trim() : '',
-              email: emailElement ? emailElement.textContent.trim() : '',
-              linkedin_url: linkedinElement ? linkedinElement.href : ''
-            };
-          })
-          .filter(person => person !== null);
-
-        if (selectedPeople.length === 0) {
-          alert("Please select at least one person to download.");
-          return;
+        function updateSelectedCount() {
+          const selectedCount = document.querySelectorAll('input[name="selectedPeople"]:checked').length;
+          selectedCountElement.textContent = `${selectedCount} Persona${selectedCount !== 1 ? 's' : ''} Selected`;
+          selectedCountElement.classList.add('party');
+          setTimeout(() => selectedCountElement.classList.remove('party'), 500);
         }
 
-        const csvContent =
-          "data:text/csv;charset=utf-8," +
-          [
-            Object.keys(selectedPeople[0]).join(","),
-            ...selectedPeople.map((person) => Object.values(person).map(value => `"${value}"`).join(","))
-          ].join("\n");
+        selectAllCheckbox.addEventListener("change", function () {
+          const isChecked = this.checked;
+          personCheckboxes.forEach((checkbox) => {
+            checkbox.checked = isChecked;
+          });
+          updateSelectedCount();
+        });
 
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "persona_data.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
+        personCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", function () {
+            const allChecked = Array.from(personCheckboxes).every(
+              (cb) => cb.checked
+            );
+            selectAllCheckbox.checked = allChecked;
+            updateSelectedCount();
+          });
+        });
+
+        updateSelectedCount(); // Initial count update
+      });
     </script>
   </body>
 </html>
