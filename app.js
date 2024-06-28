@@ -19,7 +19,11 @@ const axios = require("axios");
 const app = express();
 const { smtpTransport } = require("./services/ses");
 const { searchCompanyApollo } = require("./services/ApolloAPI/orgSearch");
-const { saveJobData, savePersonaData } = require("./services/util");
+const {
+  saveJobData,
+  savePersonaData,
+  updateContactDetails,
+} = require("./services/util");
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
@@ -222,8 +226,7 @@ app.post("/email-enrich", async (req, res) => {
       const emailEnrich = await getEmailByLinkedInUrl(linkedinUrls[i]);
       enrichedData.push(emailEnrich);
     }
-
-    console.log("Enriched Data:", enrichedData); // Log the enriched data for debugging
+    updateContactDetails(enrichedData);
     res.status(200).json({
       message: "Data successfully enriched",
       data: enrichedData,

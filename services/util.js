@@ -212,5 +212,38 @@ async function savePersonaData(personaData) {
     throw error;
   }
 }
+async function updateContactDetails(personaData) {
+  for (let persona of personaData) {
+    try {
+      const { id, email, organization } = persona.person;
+      const phone = organization.primary_phone.number || null;
 
-module.exports = { saveJobData, savePersonaData };
+      const updated = await apolloPersonaRepository.findOneAndUpdate(
+        { id: id },
+        {
+          $set: {
+            email: email,
+            "organization.primary_phone.number": phone,
+          },
+        },
+        {
+          new: true,
+          upsert: false,
+        }
+      );
+
+      if (updated) {
+        console.log(`Updated contact details for persona with ID: ${id}`);
+      } else {
+        console.log(`No persona found with ID: ${id} to update.`);
+      }
+    } catch (error) {
+      console.error(
+        `Error updating contact details for persona with ID: ${persona.person.id}: ${error}`
+      );
+      throw error;
+    }
+  }
+}
+
+module.exports = { saveJobData, savePersonaData, updateContactDetails };
