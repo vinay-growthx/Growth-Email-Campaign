@@ -5,233 +5,246 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Send Email</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
-      rel="stylesheet"
-    />
-    <link
       rel="stylesheet"
       type="text/css"
       href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.css"
     />
-    <style>
-      body,
-      html {
-        font-family: "Poppins", Arial, sans-serif;
-        background: linear-gradient(135deg, #f6f9fc 0%, #e9f2f9 100%);
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
-        color: #333;
-      }
-
-      .parallax-container {
-        perspective: 1px;
-        height: 100vh;
-        overflow-x: hidden;
-        overflow-y: auto;
-      }
-      .parallax-layer {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-      }
-      .parallax-background {
-        transform: translateZ(-1px) scale(2);
-        background: url("https://source.unsplash.com/random/1920x1080?abstract")
-          no-repeat center center fixed;
-        background-size: cover;
-        z-index: -1;
-      }
-      .content {
-        transform: translateZ(0);
-        position: relative;
-        background-color: rgba(255, 255, 255, 0.9);
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        border-radius: 15px;
-        margin: 20px auto;
-        padding: 40px;
-        max-width: 800px;
-      }
-      h1 {
-        text-align: center;
-        font-size: 3em;
-        color: #333;
-        margin-bottom: 40px;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        animation: slideDown 1s ease-out;
-      }
-      @keyframes slideDown {
-        from {
-          opacity: 0;
-          transform: translateY(-50px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .form-group {
-        margin-bottom: 20px;
-        animation: fadeIn 0.5s ease-out forwards;
-        opacity: 0;
-      }
-      @keyframes fadeIn {
-        to {
-          opacity: 1;
-        }
-      }
-      .form-group label {
-        display: block;
-        font-size: 1.2em;
-        margin-bottom: 10px;
-        color: #2c3e50;
-      }
-      .form-group input,
-      .form-group textarea,
-      trix-editor,
-      .custom-dropdown {
-        width: 100%;
-        padding: 10px;
-        font-size: 1em;
-        border-radius: 5px;
-        border: 1px solid #ddd;
-        background-color: #f7f7f7;
-        box-sizing: border-box;
-        transition: all 0.3s ease;
-      }
-      .form-group input:focus,
-      .form-group textarea:focus,
-      trix-editor:focus,
-      .custom-dropdown:focus {
-        border-color: #3498db;
-        background-color: #fff;
-        outline: none;
-        box-shadow: 0 0 10px rgba(52, 152, 219, 0.1);
-      }
-      trix-editor {
-        min-height: 200px;
-      }
-      .submit-btn {
-        display: block;
-        width: 100%;
-        padding: 15px 30px;
-        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-        color: #fff;
-        border: none;
-        border-radius: 30px;
-        cursor: pointer;
-        font-size: 1.2em;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-        animation: float 3s ease-in-out infinite;
-      }
-      @keyframes float {
-        0% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-10px);
-        }
-        100% {
-          transform: translateY(0px);
-        }
-      }
-      .submit-btn:hover {
-        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-        transform: translateY(-2px) scale(1.05);
-        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
-      }
-      .emails-list {
-        margin-bottom: 20px;
-        padding: 15px;
-        background-color: #f7f7f7;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      }
-      .emails-list span {
-        display: block;
-        color: #3498db;
-        margin-bottom: 5px;
-        font-size: 0.9em;
-      }
-      .custom-dropdown {
-        padding: 10px;
-        font-size: 1em;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background-color: #fff;
-        margin-bottom: 10px;
-        width: 100%;
-        cursor: pointer;
-      }
-      .custom-dropdown:hover {
-        border-color: #3498db;
-      }
-    </style>
   </head>
   <body>
-    <div class="parallax-container">
-      <div class="parallax-layer parallax-background"></div>
-      <div class="parallax-layer content">
-        <h1>Send Email</h1>
-        <div id="emailsContainer" class="emails-list">
-          <!-- Selected emails will be displayed here -->
-        </div>
-        <form id="emailForm" action="/send-email" method="POST">
-          <div class="form-group" style="animation-delay: 0.1s">
-            <label for="emailSubject">Subject:</label>
-            <input
-              type="text"
-              id="emailSubject"
-              name="subject"
-              placeholder="Enter the email subject"
-              required
-            />
-          </div>
-          <div class="form-group" style="animation-delay: 0.2s">
-            <label for="variableDropdown">Personalize:</label>
-            <select id="variableDropdown" class="custom-dropdown">
-              <option value="">Select an option</option>
-              <optgroup label="Persona Related">
-                <option value="{name}">Name</option>
-                <option value="{currentRole}">Current Role</option>
-                <option value="{companyName}">Company Name</option>
-              </optgroup>
-              <optgroup label="Job Related">
-                <option value="{hiringJobTitle}">Hiring Job Title</option>
-                <option value="{dateOfJobPost}">Date of Job Post</option>
-                <option value="{applicants}">#Applicants</option>
-              </optgroup>
-            </select>
-          </div>
-          <div class="form-group" style="animation-delay: 0.25s">
-            <label for="templateDropdown">AI Recommended Templates:</label>
-            <select id="templateDropdown" class="custom-dropdown">
-              <option value="">Select a template</option>
-              <option value="template1">Template 1</option>
-              <option value="template2">Template 2</option>
-              <option value="template3">Template 3</option>
-              <option value="template4">Template 4</option>
-              <option value="template5">Template 5</option>
-            </select>
-          </div>
-          <div class="form-group" style="animation-delay: 0.3s">
-            <label for="emailBody">Email Body:</label>
-            <input id="emailBody" name="body" type="hidden" />
-            <trix-editor input="emailBody"></trix-editor>
-          </div>
-          <button type="submit" class="submit-btn">Send Email</button>
-        </form>
+    <div class="content">
+      <h1>Send Email</h1>
+      <div id="emailsContainer" class="emails-list">
+        <style>
+          body,
+          html {
+            font-family: "Poppins", Arial, sans-serif;
+            background: linear-gradient(135deg, #f6f9fc 0%, #e9f2f9 100%);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            color: #333;
+          }
+
+          .parallax-container {
+            perspective: 1px;
+            height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+          }
+          .parallax-layer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+          }
+          .parallax-background {
+            transform: translateZ(-1px) scale(2);
+            background: url("https://source.unsplash.com/random/1920x1080?abstract")
+              no-repeat center center fixed;
+            background-size: cover;
+            z-index: -1;
+          }
+          .content {
+            transform: translateZ(0);
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            margin: 20px auto;
+            padding: 40px;
+            max-width: 800px;
+          }
+          h1 {
+            text-align: center;
+            font-size: 3em;
+            color: #333;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            animation: slideDown 1s ease-out;
+          }
+          @keyframes slideDown {
+            from {
+              opacity: 0;
+              transform: translateY(-50px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .form-group {
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+          }
+          @keyframes fadeIn {
+            to {
+              opacity: 1;
+            }
+          }
+          .form-group label {
+            display: block;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #2c3e50;
+          }
+          .form-group input,
+          .form-group textarea,
+          trix-editor,
+          .custom-dropdown {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #f7f7f7;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+          }
+          .form-group input:focus,
+          .form-group textarea:focus,
+          trix-editor:focus,
+          .custom-dropdown:focus {
+            border-color: #3498db;
+            background-color: #fff;
+            outline: none;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.1);
+          }
+
+          trix-editor {
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+          }
+          .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            animation: float 3s ease-in-out infinite;
+          }
+          @keyframes float {
+            0% {
+              transform: translateY(0px);
+            }
+            50% {
+              transform: translateY(-10px);
+            }
+            100% {
+              transform: translateY(0px);
+            }
+          }
+          .submit-btn:hover {
+            background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+          }
+          .emails-list {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f7f7f7;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+          }
+          .emails-list span {
+            display: block;
+            color: #3498db;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+          }
+          .custom-dropdown {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            margin-bottom: 10px;
+            width: 100%;
+            cursor: pointer;
+          }
+          .custom-dropdown:hover {
+            border-color: #3498db;
+          }
+        </style>
       </div>
+      <form id="emailForm" action="/send-email" method="POST">
+        <div class="form-group">
+          <label for="variableDropdown">Personalize:</label>
+          <select id="variableDropdown" class="custom-dropdown">
+            <option value="">Select an option</option>
+            <optgroup label="Persona Related">
+              <option value="{name}">Name</option>
+              <option value="{currentRole}">Current Role</option>
+              <option value="{companyName}">Company Name</option>
+            </optgroup>
+            <optgroup label="Job Related">
+              <option value="{hiringJobTitle}">Hiring Job Title</option>
+              <option value="{dateOfJobPost}">Date of Job Post</option>
+              <option value="{applicants}">#Applicants</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="templateDropdown">AI Recommended Templates:</label>
+          <select id="templateDropdown" class="custom-dropdown">
+            <option value="">Select a template</option>
+            <option value="rapidTalentConnect">Rapid Talent Connect</option>
+            <option disabled>
+              Quick, AI-powered hiring for immediate impact.
+            </option>
+            <option value="smartHireSpotlight">Smart Hire Spotlight</option>
+            <option disabled>
+              Showcase your top candidates with AI precision.
+            </option>
+            <option value="talentTransformationTech">
+              Talent Transformation Tech
+            </option>
+            <option disabled>
+              Revolutionize hiring with cutting-edge AI tools.
+            </option>
+            <option value="efficiencyBoostPitch">Efficiency Boost Pitch</option>
+            <option disabled>
+              Streamline recruitment with AI for faster results.
+            </option>
+            <option value="insightDrivenRecruitment">
+              Insight-Driven Recruitment
+            </option>
+            <option disabled>
+              Leverage data for smarter hiring decisions.
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="emailSubject">Subject:</label>
+          <input
+            type="text"
+            id="emailSubject"
+            name="subject"
+            placeholder="Enter the email subject"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="emailBody">Email Body:</label>
+          <input id="emailBody" name="body" type="hidden" />
+          <trix-editor input="emailBody"></trix-editor>
+        </div>
+        <button type="submit" class="submit-btn">Send Email</button>
+      </form>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.js"></script>
     <script>
-                  // Your existing JavaScript code remains unchanged
                   document.addEventListener('DOMContentLoaded', (event) => {
                     try {
                       const emails = JSON.parse(sessionStorage.getItem('emails'));
@@ -297,42 +310,147 @@
                         alert("Failed to send email: " + error.message);
                       });
                   };
+
                   document.getElementById("templateDropdown").addEventListener("change", function (event) {
         const selectedTemplate = event.target.value;
         if (selectedTemplate) {
           const editor = document.querySelector("trix-editor").editor;
           let templateContent = "";
+          let subject = "";
 
           switch (selectedTemplate) {
-            case "template1":
-              templateContent = "Dear {name},\n\nI hope this email finds you well. I recently came across the {hiringJobTitle} position at {companyName}, and I'm very excited about the opportunity. With my background in [Your Relevant Experience], I believe I could be a great fit for your team.\n\nI've attached my resume for your review. I'd love the chance to discuss how my skills and experience align with your needs for this role.\n\nThank you for your time and consideration.\n\nBest regards,\n[Your Name]";
+            case "rapidTalentConnect":
+              subject = "Accelerate Your Hiring for [Position] with AI-Powered Talent Connect";
+              templateContent = `Dear {name},
+
+      I hope this email finds you well. I'm reaching out to introduce our Rapid Talent Connect service, which uses AI to quickly identify top candidates for your {hiringJobTitle} position at {companyName}.
+
+      Our AI-powered system can process applications rapidly, ensuring you don't miss out on high-potential candidates in this competitive market. Here's how we can help:
+
+      - Swift Candidate Matching: Our AI analyzes applicants in real-time, presenting you with the best matches instantly.
+      - Reduced Time-to-Hire: Cut your hiring process time by up to 50% without sacrificing quality.
+      - Customized Screening: Our AI adapts to your specific requirements, ensuring a perfect fit for your team.
+
+      We'd love to show you how we can streamline your hiring process and connect you with ideal candidates faster than ever.
+
+      Would you be available for a quick 15-minute demo this week? I'm confident you'll see the immediate value we can bring to your recruitment efforts.
+
+      Best regards,
+      [Your Name]
+      [Your Position]
+      [Your Company]
+      [Contact Information]`;
               break;
-            case "template2":
-              templateContent = "Hello {name},\n\nI trust you're having a good day. I'm reaching out regarding the {hiringJobTitle} role that was recently posted at {companyName}.\n\nI've been following {companyName}'s growth and innovations in [Industry/Field], and I'm impressed by [Specific Company Achievement or Project]. I believe my experience in [Your Relevant Skills/Experience] could contribute significantly to your team's continued success.\n\nI've attached my resume and would welcome the opportunity to discuss how I can add value to your organization.\n\nThank you for your consideration.\n\nSincerely,\n[Your Name]";
+            case "smartHireSpotlight":
+              subject = "Spotlight Top Talent for [Marketing Manager – 150+ Applicants] with AI";
+              templateContent = `Hi {name},
+
+      I'm John Doe, founder of [Your Company Name]. We specialize in AI-driven hiring solutions that help companies like {companyName} identify and attract top talent.
+
+      Why Choose Us?
+      - Precision: Our AI highlights the best candidates for [Marketing Manager – 150+ Applicants].
+      - Efficiency: Save time by focusing on the most qualified applicants.
+      - Integration: Easy to implement with your existing HR systems.
+
+      Navigating through 150+ applicants for [Marketing Manager] can be overwhelming. Our AI ensures you see only the top-tier candidates, making your job easier.
+
+      Can we discuss how we can enhance your hiring process for [Marketing Manager]? Are you available for a quick call this week?
+
+      Best,
+      John Doe
+      Founder & CEO
+      [Your Company Name]
+      [Email Address]
+      [Website]`;
               break;
-            case "template3":
-              templateContent = "Dear {name},\n\nI hope this message finds you well. I'm writing to express my strong interest in the {hiringJobTitle} position at {companyName}.\n\nWith {applicants} applicants, I understand you must be busy, but I believe I stand out as an excellent candidate for this role. My background in [Your Relevant Background] aligns perfectly with the requirements outlined in your job posting from {dateOfJobPost}.\n\nI'm particularly drawn to {companyName} because of [Specific Reason/Company Value/Project]. I'm confident that my skills in [Key Skills] would allow me to make immediate contributions to your team.\n\nI've attached my resume for your review and would be grateful for the opportunity to discuss this position further.\n\nThank you for your time and consideration.\n\nBest regards,\n[Your Name]";
+            case "talentTransformationTech":
+              subject = "Revolutionize Your Hiring Process for [Position] with AI";
+              templateContent = `Dear {name},
+
+      I hope this message finds you well. I'm reaching out to introduce our Talent Transformation Tech, a revolutionary AI-driven hiring solution that I believe could transform your recruitment process for the {hiringJobTitle} role at {companyName}.
+
+      Our cutting-edge AI tools go beyond traditional hiring methods, offering:
+
+      1. Predictive Success Modeling: Identify candidates most likely to excel in your specific work environment.
+      2. Skill Gap Analysis: Understand how candidates can complement your existing team's strengths.
+      3. Bias Mitigation: Ensure a fair and diverse hiring process with our advanced algorithms.
+      4. Dynamic Interview Guides: AI-generated, role-specific questions to dig deeper into each candidate's potential.
+
+      We're not just filling a position – we're helping you build the future of your company.
+
+      I'd be thrilled to offer you a personalized demo of our technology. When would be a convenient time to showcase how we can revolutionize your hiring process?
+
+      Looking forward to potentially transforming your talent acquisition strategy.
+
+      Best regards,
+      [Your Name]
+      [Your Position]
+      [Your Company]
+      [Contact Information]`;
               break;
-            case "template4":
-              templateContent = "Hello {name},\n\nI hope your week is going well. I recently learned about the {hiringJobTitle} opening at {companyName}, and I'm thrilled to submit my application.\n\nIn my current role as {currentRole}, I've developed a strong skill set in [Relevant Skills], which I believe would translate well to this position. I'm particularly impressed by {companyName}'s commitment to [Company Value/Goal], and I'm excited about the possibility of contributing to your mission.\n\nI've attached my resume, which provides more detail about my experience and achievements. I would welcome the chance to discuss how I can contribute to your team's success.\n\nThank you for considering my application.\n\nWarm regards,\n[Your Name]";
+            case "efficiencyBoostPitch":
+              subject = "Streamline Your Hiring for [Data Analyst – 300+ Applicants] with AI";
+              templateContent = `Hi {name},
+
+      I'm John Doe, founder of [Your Company Name]. We offer AI-driven hiring solutions designed to streamline your recruitment process and deliver faster results.
+
+      Why Choose Us?
+      - Speed: Quickly sort through 300+ applicants for [Data Analyst].
+      - Efficiency: Our AI identifies the most qualified candidates swiftly.
+      - Simplicity: Seamlessly integrates with your current HR tools.
+
+      Handling 300+ applicants for [Data Analyst] is a daunting task. Our AI simplifies this, ensuring you focus on the best candidates and reduce time-to-hire.
+
+      Let's explore how we can speed up your hiring process for [Data Analyst]. Are you free for a short call this week?
+
+      Best,
+      John Doe
+      Founder & CEO
+      [Your Company Name]
+      [Email Address]
+      [Website]`;
               break;
-            case "template5":
-              templateContent = "Dear {name},\n\nI hope this email finds you in good spirits. I'm reaching out to express my keen interest in the {hiringJobTitle} role at {companyName}.\n\nAs someone who has long admired {companyName}'s innovative approach to [Industry/Field], I was excited to see this opportunity. With my background in [Your Background] and skills in [Key Skills], I believe I could be a valuable asset to your team.\n\nI'm particularly drawn to this role because [Specific Reason Related to Job or Company]. I'm confident that my experience in {currentRole} has prepared me well for the challenges and opportunities this position presents.\n\nI've attached my resume for your review and would be grateful for the opportunity to discuss how my background aligns with your needs.\n\nThank you for your time and consideration. I look forward to the possibility of speaking with you soon.\n\nBest regards,\n[Your Name]";
+            case "insightDrivenRecruitment":
+              subject = "Elevate Your Hiring Decisions for [Position] with AI-Powered Insights";
+              templateContent = `Dear {name},
+
+      I trust this email finds you well. I'm reaching out to introduce our Insight-Driven Recruitment service, which I believe could add significant value to your hiring process for the {hiringJobTitle} role at {companyName}.
+
+      Our AI-powered analytics provide deep insights into your candidate pool, helping you make data-driven decisions:
+
+      1. Predictive Success Modeling: Forecast a candidate's potential performance and longevity in your organization.
+      2. Team Dynamics Analysis: Understand how a new hire might impact your existing team's productivity and culture.
+      3. Skill Gap Identification: Pinpoint areas where candidates can bring unique value to your organization.
+      4. Customized Interview Strategies: AI-generated, candidate-specific questions to uncover key traits and abilities.
+
+      I'd love to share a sample insights report we've prepared for a similar role. This report demonstrates how our AI can uncover hidden potential and flag potential concerns that traditional hiring methods might miss.
+
+      When would be a good time to walk you through how these insights can enhance your hiring decisions for the {hiringJobTitle} position?
+
+      Looking forward to potentially revolutionizing your recruitment process with data-driven insights.
+
+      Best regards,
+      [Your Name]
+      [Your Position]
+      [Your Company]
+      [Contact Information]`;
               break;
           }
 
-          editor.loadHTML(templateContent);
+          editor.loadHTML(templateContent.split('\n').map(line => `<div>${line}</div>`).join(''));
+          // Set the email subject
+          document.getElementById("emailSubject").value = subject;
         }
       });
                   document.getElementById("variableDropdown").addEventListener("change", function (event) {
-              const selectedVariable = event.target.value;
-              if (selectedVariable) {
-                const editor = document.querySelector("trix-editor").editor;
-                const currentPosition = editor.getSelectedRange()[0];
-                editor.insertString(selectedVariable);
-                editor.setSelectedRange([currentPosition + selectedVariable.length, currentPosition + selectedVariable.length]);
-              }
-            });
+                    const selectedVariable = event.target.value;
+                    if (selectedVariable) {
+                      const editor = document.querySelector("trix-editor").editor;
+                      const currentPosition = editor.getSelectedRange()[0];
+                      editor.insertString(selectedVariable);
+                      editor.setSelectedRange([currentPosition + selectedVariable.length, currentPosition + selectedVariable.length]);
+                    }
+                  });
     </script>
   </body>
 </html>

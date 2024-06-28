@@ -200,7 +200,7 @@ app.post("/search-jobs", async (req, res) => {
           /Annual Salary Range:\$\s*([\d,]+)\s*-\s*\$\s*([\d,]+)/
         );
         if (salaryMatch) {
-          salaryRange = `$${salaryMatch[1]} - $${salaryMatch[2]}`;
+          salaryRange = `${salaryMatch[1]} - ${salaryMatch[2]}`;
         }
       }
       job.salaryRange = salaryRange;
