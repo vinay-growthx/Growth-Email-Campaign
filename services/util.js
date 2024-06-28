@@ -80,7 +80,6 @@ async function saveJobData(jobData) {
     }
   } catch (error) {
     console.log("Failed to save jobs:", error);
-    throw error;
   }
 }
 
@@ -209,7 +208,6 @@ async function savePersonaData(personaData) {
     }
   } catch (error) {
     console.log("Failed to save personas:", error);
-    throw error;
   }
 }
 async function updateContactDetails(personaData) {
@@ -241,7 +239,6 @@ async function updateContactDetails(personaData) {
       console.error(
         `Error updating contact details for persona with ID: ${persona.person.id}: ${error}`
       );
-      throw error;
     }
   }
 }

@@ -19,9 +19,7 @@ async function searchJobs(query, page, numPages, datePosted) {
   try {
     const response = await axios.request(options);
     return response.data;
-  } catch (error) {
-    throw error;
-  }
+  } catch (error) {}
 }
 
 // const query = "Python developer in Texas, USA";

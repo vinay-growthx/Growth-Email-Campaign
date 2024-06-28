@@ -25,7 +25,6 @@ async function searchPeople(locations, companyNames) {
     return response.data;
   } catch (error) {
     console.error("Error searching people:", error);
-    throw error;
   }
 }
 

@@ -196,9 +196,27 @@
             <label for="variableDropdown">Personalize:</label>
             <select id="variableDropdown" class="custom-dropdown">
               <option value="">Select an option</option>
-              <option value="{companyName}">Company Name</option>
-              <option value="{jobTitle}">Job Title</option>
-              <option value="{name}">Name</option>
+              <optgroup label="Persona Related">
+                <option value="{name}">Name</option>
+                <option value="{currentRole}">Current Role</option>
+                <option value="{companyName}">Company Name</option>
+              </optgroup>
+              <optgroup label="Job Related">
+                <option value="{hiringJobTitle}">Hiring Job Title</option>
+                <option value="{dateOfJobPost}">Date of Job Post</option>
+                <option value="{applicants}">#Applicants</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group" style="animation-delay: 0.25s">
+            <label for="templateDropdown">AI Recommended Templates:</label>
+            <select id="templateDropdown" class="custom-dropdown">
+              <option value="">Select a template</option>
+              <option value="template1">Template 1</option>
+              <option value="template2">Template 2</option>
+              <option value="template3">Template 3</option>
+              <option value="template4">Template 4</option>
+              <option value="template5">Template 5</option>
             </select>
           </div>
           <div class="form-group" style="animation-delay: 0.3s">
@@ -213,82 +231,108 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.js"></script>
     <script>
-      // Your existing JavaScript code remains unchanged
-      document.addEventListener('DOMContentLoaded', (event) => {
-        try {
-          const emails = JSON.parse(sessionStorage.getItem('emails'));
-          console.log(emails);
-        } catch (error) {
-          console.error('Error parsing emails:', error);
-        }
-      });
+                  // Your existing JavaScript code remains unchanged
+                  document.addEventListener('DOMContentLoaded', (event) => {
+                    try {
+                      const emails = JSON.parse(sessionStorage.getItem('emails'));
+                      console.log(emails);
+                    } catch (error) {
+                      console.error('Error parsing emails:', error);
+                    }
+                  });
 
-      document.addEventListener('DOMContentLoaded', (event) => {
-        // Retrieve the emails from the server-side rendered data
-        const emails = <%- JSON.stringify(emails) %>;
+                  document.addEventListener('DOMContentLoaded', (event) => {
+                    // Retrieve the emails from the server-side rendered data
+                    const emails = <%- JSON.stringify(emails) %>;
 
-        const emailsContainer = document.getElementById('emailsContainer');
+                    const emailsContainer = document.getElementById('emailsContainer');
 
-        if (emails.length > 0) {
-          emails.forEach(email => {
-            const emailSpan = document.createElement('span');
-            emailSpan.textContent = email;
-            emailsContainer.appendChild(emailSpan);
-          });
-        } else {
-          emailsContainer.textContent = 'No emails selected. Please go back and select at least one email.';
-        }
+                    if (emails.length > 0) {
+                      emails.forEach(email => {
+                        const emailSpan = document.createElement('span');
+                        emailSpan.textContent = email;
+                        emailsContainer.appendChild(emailSpan);
+                      });
+                    } else {
+                      emailsContainer.textContent = 'No emails selected. Please go back and select at least one email.';
+                    }
 
-        // Store emails in localStorage for use in form submission
-        localStorage.setItem('selectedEmails', JSON.stringify(emails));
-      });
+                    // Store emails in localStorage for use in form submission
+                    localStorage.setItem('selectedEmails', JSON.stringify(emails));
+                  });
 
-      document.getElementById("emailForm").onsubmit = function (event) {
-        event.preventDefault(); // Prevent the default form submission
+                  document.getElementById("emailForm").onsubmit = function (event) {
+                    event.preventDefault(); // Prevent the default form submission
 
-        const subject = document.getElementById("emailSubject").value;
-        const body = document
-          .querySelector("trix-editor")
-          .editor.getDocument()
-          .toString()
-          .trim();
+                    const subject = document.getElementById("emailSubject").value;
+                    const body = document
+                      .querySelector("trix-editor")
+                      .editor.getDocument()
+                      .toString()
+                      .trim();
 
-        // Retrieve emails from localStorage
-        const emails = JSON.parse(localStorage.getItem('selectedEmails'));
+                    // Retrieve emails from localStorage
+                    const emails = JSON.parse(localStorage.getItem('selectedEmails'));
 
-        if (!subject || !body || emails.length === 0) {
-          alert("Please fill in the subject, body, and ensure emails are selected.");
-          return;
-        }
+                    if (!subject || !body || emails.length === 0) {
+                      alert("Please fill in the subject, body, and ensure emails are selected.");
+                      return;
+                    }
 
-        // Use fetch API to send data to your server
-        fetch("/send-email", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ subject: subject, body: body, emails: emails }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            alert("Email sent successfully!");
-            console.log(data);
-          })
-          .catch((error) => {
-            console.error("Error during email sending:", error);
-            alert("Failed to send email: " + error.message);
-          });
-      };
-
-      document.getElementById("variableDropdown").addEventListener("change", function (event) {
-        const selectedVariable = event.target.value;
-        if (selectedVariable) {
+                    // Use fetch API to send data to your server
+                    fetch("/send-email", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({ subject: subject, body: body, emails: emails }),
+                    })
+                      .then((response) => response.json())
+                      .then((data) => {
+                        alert("Email sent successfully!");
+                        console.log(data);
+                      })
+                      .catch((error) => {
+                        console.error("Error during email sending:", error);
+                        alert("Failed to send email: " + error.message);
+                      });
+                  };
+                  document.getElementById("templateDropdown").addEventListener("change", function (event) {
+        const selectedTemplate = event.target.value;
+        if (selectedTemplate) {
           const editor = document.querySelector("trix-editor").editor;
-          const currentPosition = editor.getSelectedRange()[0];
-          editor.insertString(selectedVariable);
-          editor.setSelectedRange([currentPosition + selectedVariable.length, currentPosition + selectedVariable.length]);
+          let templateContent = "";
+
+          switch (selectedTemplate) {
+            case "template1":
+              templateContent = "Dear {name},\n\nI hope this email finds you well. I recently came across the {hiringJobTitle} position at {companyName}, and I'm very excited about the opportunity. With my background in [Your Relevant Experience], I believe I could be a great fit for your team.\n\nI've attached my resume for your review. I'd love the chance to discuss how my skills and experience align with your needs for this role.\n\nThank you for your time and consideration.\n\nBest regards,\n[Your Name]";
+              break;
+            case "template2":
+              templateContent = "Hello {name},\n\nI trust you're having a good day. I'm reaching out regarding the {hiringJobTitle} role that was recently posted at {companyName}.\n\nI've been following {companyName}'s growth and innovations in [Industry/Field], and I'm impressed by [Specific Company Achievement or Project]. I believe my experience in [Your Relevant Skills/Experience] could contribute significantly to your team's continued success.\n\nI've attached my resume and would welcome the opportunity to discuss how I can add value to your organization.\n\nThank you for your consideration.\n\nSincerely,\n[Your Name]";
+              break;
+            case "template3":
+              templateContent = "Dear {name},\n\nI hope this message finds you well. I'm writing to express my strong interest in the {hiringJobTitle} position at {companyName}.\n\nWith {applicants} applicants, I understand you must be busy, but I believe I stand out as an excellent candidate for this role. My background in [Your Relevant Background] aligns perfectly with the requirements outlined in your job posting from {dateOfJobPost}.\n\nI'm particularly drawn to {companyName} because of [Specific Reason/Company Value/Project]. I'm confident that my skills in [Key Skills] would allow me to make immediate contributions to your team.\n\nI've attached my resume for your review and would be grateful for the opportunity to discuss this position further.\n\nThank you for your time and consideration.\n\nBest regards,\n[Your Name]";
+              break;
+            case "template4":
+              templateContent = "Hello {name},\n\nI hope your week is going well. I recently learned about the {hiringJobTitle} opening at {companyName}, and I'm thrilled to submit my application.\n\nIn my current role as {currentRole}, I've developed a strong skill set in [Relevant Skills], which I believe would translate well to this position. I'm particularly impressed by {companyName}'s commitment to [Company Value/Goal], and I'm excited about the possibility of contributing to your mission.\n\nI've attached my resume, which provides more detail about my experience and achievements. I would welcome the chance to discuss how I can contribute to your team's success.\n\nThank you for considering my application.\n\nWarm regards,\n[Your Name]";
+              break;
+            case "template5":
+              templateContent = "Dear {name},\n\nI hope this email finds you in good spirits. I'm reaching out to express my keen interest in the {hiringJobTitle} role at {companyName}.\n\nAs someone who has long admired {companyName}'s innovative approach to [Industry/Field], I was excited to see this opportunity. With my background in [Your Background] and skills in [Key Skills], I believe I could be a valuable asset to your team.\n\nI'm particularly drawn to this role because [Specific Reason Related to Job or Company]. I'm confident that my experience in {currentRole} has prepared me well for the challenges and opportunities this position presents.\n\nI've attached my resume for your review and would be grateful for the opportunity to discuss how my background aligns with your needs.\n\nThank you for your time and consideration. I look forward to the possibility of speaking with you soon.\n\nBest regards,\n[Your Name]";
+              break;
+          }
+
+          editor.loadHTML(templateContent);
         }
       });
+                  document.getElementById("variableDropdown").addEventListener("change", function (event) {
+              const selectedVariable = event.target.value;
+              if (selectedVariable) {
+                const editor = document.querySelector("trix-editor").editor;
+                const currentPosition = editor.getSelectedRange()[0];
+                editor.insertString(selectedVariable);
+                editor.setSelectedRange([currentPosition + selectedVariable.length, currentPosition + selectedVariable.length]);
+              }
+            });
     </script>
   </body>
 </html>

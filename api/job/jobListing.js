@@ -12,7 +12,7 @@ module.exports = class jobListing extends BaseUsecase {
     const apiBody = Joi.object({});
     const { error, value } = apiBody.validate(body, { allowUnknown: false });
     if (error) {
-      throw error;
+      console.log(error);
     } else {
       return value;
     }
