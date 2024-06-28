@@ -86,7 +86,7 @@ async function saveJobData(jobData) {
 
 async function savePersonaData(personaData) {
   const personaEntries = personaData.map((persona) => ({
-    id: persona.id || "", // Default to empty string if undefined
+    id: persona.id || "",
     first_name: persona.first_name || "",
     last_name: persona.last_name || "",
     name: persona.name || "",
@@ -103,12 +103,24 @@ async function savePersonaData(personaData) {
     organization_id: persona.organization_id || "",
     employment_history: persona.employment_history
       ? persona.employment_history.map((history) => ({
-          title: history.title || "",
-          start_date: history.start_date ? new Date(history.start_date) : null,
-          end_date: history.end_date ? new Date(history.end_date) : null,
-          is_current: history.is_current || false,
-          company_name: history.company_name || "",
+          _id: history._id || null,
+          created_at: history.created_at ? new Date(history.created_at) : null,
+          current: history.current || false,
+          degree: history.degree || "",
           description: history.description || "",
+          emails: history.emails || [],
+          end_date: history.end_date ? new Date(history.end_date) : null,
+          grade_level: history.grade_level || "",
+          kind: history.kind || "",
+          major: history.major || "",
+          organization_id: history.organization_id || "",
+          organization_name: history.organization_name || "",
+          raw_address: history.raw_address || "",
+          start_date: history.start_date ? new Date(history.start_date) : null,
+          title: history.title || "",
+          updated_at: history.updated_at ? new Date(history.updated_at) : null,
+          id: history.id || "",
+          key: history.key || "",
         }))
       : [],
     state: persona.state || "",
@@ -119,19 +131,35 @@ async function savePersonaData(personaData) {
           id: persona.organization.id || "",
           name: persona.organization.name || "",
           website_url: persona.organization.website_url || "",
+          blog_url: persona.organization.blog_url || null,
+          angellist_url: persona.organization.angellist_url || null,
           linkedin_url: persona.organization.linkedin_url || "",
-          primary_phone:
-            (persona.organization.primary_phone &&
-              persona.organization.primary_phone.toString()) ||
-            "",
-          phone:
-            (persona.organization.phone &&
-              persona.organization.phone.toString()) ||
-            "",
+          twitter_url: persona.organization.twitter_url || null,
+          facebook_url: persona.organization.facebook_url || null,
+          primary_phone: {
+            number: persona.organization.primary_phone
+              ? persona.organization.primary_phone.number || ""
+              : "",
+            sanitized_number: persona.organization.primary_phone
+              ? persona.organization.primary_phone.sanitized_number || ""
+              : "",
+            source: persona.organization.primary_phone
+              ? persona.organization.primary_phone.source || ""
+              : "",
+          },
+          languages: persona.organization.languages || [],
+          alexa_ranking: persona.organization.alexa_ranking || 0,
+          phone: persona.organization.phone || "",
           linkedin_uid: persona.organization.linkedin_uid || "",
           founded_year: persona.organization.founded_year || 0,
+          publicly_traded_symbol:
+            persona.organization.publicly_traded_symbol || "",
+          publicly_traded_exchange:
+            persona.organization.publicly_traded_exchange || "",
           logo_url: persona.organization.logo_url || "",
+          crunchbase_url: persona.organization.crunchbase_url || null,
           primary_domain: persona.organization.primary_domain || "",
+          sanitized_phone: persona.organization.sanitized_phone || "",
         }
       : {},
     is_likely_to_engage: persona.is_likely_to_engage || false,
@@ -140,9 +168,16 @@ async function savePersonaData(personaData) {
     seniority: persona.seniority || "",
     functions: persona.functions || [],
     phone_numbers: persona.phone_numbers
-      ? persona.phone_numbers.map((phone) => {
-          return phone.number ? phone.number.toString() : "";
-        })
+      ? persona.phone_numbers.map((phone) => ({
+          raw_number: phone.raw_number || "",
+          sanitized_number: phone.sanitized_number || "",
+          type: phone.type || "",
+          position: phone.position || 0,
+          status: phone.status || "",
+          dnc_status: phone.dnc_status || null,
+          dnc_other_info: phone.dnc_other_info || null,
+          dialer_flags: phone.dialer_flags || null,
+        }))
       : [],
     intent_strength: persona.intent_strength || 0,
     show_intent: persona.show_intent || false,
