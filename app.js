@@ -19,7 +19,7 @@ const axios = require("axios");
 const app = express();
 const { smtpTransport } = require("./services/ses");
 const { searchCompanyApollo } = require("./services/ApolloAPI/orgSearch");
-const { saveJobData } = require("./services/util");
+const { saveJobData, savePersonaData } = require("./services/util");
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
@@ -141,7 +141,8 @@ app.post("/create-persona", async (req, res) => {
         console.error(`Error processing company name ${name}:`, error);
       }
     }
-
+    console.log("person data ====>", JSON.stringify(allPeople[0]));
+    const personaSave = await savePersonaData(allPeople);
     res.render("personaReachout", { people: allPeople });
   } catch (error) {
     console.error("Error creating persona:", error);
@@ -200,7 +201,7 @@ app.post("/search-jobs", async (req, res) => {
       }
       job.salaryRange = salaryRange;
     });
-    const resultData = await saveJobData(results.data);
+    saveJobData(results.data);
     res.render("showJob", { results });
   } catch (error) {
     res.status(500).send(error.toString());
