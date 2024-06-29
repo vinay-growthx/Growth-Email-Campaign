@@ -92,7 +92,7 @@ async function findAllJobs(reqId) {
     reqId: reqId,
   });
   // console.log("job ids ===>", jobIds.jobIds);
-  const cleanedJobIdsArray = cleanIdsArray(jobIds.jobIds);
+  const cleanedJobIdsArray = jobIds.jobIds;
 
   let jobData;
   if (cleanedJobIdsArray?.length) {
