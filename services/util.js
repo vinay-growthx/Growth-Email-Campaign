@@ -1,10 +1,11 @@
-const mongoose = require("mongoose");
 const LinkedinJobRepository = require("../repository/LinkedinJobRepository");
 const linkedinJobRepository = new LinkedinJobRepository();
 const ApolloPersonaRepository = require("../repository/ApolloPersonaRepository");
 const apolloPersonaRepository = new ApolloPersonaRepository();
 const ApolloOrganizationRepository = require("../repository/ApolloOrganizationRepository");
 const apolloOrganizationRepository = new ApolloOrganizationRepository();
+const RequestIdRepository = require("../repository/RequestIdRepository");
+const requestIdRepository = new RequestIdRepository();
 async function saveJobData(jobData) {
   const jobEntries = jobData.map((job) => ({
     job_id: job.job_id || "",
@@ -72,20 +73,121 @@ async function saveJobData(jobData) {
     const newJobEntries = jobEntries.filter(
       (job) => !existingJobIds.includes(job.job_id)
     );
+    let allProcessedJobIds = [...existingJobIds];
 
     if (newJobEntries.length > 0) {
       const savedJobs = await linkedinJobRepository.insertMany(newJobEntries);
       console.log(`Saved ${savedJobs.length} new jobs successfully.`);
-      return savedJobs;
     } else {
       console.log("No new jobs to save.");
-      return [];
     }
+    return allProcessedJobIds;
   } catch (error) {
     console.log("Failed to save jobs:", error);
   }
 }
 
+async function findAllJobs(reqId) {
+  const jobIds = await requestIdRepository.findOne({
+    reqId: reqId,
+  });
+  // console.log("job ids ===>", jobIds.jobIds);
+  const cleanedJobIdsArray = cleanIdsArray(jobIds.jobIds);
+
+  let jobData;
+  if (cleanedJobIdsArray?.length) {
+    jobData = await linkedinJobRepository.find({ job_id: cleanedJobIdsArray });
+  }
+  return jobData;
+}
+async function findAllPersonas(reqId) {
+  const personaIds = await requestIdRepository.findOne({
+    reqId: reqId,
+  });
+  // console.log("persona ids ===>", personaIds.personaIds);
+  let jobData;
+  if (personaIds?.personaIds) {
+    jobData = await apolloPersonaRepository.find({
+      id: personaIds.personaIds,
+    });
+  }
+  return jobData;
+}
+async function updateRequestWithJobIds(reqId, jobIdsObject) {
+  console.log("Updating request:", reqId, "with job IDs object:", jobIdsObject);
+  try {
+    // Ensure jobIdsObject is an object and not null
+    if (typeof jobIdsObject !== "object" || jobIdsObject === null) {
+      throw new Error("jobIdsObject must be a non-null object");
+    }
+
+    // Convert the object values to an array of strings
+    const jobIdsArray = Object.entries(jobIdsObject).map(
+      ([key, value]) => `${key}:${value}`
+    );
+    console.log("Converted job IDs array:", jobIdsArray);
+
+    // Validate that the conversion has been successful
+    if (!Array.isArray(jobIdsArray) || jobIdsArray.length === 0) {
+      throw new Error("Failed to convert jobIdsObject to a non-empty array");
+    }
+
+    // Create a new document using the base repository create function
+    const updatedRequest = await requestIdRepository.create({
+      reqId: reqId,
+      jobIds: jobIdsArray,
+    });
+
+    console.log("Created request:", updatedRequest);
+    return updatedRequest;
+  } catch (error) {
+    console.error("Error creating request with job IDs:", error);
+    throw error;
+  }
+}
+function extractIdsFromObjects(objectsArray) {
+  return objectsArray.map((obj) => obj.id);
+}
+async function updateRequestWithPersonaIds(reqId, personaIdsObject) {
+  console.log(
+    "Updating request:",
+    reqId,
+    "with job IDs object:",
+    personaIdsObject
+  );
+  try {
+    // Ensure jobIdsObject is an object and not null
+
+    // Convert the object values to an array of strings
+
+    // Validate that the conversion has been successful
+
+    // Create a new document using the base repository create function
+    // Assuming personaIdsObject is the object from your image
+    const idArray = personaIdsObject.map((id) => String(id.id));
+    console.log("Converted persona IDs array:", idArray);
+
+    // Validate that the conversion has been successful
+    if (
+      !Array.isArray(idArray) ||
+      idArray.some((id) => typeof id !== "string")
+    ) {
+      throw new Error("Conversion to array of strings failed");
+    }
+
+    // Update or create a document using the base repository updateOne function
+    const updatedRequest = await requestIdRepository.updateOne(
+      { reqId: reqId },
+      { $set: { personaIds: idArray } },
+      { upsert: true }
+    );
+    console.log("Created request:", updatedRequest);
+    return updatedRequest;
+  } catch (error) {
+    console.error("Error creating request with job IDs:", error);
+    throw error;
+  }
+}
 async function savePersonaData(personaData) {
   const personaEntries = personaData.map((persona) => ({
     id: persona.id || "",
@@ -254,8 +356,12 @@ async function saveOrganizationData(orgData) {
 }
 
 module.exports = {
+  findAllJobs,
   saveJobData,
+  findAllPersonas,
   savePersonaData,
   updateContactDetails,
   saveOrganizationData,
+  updateRequestWithJobIds,
+  updateRequestWithPersonaIds,
 };

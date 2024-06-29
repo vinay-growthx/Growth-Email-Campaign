@@ -8,6 +8,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const admin = require("firebase-admin");
 const port = process.env.PORT || 4000;
+const { v4: uuidv4 } = require("uuid");
 
 const healthRouter = require("./api/health/routes")();
 const logtail = require("./services/logtail");
@@ -21,10 +22,16 @@ const { smtpTransport } = require("./services/ses");
 const { searchCompanyApollo } = require("./services/ApolloAPI/orgSearch");
 const {
   saveJobData,
+  findAllJobs,
   savePersonaData,
   updateContactDetails,
   saveOrganizationData,
+  updateRequestWithJobIds,
+  updateRequestWithPersonaIds,
+  findAllPersonas,
 } = require("./services/util");
+const LinkedinJobRepository = require("./repository/LinkedinJobRepository");
+const linkedinJobRepository = new LinkedinJobRepository();
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
@@ -72,19 +79,41 @@ app.use("/", healthRouter);
 app.get("/find-jobs", (req, res) => {
   res.render("findJob", { title: "Find the Best LinkedIn Jobs Available" });
 });
-app.get("/persona-reachout", (req, res) => {
-  let people = [];
-
+app.get("/get-jobs/:reqId", async (req, res) => {
+  const reqId = req.params.reqId;
   try {
-    if (req.query.people) {
-      people = JSON.parse(decodeURIComponent(req.query.people));
-    }
+    const jobs = await findAllJobs(reqId);
+    res.render("showJob", { jobs: jobs, reqId });
   } catch (error) {
-    console.error("Error parsing people data:", error);
+    console.error("Error fetching jobs:", error);
+    res.status(500).send("Internal Server Error");
   }
-
-  res.render("personaReachout", { people });
 });
+
+app.get("/persona-reachout/:reqId", async (req, res) => {
+  const reqId = req.params.reqId;
+  try {
+    const people = await findAllPersonas(reqId);
+    console.log(people?.length, "prople here");
+    res.render("personaReachout", { people });
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+// app.get("/persona-reachout", (req, res) => {
+//   let people = [];
+
+//   try {
+//     if (req.query.people) {
+//       people = JSON.parse(decodeURIComponent(req.query.people));
+//     }
+//   } catch (error) {
+//     console.error("Error parsing people data:", error);
+//   }
+
+//   res.render("personaReachout", { people });
+// });
 app.get("/send-email", (req, res) => {
   const enrichedData = JSON.parse(req.query.data);
   const emails = enrichedData.map((item) => item.person.email);
@@ -123,33 +152,58 @@ app.post("/send-email", async (req, res) => {
       .json({ error: "Failed to send emails", details: error.message });
   }
 });
+
 app.post("/create-persona", async (req, res) => {
   try {
-    const { locations, companyNames } = req.body;
-
-    console.log("Received locations:", locations);
-    console.log("Received company names:", companyNames);
+    const { jobSelect } = req.body;
+    console.log("req.body", req.body);
+    const selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
+    const reqUUID = req.body.reqId || uuidv4();
+    // console.log("selected ids ====>", selectedIds);
+    const linkedinJobs = await linkedinJobRepository.find(
+      {
+        _id: selectedIds,
+      },
+      "employer_name job_title employer_company_type job_description job_city job_state job_country"
+    );
+    const jobLocations = linkedinJobs.map((job) =>
+      `${job.job_city || ""}, ${job.job_state || ""}, ${job.job_country || ""}`
+        .trim()
+        .replace(/^,\s*|,\s*$/g, "")
+    );
+    const employerNames = linkedinJobs.map((job) => job.employer_name);
+    console.log("job locations --->", jobLocations);
+    console.log("employer names ====>", employerNames);
+    // console.log("linkedin jobs ====>", linkedinJobs);
+    // console.log("Received locations:", locations);
     const allPeople = [];
 
-    // Process each company name one by one
-    for (const name of companyNames) {
+    // // Process each company name one by one
+    for (const name of employerNames) {
       try {
         const company = await searchCompanyApollo(name);
-        console.log("company data ====>", JSON.stringify(company));
         if (company) {
           saveOrganizationData([company]);
-          const people = await searchPeople(locations, company.name);
+          const people = await searchPeople(jobLocations, company.name);
           allPeople.push(...people.people);
+          const updateData = await updateRequestWithPersonaIds(
+            reqUUID,
+            allPeople
+          );
+          // res.json({ reqId: reqUUID });
         } else {
+          // res.json({});
           console.warn(`No company found for name: ${name}`);
         }
       } catch (error) {
+        // res.json({});
         console.error(`Error processing company name ${name}:`, error);
       }
     }
-    // console.log("person data ====>", JSON.stringify(allPeople[0]));
-    savePersonaData(allPeople);
-    res.render("personaReachout", { people: allPeople });
+    // // console.log("person data ====>", JSON.stringify(allPeople[0]));
+    // savePersonaData(allPeople);
+    // res.render("personaReachout", { people: allPeople });
+    res.redirect(`/persona-reachout/${reqUUID}`);
   } catch (error) {
     console.error("Error creating persona:", error);
     res.status(500).json({ error: "Failed to create persona" });
@@ -173,6 +227,8 @@ app.post("/search-jobs", async (req, res) => {
       radius,
       exclude_job_publishers,
     } = req.body;
+    const reqUUID = uuidv4();
+
     const results = await searchJobs(
       query,
       page,
@@ -203,12 +259,17 @@ app.post("/search-jobs", async (req, res) => {
         );
         if (salaryMatch) {
           salaryRange = `${salaryMatch[1]} - ${salaryMatch[2]}`;
+          c;
         }
       }
       job.salaryRange = salaryRange;
     });
-    saveJobData(results.data);
-    res.render("showJob", { results });
+    const jobDataSave = await saveJobData(results.data);
+    const updateJobData = await updateRequestWithJobIds(reqUUID, jobDataSave);
+    // console.log("update job data ===>", updateJobData);
+    // console.log("job data save", jobDataSave);
+    // res.render("showJob", {});
+    res.redirect(`/get-jobs/${reqUUID}`);
   } catch (error) {
     res.status(500).send(error.toString());
   }
