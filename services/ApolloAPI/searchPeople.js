@@ -1,6 +1,8 @@
 const axios = require("axios");
 
-async function searchPeople(locations, companyNames) {
+async function searchPeople(locations, orgId, personaDesignation) {
+  console.log("org ids ====>", orgId);
+  console.log("location =====>", locations);
   const url = "https://api.apollo.io/v1/mixed_people/search";
   const headers = {
     "Content-Type": "application/json",
@@ -10,7 +12,7 @@ async function searchPeople(locations, companyNames) {
 
   const body = {
     page: 1,
-    per_page: 50,
+    per_page: 2,
     organization_locations: locations,
     person_titles: [
       "VP of Talent Acquisition",
@@ -18,6 +20,7 @@ async function searchPeople(locations, companyNames) {
       "Director of Talent Acquisition",
       "Head of Talent AcquisitionA",
     ],
+    organization_ids: [orgId],
   };
 
   try {

@@ -152,11 +152,15 @@ app.post("/send-email", async (req, res) => {
       .json({ error: "Failed to send emails", details: error.message });
   }
 });
-
+function convertToStringArray(commaString) {
+  return commaString
+    .split(",")
+    .map((item) => item.trim())
+    .filter((item) => item !== "");
+}
 app.post("/create-persona", async (req, res) => {
   try {
     const { jobSelect } = req.body;
-    console.log("req.body", req.body);
     const selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
     const reqUUID = req.body.reqId || uuidv4();
     // console.log("selected ids ====>", selectedIds);
@@ -174,6 +178,8 @@ app.post("/create-persona", async (req, res) => {
     const employerNames = linkedinJobs.map((job) => job.employer_name);
     console.log("job locations --->", jobLocations);
     console.log("employer names ====>", employerNames);
+    let personaDesignation = req?.body?.personaDesignations;
+    personaDesignation = convertToStringArray(personaDesignation);
     // console.log("linkedin jobs ====>", linkedinJobs);
     // console.log("Received locations:", locations);
     const allPeople = [];
@@ -182,10 +188,16 @@ app.post("/create-persona", async (req, res) => {
     for (const name of employerNames) {
       try {
         const company = await searchCompanyApollo(name);
+        let orgId = company?.accounts?.[0]?.organization_id;
         if (company) {
           saveOrganizationData([company]);
-          const people = await searchPeople(jobLocations, company.name);
+          const people = await searchPeople(
+            jobLocations,
+            orgId,
+            personaDesignation
+          );
           allPeople.push(...people.people);
+          console.log("all people", allPeople);
           await savePersonaData(allPeople);
           const updateData = await updateRequestWithPersonaIds(
             reqUUID,

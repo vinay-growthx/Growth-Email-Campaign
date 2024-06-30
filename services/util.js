@@ -145,7 +145,7 @@ async function updateRequestWithPersonaIds(reqId, personaIdsObject) {
   console.log(
     "Updating request:",
     reqId,
-    "with job IDs object:",
+    "with job personas object:",
     personaIdsObject
   );
   try {

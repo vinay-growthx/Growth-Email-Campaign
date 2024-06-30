@@ -535,7 +535,7 @@
           </div>
           <button class="download-btn" onclick="downloadCSV()">Download</button>
         </div>
-        <form action="/create-persona" method="POST">
+        <form id="jobForm" action="/create-persona" method="POST">
           <input
             checked
             type="checkbox"
@@ -549,7 +549,6 @@
               type="text"
               id="personaDesignations"
               name="personaDesignations"
-              required
             />
             <div id="designationTags" class="designation-tags"></div>
             <div class="default-designations">
@@ -881,6 +880,41 @@
           btn.addEventListener("click", function () {
             addDesignation(this.dataset.designation);
           });
+        });
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("jobForm");
+        form.addEventListener("submit", function (event) {
+          const selectedJobs = document.querySelectorAll(
+            'input[name="jobSelect"]:checked'
+          );
+          if (selectedJobs.length === 0) {
+            event.preventDefault();
+            alert("Please select at least one job before creating a persona.");
+          }
+        });
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("jobForm");
+        form.addEventListener("submit", function (event) {
+          const selectedJobs = document.querySelectorAll(
+            'input[name="jobSelect"]:checked'
+          );
+          const designationInput = document.getElementById(
+            "personaDesignations"
+          );
+          const designationTags = document.querySelectorAll(".designation-tag");
+
+          if (selectedJobs.length === 0) {
+            event.preventDefault();
+            alert("Please select at least one job before creating a persona.");
+          } else if (
+            designationInput.value.trim() === "" &&
+            designationTags.length === 0
+          ) {
+            event.preventDefault();
+            alert("Please enter at least one Persona Designation.");
+          }
         });
       });
     </script>
