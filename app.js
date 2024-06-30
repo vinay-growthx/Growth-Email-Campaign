@@ -94,7 +94,7 @@ app.get("/persona-reachout/:reqId", async (req, res) => {
   const reqId = req.params.reqId;
   try {
     const people = await findAllPersonas(reqId);
-    console.log(people?.length, "prople here");
+    console.log(people?.length, "people here");
     res.render("personaReachout", { people });
   } catch (error) {
     console.error("Error fetching jobs:", error);
