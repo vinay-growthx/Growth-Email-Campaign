@@ -186,6 +186,7 @@ app.post("/create-persona", async (req, res) => {
           saveOrganizationData([company]);
           const people = await searchPeople(jobLocations, company.name);
           allPeople.push(...people.people);
+          await savePersonaData(allPeople);
           const updateData = await updateRequestWithPersonaIds(
             reqUUID,
             allPeople

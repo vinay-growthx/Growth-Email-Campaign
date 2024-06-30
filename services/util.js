@@ -121,21 +121,17 @@ async function updateRequestWithJobIds(reqId, jobIdsObject) {
       throw new Error("jobIdsObject must be a non-null object");
     }
 
-    // Convert the object values to an array of strings
-    const jobIdsArray = Object.entries(jobIdsObject).map(
-      ([key, value]) => `${key}:${value}`
-    );
-    console.log("Converted job IDs array:", jobIdsArray);
+    console.log("Converted job IDs array:", jobIdsObject);
 
     // Validate that the conversion has been successful
-    if (!Array.isArray(jobIdsArray) || jobIdsArray.length === 0) {
+    if (!Array.isArray(jobIdsObject) || jobIdsObject.length === 0) {
       throw new Error("Failed to convert jobIdsObject to a non-empty array");
     }
 
     // Create a new document using the base repository create function
     const updatedRequest = await requestIdRepository.create({
       reqId: reqId,
-      jobIds: jobIdsArray,
+      jobIds: jobIdsObject,
     });
 
     console.log("Created request:", updatedRequest);
@@ -144,9 +140,6 @@ async function updateRequestWithJobIds(reqId, jobIdsObject) {
     console.error("Error creating request with job IDs:", error);
     throw error;
   }
-}
-function extractIdsFromObjects(objectsArray) {
-  return objectsArray.map((obj) => obj.id);
 }
 async function updateRequestWithPersonaIds(reqId, personaIdsObject) {
   console.log(
