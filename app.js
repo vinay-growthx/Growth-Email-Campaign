@@ -295,9 +295,10 @@ app.post("/email-enrich-process", async (req, res) => {
   try {
     console.log(req.body);
     let selectedPeople = req.body.selectedPeople;
-    const reqId = req.body.reqId;
-    console.log("req id", reqId);
-    // If you need to ensure it's an array (for older Express versions)
+    const reqId = Array.isArray(req.body.reqId)
+      ? req.body.reqId[req.body.reqId.length - 1]
+      : req.body.reqId;
+    console.log("req id ===>", reqId);
     if (typeof selectedPeople === "string") {
       selectedPeople = selectedPeople.split(",").map((id) => id.trim());
     } else if (!Array.isArray(selectedPeople)) {
