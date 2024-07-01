@@ -345,6 +345,7 @@ app.post("/enriched-data-process", async (req, res) => {
   try {
     let selectedPeople = req.body.selectedPeople;
     const reqId = req.body.reqId;
+    console.log("req id ===>", reqId);
     // If you need to ensure it's an array (for older Express versions)
     if (typeof selectedPeople === "string") {
       selectedPeople = selectedPeople.split(",").map((id) => id.trim());
