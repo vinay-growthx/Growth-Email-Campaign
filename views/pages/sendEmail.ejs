@@ -244,210 +244,216 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.js"></script>
     <script>
-                 document.addEventListener('DOMContentLoaded', (event) => {
-        // Retrieve the emails from the server-side rendered data
-        const emails = <%- JSON.stringify(enrichedData) %>;
+                     document.addEventListener('DOMContentLoaded', (event) => {
+            // Retrieve the emails from the server-side rendered data
+            const emails = <%- JSON.stringify(enrichedData) %>;
 
-        const emailsContainer = document.getElementById('emailsContainer');
+            const emailsContainer = document.getElementById('emailsContainer');
 
-        if (emails.length > 0) {
-          const displayCount = Math.min(emails.length, 5);
-          for (let i = 0; i < displayCount; i++) {
-            const emailSpan = document.createElement('span');
-            emailSpan.textContent = `${emails[i].name} (${emails[i].email})`;
-            emailsContainer.appendChild(emailSpan);
-          }
+            if (emails.length > 0) {
+              const displayCount = Math.min(emails.length, 5);
+              for (let i = 0; i < displayCount; i++) {
+                const emailSpan = document.createElement('span');
+                emailSpan.textContent = `${emails[i].name} (${emails[i].email})`;
+                emailsContainer.appendChild(emailSpan);
+              }
 
-          if (emails.length > 5) {
-            const remainingCount = emails.length - 5;
-            const countSpan = document.createElement('span');
-            countSpan.textContent = `and ${remainingCount} more...`;
-            countSpan.style.fontWeight = 'bold';
-            emailsContainer.appendChild(countSpan);
-          }
+              if (emails.length > 5) {
+                const remainingCount = emails.length - 5;
+                const countSpan = document.createElement('span');
+                countSpan.textContent = `and ${remainingCount} more...`;
+                countSpan.style.fontWeight = 'bold';
+                emailsContainer.appendChild(countSpan);
+              }
 
-          const totalCountSpan = document.createElement('span');
-          totalCountSpan.textContent = `Total Emails found: ${emails.length}`;
-          totalCountSpan.style.display = 'block';
-          totalCountSpan.style.marginTop = '10px';
-          totalCountSpan.style.fontWeight = 'bold';
-          emailsContainer.appendChild(totalCountSpan);
-        } else {
-          emailsContainer.textContent = 'No emails found from selected. Please go back and select again.';
-        }
+              const totalCountSpan = document.createElement('span');
+              totalCountSpan.textContent = `Total Emails found: ${emails.length}`;
+              totalCountSpan.style.display = 'block';
+              totalCountSpan.style.marginTop = '10px';
+              totalCountSpan.style.fontWeight = 'bold';
+              emailsContainer.appendChild(totalCountSpan);
+            } else {
+              emailsContainer.textContent = 'No emails found from selected. Please go back and select again.';
+            }
 
-        localStorage.setItem('selectedEmails', JSON.stringify(emails));
-      });                 document.getElementById("emailForm").onsubmit = function (event) {
-                                      event.preventDefault();
+            localStorage.setItem('selectedEmails', JSON.stringify(emails));
+          });                 document.getElementById("emailForm").onsubmit = function (event) {
+                                          event.preventDefault();
 
-                                      const subject = document.getElementById("emailSubject").value;
-                                      const body = document.querySelector("trix-editor").innerHTML;
+                                          const subject = document.getElementById("emailSubject").value;
+                                          const body = document.querySelector("trix-editor").innerHTML;
 
-                                      const emails = JSON.parse(localStorage.getItem('selectedEmails'));
-                                      const reqId = localStorage.getItem('reqId');
-                                      if (!subject || !body || emails.length === 0) {
-                                        alert("Please fill in the subject, body, and ensure emails are selected.");
-                                        return;
-                                      }
-                                      console.log('just before sending req id',reqId);
-                                      fetch("/send-email", {
-                                        method: "POST",
-                                        headers: {
-                                          "Content-Type": "application/json",
-                                        },
-                                        body: JSON.stringify({ subject: subject, body: body, emails: emails,reqId: reqId }),
-                                      })
-                                        .then((response) => response.json())
-                                        .then((data) => {
-                                          alert("Email sent successfully!");
-                                          console.log(data);
-                                        })
-                                        .catch((error) => {
-                                          console.error("Error during email sending:", error);
-                                          alert("Failed to send email: " + error.message);
+                                          const emails = JSON.parse(localStorage.getItem('selectedEmails'));
+                                          const reqId = localStorage.getItem('reqId');
+                                          if (!subject || !body || emails.length === 0) {
+                                            alert("Please fill in the subject, body, and ensure emails are selected.");
+                                            return;
+                                          }
+                                          if (!reqId) {
+        console.log("reqId is missing");
+        alert("reqId is missing. Please try again or contact support.");
+        return;
+      }
+
+                                          console.log('just before sending req id',reqId);
+                                          fetch("/send-email", {
+                                            method: "POST",
+                                            headers: {
+                                              "Content-Type": "application/json",
+                                            },
+                                            body: JSON.stringify({ subject: subject, body: body, emails: emails,reqId: reqId }),
+                                          })
+                                            .then((response) => response.json())
+                                            .then((data) => {
+                                              alert("Email sent successfully!");
+                                              console.log(data);
+                                            })
+                                            .catch((error) => {
+                                              console.error("Error during email sending:", error);
+                                              alert("Failed to send email: " + error.message);
+                                            });
+                                        };
+
+                                        document.getElementById("templateDropdown").addEventListener("change", function (event) {
+                              const selectedTemplate = event.target.value;
+                              if (selectedTemplate) {
+                                const editor = document.querySelector("trix-editor").editor;
+                                let templateContent = "";
+                                let subject = "";
+
+                                switch (selectedTemplate) {
+                                  case "rapidTalentConnect":
+                                    subject = "Accelerate Your Hiring for [Position] with AI-Powered Talent Connect";
+                                    templateContent = `Dear {name},
+
+                            I hope this email finds you well. I'm reaching out to introduce our Rapid Talent Connect service, which uses AI to quickly identify top candidates for your {hiringJobTitle} position at {companyName}.
+
+                            Our AI-powered system can process applications rapidly, ensuring you don't miss out on high-potential candidates in this competitive market. Here's how we can help:
+
+                            - Swift Candidate Matching: Our AI analyzes applicants in real-time, presenting you with the best matches instantly.
+                            - Reduced Time-to-Hire: Cut your hiring process time by up to 50% without sacrificing quality.
+                            - Customized Screening: Our AI adapts to your specific requirements, ensuring a perfect fit for your team.
+
+                            We'd love to show you how we can streamline your hiring process and connect you with ideal candidates faster than ever.
+
+                            Would you be available for a quick 15-minute demo this week? I'm confident you'll see the immediate value we can bring to your recruitment efforts.
+
+                            Best regards,
+                            [Your Name]
+                            [Your Position]
+                            [Your Company]
+                            [Contact Information]`;
+                                    break;
+                                  case "smartHireSpotlight":
+                                    subject = "Spotlight Top Talent for [Marketing Manager – 150+ Applicants] with AI";
+                                    templateContent = `Hi {name},
+
+                            I'm John Doe, founder of [Your Company Name]. We specialize in AI-driven hiring solutions that help companies like {companyName} identify and attract top talent.
+
+                            Why Choose Us?
+                            - Precision: Our AI highlights the best candidates for [Marketing Manager – 150+ Applicants].
+                            - Efficiency: Save time by focusing on the most qualified applicants.
+                            - Integration: Easy to implement with your existing HR systems.
+
+                            Navigating through 150+ applicants for [Marketing Manager] can be overwhelming. Our AI ensures you see only the top-tier candidates, making your job easier.
+
+                            Can we discuss how we can enhance your hiring process for [Marketing Manager]? Are you available for a quick call this week?
+
+                            Best,
+                            John Doe
+                            Founder & CEO
+                            [Your Company Name]
+                            [Email Address]
+                            [Website]`;
+                                    break;
+                                  case "talentTransformationTech":
+                                    subject = "Revolutionize Your Hiring Process for [Position] with AI";
+                                    templateContent = `Dear {name},
+
+                            I hope this message finds you well. I'm reaching out to introduce our Talent Transformation Tech, a revolutionary AI-driven hiring solution that I believe could transform your recruitment process for the {hiringJobTitle} role at {companyName}.
+
+                            Our cutting-edge AI tools go beyond traditional hiring methods, offering:
+
+                            1. Predictive Success Modeling: Identify candidates most likely to excel in your specific work environment.
+                            2. Skill Gap Analysis: Understand how candidates can complement your existing team's strengths.
+                            3. Bias Mitigation: Ensure a fair and diverse hiring process with our advanced algorithms.
+                            4. Dynamic Interview Guides: AI-generated, role-specific questions to dig deeper into each candidate's potential.
+
+                            We're not just filling a position – we're helping you build the future of your company.
+
+                            I'd be thrilled to offer you a personalized demo of our technology. When would be a convenient time to showcase how we can revolutionize your hiring process?
+
+                            Looking forward to potentially transforming your talent acquisition strategy.
+
+                            Best regards,
+                            [Your Name]
+                            [Your Position]
+                            [Your Company]
+                            [Contact Information]`;
+                                    break;
+                                  case "efficiencyBoostPitch":
+                                    subject = "Streamline Your Hiring for [Data Analyst – 300+ Applicants] with AI";
+                                    templateContent = `Hi {name},
+
+                            I'm John Doe, founder of [Your Company Name]. We offer AI-driven hiring solutions designed to streamline your recruitment process and deliver faster results.
+
+                            Why Choose Us?
+                            - Speed: Quickly sort through 300+ applicants for [Data Analyst].
+                            - Efficiency: Our AI identifies the most qualified candidates swiftly.
+                            - Simplicity: Seamlessly integrates with your current HR tools.
+
+                            Handling 300+ applicants for [Data Analyst] is a daunting task. Our AI simplifies this, ensuring you focus on the best candidates and reduce time-to-hire.
+
+                            Let's explore how we can speed up your hiring process for [Data Analyst]. Are you free for a short call this week?
+
+                            Best,
+                            John Doe
+                            Founder & CEO
+                            [Your Company Name]
+                            [Email Address]
+                            [Website]`;
+                                    break;
+                                  case "insightDrivenRecruitment":
+                                    subject = "Elevate Your Hiring Decisions for [Position] with AI-Powered Insights";
+                                    templateContent = `Dear {name},
+
+                            I trust this email finds you well. I'm reaching out to introduce our Insight-Driven Recruitment service, which I believe could add significant value to your hiring process for the {hiringJobTitle} role at {companyName}.
+
+                            Our AI-powered analytics provide deep insights into your candidate pool, helping you make data-driven decisions:
+
+                            1. Predictive Success Modeling: Forecast a candidate's potential performance and longevity in your organization.
+                            2. Team Dynamics Analysis: Understand how a new hire might impact your existing team's productivity and culture.
+                            3. Skill Gap Identification: Pinpoint areas where candidates can bring unique value to your organization.
+                            4. Customized Interview Strategies: AI-generated, candidate-specific questions to uncover key traits and abilities.
+
+                            I'd love to share a sample insights report we've prepared for a similar role. This report demonstrates how our AI can uncover hidden potential and flag potential concerns that traditional hiring methods might miss.
+
+                            When would be a good time to walk you through how these insights can enhance your hiring decisions for the {hiringJobTitle} position?
+
+                            Looking forward to potentially revolutionizing your recruitment process with data-driven insights.
+
+                            Best regards,
+                            [Your Name]
+                            [Your Position]
+                            [Your Company]
+                            [Contact Information]`;
+                                    break;
+                                }
+
+                                editor.loadHTML(templateContent.split('\n').map(line => `<div>${line}</div>`).join(''));
+                                // Set the email subject
+                                document.getElementById("emailSubject").value = subject;
+                              }
+                            });
+                                        document.getElementById("variableDropdown").addEventListener("change", function (event) {
+                                          const selectedVariable = event.target.value;
+                                          if (selectedVariable) {
+                                            const editor = document.querySelector("trix-editor").editor;
+                                            const currentPosition = editor.getSelectedRange()[0];
+                                            editor.insertString(selectedVariable);
+                                            editor.setSelectedRange([currentPosition + selectedVariable.length, currentPosition + selectedVariable.length]);
+                                          }
                                         });
-                                    };
-
-                                    document.getElementById("templateDropdown").addEventListener("change", function (event) {
-                          const selectedTemplate = event.target.value;
-                          if (selectedTemplate) {
-                            const editor = document.querySelector("trix-editor").editor;
-                            let templateContent = "";
-                            let subject = "";
-
-                            switch (selectedTemplate) {
-                              case "rapidTalentConnect":
-                                subject = "Accelerate Your Hiring for [Position] with AI-Powered Talent Connect";
-                                templateContent = `Dear {name},
-
-                        I hope this email finds you well. I'm reaching out to introduce our Rapid Talent Connect service, which uses AI to quickly identify top candidates for your {hiringJobTitle} position at {companyName}.
-
-                        Our AI-powered system can process applications rapidly, ensuring you don't miss out on high-potential candidates in this competitive market. Here's how we can help:
-
-                        - Swift Candidate Matching: Our AI analyzes applicants in real-time, presenting you with the best matches instantly.
-                        - Reduced Time-to-Hire: Cut your hiring process time by up to 50% without sacrificing quality.
-                        - Customized Screening: Our AI adapts to your specific requirements, ensuring a perfect fit for your team.
-
-                        We'd love to show you how we can streamline your hiring process and connect you with ideal candidates faster than ever.
-
-                        Would you be available for a quick 15-minute demo this week? I'm confident you'll see the immediate value we can bring to your recruitment efforts.
-
-                        Best regards,
-                        [Your Name]
-                        [Your Position]
-                        [Your Company]
-                        [Contact Information]`;
-                                break;
-                              case "smartHireSpotlight":
-                                subject = "Spotlight Top Talent for [Marketing Manager – 150+ Applicants] with AI";
-                                templateContent = `Hi {name},
-
-                        I'm John Doe, founder of [Your Company Name]. We specialize in AI-driven hiring solutions that help companies like {companyName} identify and attract top talent.
-
-                        Why Choose Us?
-                        - Precision: Our AI highlights the best candidates for [Marketing Manager – 150+ Applicants].
-                        - Efficiency: Save time by focusing on the most qualified applicants.
-                        - Integration: Easy to implement with your existing HR systems.
-
-                        Navigating through 150+ applicants for [Marketing Manager] can be overwhelming. Our AI ensures you see only the top-tier candidates, making your job easier.
-
-                        Can we discuss how we can enhance your hiring process for [Marketing Manager]? Are you available for a quick call this week?
-
-                        Best,
-                        John Doe
-                        Founder & CEO
-                        [Your Company Name]
-                        [Email Address]
-                        [Website]`;
-                                break;
-                              case "talentTransformationTech":
-                                subject = "Revolutionize Your Hiring Process for [Position] with AI";
-                                templateContent = `Dear {name},
-
-                        I hope this message finds you well. I'm reaching out to introduce our Talent Transformation Tech, a revolutionary AI-driven hiring solution that I believe could transform your recruitment process for the {hiringJobTitle} role at {companyName}.
-
-                        Our cutting-edge AI tools go beyond traditional hiring methods, offering:
-
-                        1. Predictive Success Modeling: Identify candidates most likely to excel in your specific work environment.
-                        2. Skill Gap Analysis: Understand how candidates can complement your existing team's strengths.
-                        3. Bias Mitigation: Ensure a fair and diverse hiring process with our advanced algorithms.
-                        4. Dynamic Interview Guides: AI-generated, role-specific questions to dig deeper into each candidate's potential.
-
-                        We're not just filling a position – we're helping you build the future of your company.
-
-                        I'd be thrilled to offer you a personalized demo of our technology. When would be a convenient time to showcase how we can revolutionize your hiring process?
-
-                        Looking forward to potentially transforming your talent acquisition strategy.
-
-                        Best regards,
-                        [Your Name]
-                        [Your Position]
-                        [Your Company]
-                        [Contact Information]`;
-                                break;
-                              case "efficiencyBoostPitch":
-                                subject = "Streamline Your Hiring for [Data Analyst – 300+ Applicants] with AI";
-                                templateContent = `Hi {name},
-
-                        I'm John Doe, founder of [Your Company Name]. We offer AI-driven hiring solutions designed to streamline your recruitment process and deliver faster results.
-
-                        Why Choose Us?
-                        - Speed: Quickly sort through 300+ applicants for [Data Analyst].
-                        - Efficiency: Our AI identifies the most qualified candidates swiftly.
-                        - Simplicity: Seamlessly integrates with your current HR tools.
-
-                        Handling 300+ applicants for [Data Analyst] is a daunting task. Our AI simplifies this, ensuring you focus on the best candidates and reduce time-to-hire.
-
-                        Let's explore how we can speed up your hiring process for [Data Analyst]. Are you free for a short call this week?
-
-                        Best,
-                        John Doe
-                        Founder & CEO
-                        [Your Company Name]
-                        [Email Address]
-                        [Website]`;
-                                break;
-                              case "insightDrivenRecruitment":
-                                subject = "Elevate Your Hiring Decisions for [Position] with AI-Powered Insights";
-                                templateContent = `Dear {name},
-
-                        I trust this email finds you well. I'm reaching out to introduce our Insight-Driven Recruitment service, which I believe could add significant value to your hiring process for the {hiringJobTitle} role at {companyName}.
-
-                        Our AI-powered analytics provide deep insights into your candidate pool, helping you make data-driven decisions:
-
-                        1. Predictive Success Modeling: Forecast a candidate's potential performance and longevity in your organization.
-                        2. Team Dynamics Analysis: Understand how a new hire might impact your existing team's productivity and culture.
-                        3. Skill Gap Identification: Pinpoint areas where candidates can bring unique value to your organization.
-                        4. Customized Interview Strategies: AI-generated, candidate-specific questions to uncover key traits and abilities.
-
-                        I'd love to share a sample insights report we've prepared for a similar role. This report demonstrates how our AI can uncover hidden potential and flag potential concerns that traditional hiring methods might miss.
-
-                        When would be a good time to walk you through how these insights can enhance your hiring decisions for the {hiringJobTitle} position?
-
-                        Looking forward to potentially revolutionizing your recruitment process with data-driven insights.
-
-                        Best regards,
-                        [Your Name]
-                        [Your Position]
-                        [Your Company]
-                        [Contact Information]`;
-                                break;
-                            }
-
-                            editor.loadHTML(templateContent.split('\n').map(line => `<div>${line}</div>`).join(''));
-                            // Set the email subject
-                            document.getElementById("emailSubject").value = subject;
-                          }
-                        });
-                                    document.getElementById("variableDropdown").addEventListener("change", function (event) {
-                                      const selectedVariable = event.target.value;
-                                      if (selectedVariable) {
-                                        const editor = document.querySelector("trix-editor").editor;
-                                        const currentPosition = editor.getSelectedRange()[0];
-                                        editor.insertString(selectedVariable);
-                                        editor.setSelectedRange([currentPosition + selectedVariable.length, currentPosition + selectedVariable.length]);
-                                      }
-                                    });
     </script>
   </body>
 </html>
