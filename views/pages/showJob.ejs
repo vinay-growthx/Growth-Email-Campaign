@@ -520,6 +520,17 @@
       .designation-btn:hover {
         background-color: #bdc3c7;
       }
+      .job-apply-link {
+        color: #3498db;
+        text-decoration: none;
+        transition: color 0.3s ease;
+        word-break: break-all;
+      }
+
+      .job-apply-link:hover {
+        color: #2980b9;
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -614,6 +625,15 @@
                 <div class="job-detail">
                   <span>Salary Range:</span> <%= job.salaryRange %>
                 </div>
+              </div>
+              <div class="job-detail">
+                <span>Job Post Link:</span>
+                <a
+                  href="<%= job.job_apply_link %>"
+                  target="_blank"
+                  class="job-apply-link"
+                  ><%= job.job_apply_link %></a
+                >
               </div>
               <div class="job-description">
                 <% if (job.job_description.includes('Qualifications:')) { %>
@@ -747,6 +767,7 @@
               salary_range: salaryRangeDetail
                 ? salaryRangeDetail.textContent.split("Salary Range:")[1].trim()
                 : "",
+              apply_link: jobCard.querySelector(".job-apply-link").href,
               description: description,
             };
           })

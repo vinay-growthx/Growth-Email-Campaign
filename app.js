@@ -259,7 +259,6 @@ app.post("/search-jobs", async (req, res) => {
       radius,
       exclude_job_publishers
     );
-    // Extract salary range in the backend
     results.data.forEach((job) => {
       let salaryRange = "N/A";
       if (job.job_min_salary && job.job_max_salary) {
@@ -281,9 +280,6 @@ app.post("/search-jobs", async (req, res) => {
     });
     const jobDataSave = await saveJobData(results.data);
     const updateJobData = await updateRequestWithJobIds(reqUUID, jobDataSave);
-    // console.log("update job data ===>", updateJobData);
-    // console.log("job data save", jobDataSave);
-    // res.render("showJob", {});
     res.redirect(`/get-jobs/${reqUUID}`);
   } catch (error) {
     res.status(500).send(error.toString());
@@ -300,6 +296,7 @@ app.post("/email-enrich-process", async (req, res) => {
     console.log(req.body);
     let selectedPeople = req.body.selectedPeople;
     const reqId = req.body.reqId;
+    console.log("req id", reqId);
     // If you need to ensure it's an array (for older Express versions)
     if (typeof selectedPeople === "string") {
       selectedPeople = selectedPeople.split(",").map((id) => id.trim());
@@ -358,7 +355,7 @@ app.post("/enriched-data-process", async (req, res) => {
       { id: { $in: selectedPeople } },
       "id photo_url name title organization.name email"
     );
-    res.render("enrichedData", { people: allPersonas });
+    res.render("enrichedData", { people: allPersonas, reqId });
   } catch (error) {
     console.error("Error creating persona:", error);
     res.status(500).json({ error: "Failed to create persona" });
@@ -491,6 +488,7 @@ app.get("/", (req, res) => {
 //   }
 // });
 app.post("/send-email", async (req, res) => {
+  console.log("req.body.reqId", req.body);
   const { enrichedData, emailTemplate, emailSubject } = req.body;
 
   if (!enrichedData || !emailTemplate) {

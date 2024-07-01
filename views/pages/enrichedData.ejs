@@ -419,6 +419,7 @@
           <% if (people && people.length > 0) { %> <%
           people.forEach(function(enrichData, index) { %> <% if (enrichData) {
           %>
+          <input type="hidden" name="reqId" value="<%= reqId %>" />
           <div class="person-card" style="animation-delay: <%= index * 0.1 %>s">
             <input
               type="checkbox"

@@ -279,13 +279,14 @@
 
         localStorage.setItem('selectedEmails', JSON.stringify(emails));
       });                 document.getElementById("emailForm").onsubmit = function (event) {
-                                      event.preventDefault(); // Prevent the default form submission
+                                      event.preventDefault();
 
                                       const subject = document.getElementById("emailSubject").value;
                                       const body = document.querySelector("trix-editor").innerHTML;
 
                                       const emails = JSON.parse(localStorage.getItem('selectedEmails'));
-
+                                      const reqId = localStorage.getItem('reqId');
+                                      console.log('req id',reqId);
                                       if (!subject || !body || emails.length === 0) {
                                         alert("Please fill in the subject, body, and ensure emails are selected.");
                                         return;
@@ -296,7 +297,7 @@
                                         headers: {
                                           "Content-Type": "application/json",
                                         },
-                                        body: JSON.stringify({ subject: subject, body: body, emails: emails }),
+                                        body: JSON.stringify({ subject: subject, body: body, emails: emails,reqId }),
                                       })
                                         .then((response) => response.json())
                                         .then((data) => {
