@@ -277,19 +277,13 @@
           emailsContainer.textContent = 'No emails found from selected. Please go back and select again.';
         }
 
-        // Store emails in localStorage for use in form submission
         localStorage.setItem('selectedEmails', JSON.stringify(emails));
       });                 document.getElementById("emailForm").onsubmit = function (event) {
                                       event.preventDefault(); // Prevent the default form submission
 
                                       const subject = document.getElementById("emailSubject").value;
-                                      const body = document
-                                        .querySelector("trix-editor")
-                                        .editor.getDocument()
-                                        .toString()
-                                        .trim();
+                                      const body = document.querySelector("trix-editor").innerHTML;
 
-                                      // Retrieve emails from localStorage
                                       const emails = JSON.parse(localStorage.getItem('selectedEmails'));
 
                                       if (!subject || !body || emails.length === 0) {
@@ -297,7 +291,6 @@
                                         return;
                                       }
 
-                                      // Use fetch API to send data to your server
                                       fetch("/send-email", {
                                         method: "POST",
                                         headers: {
