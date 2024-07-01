@@ -410,26 +410,31 @@
           </div>
           <button class="download-btn" onclick="downloadCSV()">Download</button>
         </div>
-        <form id="enrichedForm" onsubmit="submitEmail(event)">
+        <form
+          id="enrichedForm"
+          onsubmit="submitEmail(event)"
+          action="/email-enrich-process"
+          method="POST"
+        >
           <% if (people && people.length > 0) { %> <%
-          people.forEach(function(enrichData, index) { %> <% if
-          (enrichData.person) { %>
+          people.forEach(function(enrichData, index) { %> <% if (enrichData) {
+          %>
           <div class="person-card" style="animation-delay: <%= index * 0.1 %>s">
             <input
               type="checkbox"
               class="select-checkbox"
               name="selectedPeople"
-              value="<%= index %>"
+              value="<%= enrichData._id %>"
               id="person<%= index %>"
             />
             <label
               for="person<%= index %>"
               class="select-checkbox-label"
             ></label>
-            <% if (enrichData.person.photo_url) { %>
+            <% if (enrichData.photo_url) { %>
             <img
-              src="<%= enrichData.person.photo_url %>"
-              alt="<%= enrichData.person.name %>"
+              src="<%= enrichData.photo_url %>"
+              alt="<%= enrichData.name %>"
               class="person-photo"
             />
             <% } else { %>
@@ -440,22 +445,21 @@
             />
             <% } %>
             <div class="person-details">
-              <div class="person-name"><%= enrichData.person.name %></div>
-              <div class="person-title"><%= enrichData.person.title %></div>
+              <div class="person-name"><%= enrichData.name %></div>
+              <div class="person-title"><%= enrichData.title %></div>
               <div class="person-organization">
-                <%= enrichData.person.organization.name %>
+                <%= enrichData.organization.name %>
               </div>
               <div class="person-contact">
                 <span class="contact-icon">📧</span>
-                <a href="mailto:<%= enrichData.person.email %>" class="email"
-                  ><%= enrichData.person.email %></a
+                <a href="mailto:<%= enrichData.email %>" class="email"
+                  ><%= enrichData.email %></a
                 >
               </div>
               <div class="person-contact">
                 <span class="contact-icon">🔗</span>
-
                 <a
-                  href="<%= enrichData.person.linkedin_url %>"
+                  href="<%= enrichData.linkedin_url %>"
                   class="linkedin-url"
                   target="_blank"
                   >LinkedIn Profile</a
@@ -484,10 +488,18 @@
           return;
         }
 
-        const url = new URL(window.location.href);
-        url.pathname = "/send-email";
-        url.searchParams.set("emails", JSON.stringify(selectedEmails));
-        window.location.href = url.toString();
+        // Create a hidden input to store the selected emails
+        const hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "enrichedIds";
+        hiddenInput.value = JSON.stringify(selectedEmails);
+
+        // Append the hidden input to the form
+        const form = document.getElementById("enrichedForm");
+        form.appendChild(hiddenInput);
+
+        // Submit the form
+        form.submit();
       }
       document.addEventListener("DOMContentLoaded", (event) => {
         const selectAllCheckbox = document.getElementById("selectAll");

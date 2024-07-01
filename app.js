@@ -32,6 +32,8 @@ const {
 } = require("./services/util");
 const LinkedinJobRepository = require("./repository/LinkedinJobRepository");
 const linkedinJobRepository = new LinkedinJobRepository();
+const ApolloPersonaRepository = require("./repository/ApolloPersonaRepository");
+const apolloPersonaRepository = new ApolloPersonaRepository();
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
@@ -95,7 +97,7 @@ app.get("/persona-reachout/:reqId", async (req, res) => {
   try {
     const people = await findAllPersonas(reqId);
     console.log(people?.length, "people here");
-    res.render("personaReachout", { people });
+    res.render("personaReachout", { people, reqId });
   } catch (error) {
     console.error("Error fetching jobs:", error);
     res.status(500).send("Internal Server Error");
@@ -115,9 +117,10 @@ app.get("/persona-reachout/:reqId", async (req, res) => {
 //   res.render("personaReachout", { people });
 // });
 app.get("/send-email", (req, res) => {
-  const enrichedData = JSON.parse(req.query.data);
-  const emails = enrichedData.map((item) => item.person.email);
-  res.render("sendEmail", { emails });
+  console.log("req query data ====>", req.query);
+  const enrichedData = JSON.parse(req.query.enrichedId);
+  console.log("enriched data --->", enrichedData);
+  res.render("sendEmail", { enrichedData });
 });
 
 app.post("/send-email", async (req, res) => {
@@ -163,7 +166,6 @@ app.post("/create-persona", async (req, res) => {
     const { jobSelect } = req.body;
     const selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
     const reqUUID = req.body.reqId || uuidv4();
-    // console.log("selected ids ====>", selectedIds);
     const linkedinJobs = await linkedinJobRepository.find(
       {
         _id: selectedIds,
@@ -176,15 +178,12 @@ app.post("/create-persona", async (req, res) => {
         .replace(/^,\s*|,\s*$/g, "")
     );
     const employerNames = linkedinJobs.map((job) => job.employer_name);
-    console.log("job locations --->", jobLocations);
-    console.log("employer names ====>", employerNames);
+
     let personaDesignation = req?.body?.personaDesignations;
     personaDesignation = convertToStringArray(personaDesignation);
-    // console.log("linkedin jobs ====>", linkedinJobs);
-    // console.log("Received locations:", locations);
+
     const allPeople = [];
 
-    // // Process each company name one by one
     for (const name of employerNames) {
       try {
         const company = await searchCompanyApollo(name);
@@ -199,23 +198,15 @@ app.post("/create-persona", async (req, res) => {
           allPeople.push(...people.people);
           console.log("all people", allPeople);
           await savePersonaData(allPeople);
-          const updateData = await updateRequestWithPersonaIds(
-            reqUUID,
-            allPeople
-          );
-          // res.json({ reqId: reqUUID });
+          updateRequestWithPersonaIds(reqUUID, allPeople);
         } else {
-          // res.json({});
           console.warn(`No company found for name: ${name}`);
         }
       } catch (error) {
-        // res.json({});
         console.error(`Error processing company name ${name}:`, error);
       }
     }
-    // // console.log("person data ====>", JSON.stringify(allPeople[0]));
-    // savePersonaData(allPeople);
-    // res.render("personaReachout", { people: allPeople });
+
     res.redirect(`/persona-reachout/${reqUUID}`);
   } catch (error) {
     console.error("Error creating persona:", error);
@@ -291,6 +282,77 @@ app.post("/search-jobs", async (req, res) => {
 app.get("/enriched-data", (req, res) => {
   const people = JSON.parse(req.query.data);
   res.render("enrichedData", { people });
+});
+
+app.post("/email-enrich-process", async (req, res) => {
+  try {
+    console.log("req ====>", req.body);
+    let selectedPeople = req.body.selectedPeople;
+    const reqId = req.body.reqId;
+    // If you need to ensure it's an array (for older Express versions)
+    if (typeof selectedPeople === "string") {
+      selectedPeople = selectedPeople.split(",").map((id) => id.trim());
+    } else if (!Array.isArray(selectedPeople)) {
+      // If it's neither a string nor an array, wrap it in an array
+      selectedPeople = [selectedPeople];
+    }
+    const personas = await apolloPersonaRepository.find(
+      {
+        _id: { $in: selectedPeople },
+      },
+      "name id email linkedin_url"
+    );
+
+    const updatedData = [];
+
+    for (const item of personas) {
+      if (item.email === "email_not_unlocked@domain.com") {
+        console.log(item.email);
+        const newEmail = await getEmailByLinkedInUrl(
+          item?.linkedin_url,
+          item.id
+        );
+        console.log("new email ====>", newEmail);
+        updatedData.push({ ...item, email: newEmail || item.email });
+      } else {
+        updatedData.push(item);
+      }
+    }
+    const personaValidData = updatedData.map((item) => {
+      const newItem = { ...item };
+      if (!newItem.email) {
+        delete newItem.email;
+      }
+      return newItem;
+    });
+    console.log("persona name", personaValidData);
+    res.render("sendEmail", { reqId, enrichedData: personaValidData });
+  } catch (error) {
+    console.error("Error creating persona:", error);
+    res.status(500).json({ error: "Failed to create persona" });
+  }
+});
+
+app.post("/enriched-data-process", async (req, res) => {
+  try {
+    let selectedPeople = req.body.selectedPeople;
+    const reqId = req.body.reqId;
+    // If you need to ensure it's an array (for older Express versions)
+    if (typeof selectedPeople === "string") {
+      selectedPeople = selectedPeople.split(",").map((id) => id.trim());
+    } else if (!Array.isArray(selectedPeople)) {
+      // If it's neither a string nor an array, wrap it in an array
+      selectedPeople = [selectedPeople];
+    }
+    const allPersonas = await apolloPersonaRepository.find(
+      { id: { $in: selectedPeople } },
+      "id photo_url name title organization.name email"
+    );
+    res.render("enrichedData", { people: allPersonas });
+  } catch (error) {
+    console.error("Error creating persona:", error);
+    res.status(500).json({ error: "Failed to create persona" });
+  }
 });
 
 app.post("/email-enrich", async (req, res) => {
