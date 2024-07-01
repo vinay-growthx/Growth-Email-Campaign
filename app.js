@@ -29,6 +29,7 @@ const {
   updateRequestWithJobIds,
   updateRequestWithPersonaIds,
   findAllPersonas,
+  findPersonById,
 } = require("./services/util");
 const LinkedinJobRepository = require("./repository/LinkedinJobRepository");
 const linkedinJobRepository = new LinkedinJobRepository();
@@ -125,27 +126,37 @@ app.get("/send-email", (req, res) => {
 
 app.post("/send-email", async (req, res) => {
   const { subject, body, emails } = req.body;
-
+  console.log("req body ===>", req.body);
+  const personaIds = emails.map((item) => item.id);
+  const persona = await apolloPersonaRepository.find(
+    {
+      id: { $in: personaIds },
+    },
+    "id name title organization.name"
+  );
   try {
-    const sendEmailPromises = emails.map((email) => {
+    for (const email of emails) {
+      const personData = findPersonById(email.id, persona);
+      console.log("person data", personData);
       const mailOptions = {
-        //  to: person.email,
         to: "vinay.prajapati@hirequotient.com",
         from: "EasySource <no-reply@hirequotient.com>",
         subject: subject,
-        html: body,
-        // .replace("{{name}}", person.name)
-        // .replace("{{title}}", person.employment_history[0].title)
-        // .replace(
-        //   "{{companyName}}",
-        //   person.employment_history[0].organization_name
-        // ),
+        html: body
+          .replaceAll("{name}", personData?.name)
+          .replaceAll("{companyName}", personData?.organization?.name)
+          .replaceAll("{role}", personData?.title),
       };
 
-      return smtpTransport.sendMail(mailOptions);
-    });
-
-    await Promise.all(sendEmailPromises);
+      try {
+        await smtpTransport.sendMail(mailOptions);
+        // Optionally, you can log success here
+        // console.log(`Email sent successfully to ${mailOptions.to}`);
+      } catch (error) {
+        // Handle or log any errors
+        console.error(`Failed to send email to ${mailOptions.to}:`, error);
+      }
+    }
 
     res.status(200).json({ message: "Emails sent successfully" });
   } catch (error) {
@@ -286,7 +297,7 @@ app.get("/enriched-data", (req, res) => {
 
 app.post("/email-enrich-process", async (req, res) => {
   try {
-    console.log("req ====>", req.body);
+    console.log(req.body);
     let selectedPeople = req.body.selectedPeople;
     const reqId = req.body.reqId;
     // If you need to ensure it's an array (for older Express versions)
@@ -325,7 +336,6 @@ app.post("/email-enrich-process", async (req, res) => {
       }
       return newItem;
     });
-    console.log("persona name", personaValidData);
     res.render("sendEmail", { reqId, enrichedData: personaValidData });
   } catch (error) {
     console.error("Error creating persona:", error);
@@ -393,44 +403,44 @@ app.post("/email-enrich-new", async (req, res) => {
     });
   }
 });
-app.post("/send-email", async (req, res) => {
-  const { enrichedData, emailTemplate } = req.body;
+// app.post("/send-email", async (req, res) => {
+//   const { enrichedData, emailTemplate } = req.body;
 
-  if (!enrichedData || !emailTemplate) {
-    return res
-      .status(400)
-      .json({ error: "Enriched data and email template are required" });
-  }
+//   if (!enrichedData || !emailTemplate) {
+//     return res
+//       .status(400)
+//       .json({ error: "Enriched data and email template are required" });
+//   }
 
-  try {
-    const sendEmailPromises = enrichedData.map((person) => {
-      const mailOptions = {
-        to: person.email,
-        from: "EasySource <no-reply@hirequotient.com>",
-        bcc: "easysource-support@hirequotient.com",
-        subject: subject,
-        html: emailTemplate
-          .replace("{{name}}", person.name)
-          .replace("{{title}}", person.employment_history[0].title)
-          .replace(
-            "{{companyName}}",
-            person.employment_history[0].organization_name
-          ),
-      };
+//   try {
+//     const sendEmailPromises = enrichedData.map((person) => {
+//       const mailOptions = {
+//         to: person.email,
+//         from: "EasySource <no-reply@hirequotient.com>",
+//         bcc: "easysource-support@hirequotient.com",
+//         subject: subject,
+//         html: emailTemplate
+//           .replace("{{name}}", person.name)
+//           .replace("{{title}}", person.employment_history[0].title)
+//           .replace(
+//             "{{companyName}}",
+//             person.employment_history[0].organization_name
+//           ),
+//       };
 
-      return smtpTransport.sendMail(mailOptions);
-    });
+//       return smtpTransport.sendMail(mailOptions);
+//     });
 
-    await Promise.all(sendEmailPromises);
+//     await Promise.all(sendEmailPromises);
 
-    res.status(200).json({ message: "Emails sent successfully" });
-  } catch (error) {
-    console.error("Error sending emails:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to send emails", details: error.message });
-  }
-});
+//     res.status(200).json({ message: "Emails sent successfully" });
+//   } catch (error) {
+//     console.error("Error sending emails:", error);
+//     res
+//       .status(500)
+//       .json({ error: "Failed to send emails", details: error.message });
+//   }
+// });
 app.get("/", (req, res) => {
   res.render("findJob");
 });

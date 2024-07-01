@@ -347,10 +347,13 @@ async function saveOrganizationData(orgData) {
     console.error("Failed to save organizations:", error);
   }
 }
-
+function findPersonById(id, data) {
+  return data.find((person) => person.id === id);
+}
 module.exports = {
   findAllJobs,
   saveJobData,
+  findPersonById,
   findAllPersonas,
   savePersonaData,
   updateContactDetails,
