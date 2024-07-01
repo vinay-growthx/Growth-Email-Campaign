@@ -285,18 +285,17 @@
 
                                       const emails = JSON.parse(localStorage.getItem('selectedEmails'));
                                       const reqId = localStorage.getItem('reqId');
-                                      console.log('req id',reqId);
                                       if (!subject || !body || emails.length === 0) {
                                         alert("Please fill in the subject, body, and ensure emails are selected.");
                                         return;
                                       }
-
+                                      console.log('just before sending req id',reqId);
                                       fetch("/send-email", {
                                         method: "POST",
                                         headers: {
                                           "Content-Type": "application/json",
                                         },
-                                        body: JSON.stringify({ subject: subject, body: body, emails: emails,reqId }),
+                                        body: JSON.stringify({ subject: subject, body: body, emails: emails,reqId: reqId }),
                                       })
                                         .then((response) => response.json())
                                         .then((data) => {
