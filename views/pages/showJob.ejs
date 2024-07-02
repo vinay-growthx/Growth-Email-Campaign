@@ -612,8 +612,13 @@
               </div>
               <div class="job-details">
                 <div class="job-detail">
-                  <span>Location:</span> <%= job.job_city %>, <%= job.job_state
-                  %>, <%= job.job_country %>
+                  <span>Location:</span>
+                  <% if (job.job_city || job.job_state || job.job_country) { %>
+                  <%= job.job_city ? job.job_city : '' %><%= job.job_city &&
+                  (job.job_state || job.job_country) ? ', ' : '' %> <%=
+                  job.job_state ? job.job_state : '' %><%= job.job_state &&
+                  job.job_country ? ', ' : '' %> <%= job.job_country ?
+                  job.job_country : '' %> <% } else { %> Not specified <% } %>
                 </div>
                 <div class="job-detail">
                   <span>Type:</span> <%= job.job_employment_type %>
