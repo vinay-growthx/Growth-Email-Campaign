@@ -196,10 +196,9 @@ app.post("/create-persona", async (req, res) => {
         .replace(/^,\s*|,\s*$/g, "")
     );
     const employerNames = linkedinJobs.map((job) => job.employer_name);
-
+    console.log("req body", req?.body);
     let personaDesignation = req?.body?.personaDesignations;
     console.log("persona designation", personaDesignation);
-    return;
     personaDesignation = convertToStringArray(personaDesignation);
 
     const allPeople = [];

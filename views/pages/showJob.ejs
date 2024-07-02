@@ -556,11 +556,7 @@
           />
           <div class="persona-designation">
             <label for="personaDesignations">Persona Designations:</label>
-            <input
-              type="text"
-              id="personaDesignations"
-              name="personaDesignations"
-            />
+            <input type="text" id="personaDesignations" />
             <div id="designationTags" class="designation-tags"></div>
             <div class="default-designations">
               <button
@@ -682,29 +678,79 @@
         </form>
       </div>
     </div>
-
     <script>
-      // Add staggered animation to job cards
+      let designations = [];
+
       document.addEventListener("DOMContentLoaded", (event) => {
-        const jobCards = document.querySelectorAll(".job-card");
-        jobCards.forEach((card, index) => {
-          card.style.animationDelay = `${index * 0.1}s`;
-        });
         const selectAllCheckbox = document.getElementById("selectAll");
         const jobCheckboxes = document.querySelectorAll(
           'input[name="jobSelect"]'
         );
+        const selectedCountElement = document.getElementById("selected-count");
+        const input = document.getElementById("personaDesignations");
+        const tagsContainer = document.getElementById("designationTags");
+        const defaultBtns = document.querySelectorAll(".designation-btn");
+        const form = document.getElementById("jobForm");
+
+        // Create a hidden input for designations
+        const hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "personaDesignations";
+        form.appendChild(hiddenInput);
+
+        function updateSelectedCount() {
+          const selectedCount = document.querySelectorAll(
+            'input[name="jobSelect"]:checked'
+          ).length;
+          selectedCountElement.textContent = `${selectedCount} Job${
+            selectedCount !== 1 ? "s" : ""
+          } Selected`;
+          selectedCountElement.classList.add("party");
+          setTimeout(() => selectedCountElement.classList.remove("party"), 500);
+        }
+
+        function updateInput() {
+          input.value = designations.join(", ");
+          hiddenInput.value = designations.join(", "); // Update hidden input
+        }
+
+        function addDesignation(designation) {
+          if (!designations.includes(designation)) {
+            designations.push(designation);
+            updateInput();
+            renderTags();
+          }
+        }
+
+        function removeDesignation(designation) {
+          designations = designations.filter((d) => d !== designation);
+          updateInput();
+          renderTags();
+        }
+
+        function renderTags() {
+          tagsContainer.innerHTML = "";
+          designations.forEach((designation) => {
+            const tag = document.createElement("span");
+            tag.classList.add("designation-tag");
+            tag.innerHTML = `
+              ${designation}
+              <span class="remove" data-designation="${designation}">&times;</span>
+            `;
+            tagsContainer.appendChild(tag);
+          });
+        }
 
         selectAllCheckbox.addEventListener("change", function () {
           const isChecked = this.checked;
           jobCheckboxes.forEach((checkbox) => {
             checkbox.checked = isChecked;
-            if (isChecked) {
-              checkbox.parentElement.parentElement.classList.add("selected");
-            } else {
-              checkbox.parentElement.parentElement.classList.remove("selected");
-            }
+            checkbox.parentElement.parentElement.classList.toggle(
+              "selected",
+              isChecked
+            );
           });
+          updateSelectedCount();
         });
 
         jobCheckboxes.forEach((checkbox) => {
@@ -713,13 +759,53 @@
               (cb) => cb.checked
             );
             selectAllCheckbox.checked = allChecked;
-
-            if (this.checked) {
-              this.parentElement.parentElement.classList.add("selected");
-            } else {
-              this.parentElement.parentElement.classList.remove("selected");
-            }
+            this.parentElement.parentElement.classList.toggle(
+              "selected",
+              this.checked
+            );
+            updateSelectedCount();
           });
+        });
+
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === ",") {
+            e.preventDefault();
+            const newDesignation = this.value.trim();
+            if (newDesignation) {
+              addDesignation(newDesignation);
+              this.value = "";
+            }
+          }
+        });
+
+        tagsContainer.addEventListener("click", function (e) {
+          if (e.target.classList.contains("remove")) {
+            const designationToRemove = e.target.dataset.designation;
+            removeDesignation(designationToRemove);
+          }
+        });
+
+        defaultBtns.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            addDesignation(this.dataset.designation);
+          });
+        });
+
+        form.addEventListener("submit", function (event) {
+          const selectedJobs = document.querySelectorAll(
+            'input[name="jobSelect"]:checked'
+          );
+
+          // Update the hidden input value with current designations
+          updateInput();
+
+          if (selectedJobs.length === 0) {
+            event.preventDefault();
+            alert("Please select at least one job before creating a persona.");
+          } else if (designations.length === 0) {
+            event.preventDefault();
+            alert("Please enter at least one Persona Designation.");
+          }
         });
       });
       function downloadCSV() {
