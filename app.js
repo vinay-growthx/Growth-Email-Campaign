@@ -198,6 +198,8 @@ app.post("/create-persona", async (req, res) => {
     const employerNames = linkedinJobs.map((job) => job.employer_name);
 
     let personaDesignation = req?.body?.personaDesignations;
+    console.log("persona designation", personaDesignation);
+    return;
     personaDesignation = convertToStringArray(personaDesignation);
 
     const allPeople = [];
