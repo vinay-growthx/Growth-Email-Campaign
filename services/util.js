@@ -81,9 +81,62 @@ async function saveJobData(jobData) {
     } else {
       console.log("No new jobs to save.");
     }
+    console.log("all perocessed job ids ===>", allProcessedJobIds);
     return allProcessedJobIds;
   } catch (error) {
     console.log("Failed to save jobs:", error);
+  }
+}
+
+async function saveJobDataJobListing(apiResponse) {
+  // Assuming apiResponse is already parsed JSON from the API
+  const jobs = apiResponse.jobs.map((job) => ({
+    job_id: job.id || "",
+    employer_name: job.company || "",
+    employer_logo: job.image || "",
+    employer_website: job.jobProviders.length ? job.jobProviders[0].url : "",
+    job_publisher: job.jobProviders.length
+      ? job.jobProviders[0].jobProvider
+      : "",
+    job_employment_type: job.employmentType || "",
+    job_title: job.title || "",
+    job_apply_link: job.jobProviders.length ? job.jobProviders[0].url : "",
+    job_apply_is_direct: true, // Assuming all are direct since they're linked to a jobProvider
+    job_description: job.description || "",
+    job_is_remote: job.location === "Anywhere",
+    job_posted_at_datetime_utc: new Date(), // Assuming we set the posting time to now if not available
+    job_city: job.location, // This might need parsing if the location includes more than just a city name
+    job_country: "", // You would need to parse or determine the country from another source if possible
+    job_state: "", // Similarly, this needs handling if location can be parsed into a state
+    job_min_salary: job.salaryRange.split("-")[0] || 0, // Assuming salaryRange is a string like "50000-70000"
+    job_max_salary: job.salaryRange.split("-")[1] || 0,
+    job_salary_currency: "", // Currency needs to be handled if available
+    job_salary_period: "", // Period needs to be handled if available
+  }));
+
+  try {
+    const jobIds = jobs.map((job) => job.job_id);
+
+    const existingJobs = await linkedinJobRepository.find(
+      { job_id: { $in: jobIds } },
+      "job_id"
+    );
+    const existingJobIds = existingJobs.map((job) => job.job_id);
+
+    const newJobEntries = jobs.filter(
+      (job) => !existingJobIds.includes(job.job_id)
+    );
+    let allProcessedJobIds = [...existingJobIds];
+
+    if (newJobEntries.length > 0) {
+      const savedJobs = await linkedinJobRepository.insertMany(newJobEntries);
+      console.log(`Saved ${savedJobs.length} new jobs successfully.`);
+    } else {
+      console.log("No new jobs to save.");
+    }
+    return allProcessedJobIds;
+  } catch (error) {
+    console.error("Failed to save jobs:", error);
   }
 }
 
@@ -118,14 +171,14 @@ async function updateRequestWithJobIds(reqId, jobIdsObject) {
   try {
     // Ensure jobIdsObject is an object and not null
     if (typeof jobIdsObject !== "object" || jobIdsObject === null) {
-      throw new Error("jobIdsObject must be a non-null object");
+      // throw new Error("jobIdsObject must be a non-null object");
     }
 
     console.log("Converted job IDs array:", jobIdsObject);
 
     // Validate that the conversion has been successful
     if (!Array.isArray(jobIdsObject) || jobIdsObject.length === 0) {
-      throw new Error("Failed to convert jobIdsObject to a non-empty array");
+      // throw new Error("Failed to convert jobIdsObject to a non-empty array");
     }
 
     // Create a new document using the base repository create function
@@ -357,6 +410,7 @@ module.exports = {
   findAllPersonas,
   savePersonaData,
   updateContactDetails,
+  saveJobDataJobListing,
   saveOrganizationData,
   updateRequestWithJobIds,
   updateRequestWithPersonaIds,

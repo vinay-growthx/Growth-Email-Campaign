@@ -26,11 +26,13 @@ const {
   savePersonaData,
   updateContactDetails,
   saveOrganizationData,
+  saveJobDataJobListing,
   updateRequestWithJobIds,
   updateRequestWithPersonaIds,
   findAllPersonas,
   findPersonById,
 } = require("./services/util");
+const { fetchJobListings } = require("./services/rapidAPI/jobListing");
 const LinkedinJobRepository = require("./repository/LinkedinJobRepository");
 const linkedinJobRepository = new LinkedinJobRepository();
 const ApolloPersonaRepository = require("./repository/ApolloPersonaRepository");
@@ -248,21 +250,6 @@ app.post("/search-jobs", async (req, res) => {
       radius,
       exclude_job_publishers,
     } = req.body;
-    console.log({
-      query,
-      page,
-      num_pages,
-      date_posted,
-      remote_jobs_only,
-      employment_types,
-      job_requirements,
-      job_titles,
-      company_types,
-      employer,
-      actively_hiring,
-      radius,
-      exclude_job_publishers,
-    });
     const reqUUID = uuidv4();
 
     const results = await searchJobs(
@@ -299,9 +286,32 @@ app.post("/search-jobs", async (req, res) => {
       job.salaryRange = salaryRange;
     });
     console.log("result data -===>", results.data);
-    const jobDataSave = await saveJobData(results.data);
-    const updateJobData = await updateRequestWithJobIds(reqUUID, jobDataSave);
-    console.log("update job data ===>", updateJobData);
+    if (results?.data?.length) {
+      const jobDataSave = await saveJobData(results.data);
+      const updateJobData = await updateRequestWithJobIds(reqUUID, jobDataSave);
+      console.log("update job data ===>", updateJobData);
+    } else {
+      console.log("inside else");
+      const APIData = await fetchJobListings({
+        query,
+        page,
+        num_pages,
+        date_posted,
+        remote_jobs_only,
+        employment_types,
+        job_requirements,
+        job_titles,
+        company_types,
+        employer,
+        actively_hiring,
+        radius,
+        exclude_job_publishers,
+      });
+      const jobDataSave = await saveJobDataJobListing(APIData);
+      const updateJobData = await updateRequestWithJobIds(reqUUID, jobDataSave);
+      console.log("jobDataSave", updateJobData);
+      console.log("api data ===>", JSON.stringify(APIData));
+    }
     res.redirect(`/get-jobs/${reqUUID}`);
   } catch (error) {
     // console.log("error ==>", error);
