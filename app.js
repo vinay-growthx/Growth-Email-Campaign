@@ -86,7 +86,12 @@ app.get("/get-jobs/:reqId", async (req, res) => {
   const reqId = req.params.reqId;
   try {
     const jobs = await findAllJobs(reqId);
-    res.render("showJob", { jobs: jobs, reqId });
+    let jobSorted = jobs.sort(
+      (a, b) =>
+        new Date(b.job_posted_at_datetime_utc) -
+        new Date(a.job_posted_at_datetime_utc)
+    );
+    res.render("showJob", { jobs: jobSorted, reqId });
   } catch (error) {
     console.error("Error fetching jobs:", error);
     res.status(500).send("Internal Server Error");
