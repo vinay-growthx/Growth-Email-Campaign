@@ -15,12 +15,14 @@ async function searchPeople(locations, orgId, personaDesignation) {
     page: 1,
     per_page: 2,
     organization_locations: locations,
-    person_titles: [
-      "VP of Talent Acquisition",
-      "HR Director",
-      "Director of Talent Acquisition",
-      "Head of Talent AcquisitionA",
-    ],
+    person_titles: personaDesignation?.length
+      ? personaDesignation
+      : [
+          "VP of Talent Acquisition",
+          "HR Director",
+          "Director of Talent Acquisition",
+          "Head of Talent AcquisitionA",
+        ],
     organization_ids: [orgId],
   };
 
