@@ -1,6 +1,7 @@
 const axios = require("axios");
 
 async function fetchJobListings(data) {
+  console.log("date posted", data);
   const config = {
     method: "get",
     url: "https://jobs-api14.p.rapidapi.com/list",
@@ -16,13 +17,15 @@ async function fetchJobListings(data) {
       remoteOnly: data.remote_jobs_only === "on",
       datePosted: data.date_posted === "all" ? "" : data.date_posted,
       employmentTypes: data.employment_types.toUpperCase(),
-      index: parseInt(data.page) - 1, // Convert page number to zero-based index for the API
+      index:
+        parseInt(data.num_pages - data.page) - 1 <= 0
+          ? 0
+          : parseInt(data.num_pages - data.page), // Convert page number to zero-based index for the API
     },
   };
 
   try {
     const response = await axios(config);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching job listings:", error);
