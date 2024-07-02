@@ -232,33 +232,34 @@ app.post("/create-persona", async (req, res) => {
 
 app.post("/search-jobs", async (req, res) => {
   try {
+    console.log("req.body ===>", req.body);
     const {
       query,
       page,
-      numPages,
-      datePosted,
-      remoteJobsOnly,
-      employmentTypes,
-      jobRequirements,
-      jobTitles,
-      companyTypes,
+      num_pages,
+      date_posted,
+      remote_jobs_only,
+      employment_types,
+      job_requirements,
+      job_titles,
+      company_types,
       employer,
-      activelyHiring,
+      actively_hiring,
       radius,
       exclude_job_publishers,
     } = req.body;
     console.log({
       query,
       page,
-      numPages,
-      datePosted,
-      remoteJobsOnly,
-      employmentTypes,
-      jobRequirements,
-      jobTitles,
-      companyTypes,
+      num_pages,
+      date_posted,
+      remote_jobs_only,
+      employment_types,
+      job_requirements,
+      job_titles,
+      company_types,
       employer,
-      activelyHiring,
+      actively_hiring,
       radius,
       exclude_job_publishers,
     });
@@ -267,15 +268,15 @@ app.post("/search-jobs", async (req, res) => {
     const results = await searchJobs(
       query,
       page,
-      numPages,
-      datePosted,
-      remoteJobsOnly,
-      employmentTypes,
-      jobRequirements,
-      jobTitles,
-      companyTypes,
+      num_pages,
+      date_posted,
+      remote_jobs_only,
+      employment_types,
+      job_requirements,
+      job_titles,
+      company_types,
       employer,
-      activelyHiring,
+      actively_hiring,
       radius,
       exclude_job_publishers
     );
@@ -303,7 +304,7 @@ app.post("/search-jobs", async (req, res) => {
     console.log("update job data ===>", updateJobData);
     res.redirect(`/get-jobs/${reqUUID}`);
   } catch (error) {
-    console.log("error ==>", error);
+    // console.log("error ==>", error);
     res.status(500).send(error.toString());
   }
 });
