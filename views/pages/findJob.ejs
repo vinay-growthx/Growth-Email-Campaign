@@ -299,15 +299,20 @@
 
           <div class="form-group" style="animation-delay: 0.7s">
             <label for="job_requirements">Job Requirements:</label>
-            <input
-              type="text"
-              id="job_requirements"
-              name="job_requirements"
-              placeholder="under_3_years_experience, more_than_3_years_experience, no_experience, no_degree"
-            />
+            <select id="job_requirements" name="job_requirements">
+              <option value="">Any</option>
+              <option value="under_3_years_experience">
+                Less than 3 years experience
+              </option>
+              <option value="more_than_3_years_experience">
+                More than 3 years experience
+              </option>
+              <option value="no_experience">No experience required</option>
+              <option value="no_degree">No degree required</option>
+            </select>
           </div>
 
-          <div class="form-group" style="animation-delay: 0.8s">
+          <!-- <div class="form-group" style="animation-delay: 0.8s">
             <label for="job_titles">Job Titles:</label>
             <input
               type="text"
@@ -315,8 +320,8 @@
               name="job_titles"
               placeholder="e.g., Backend developer"
             />
-          </div>
-
+          </div> -->
+          <!-- 
           <div class="form-group" style="animation-delay: 0.9s">
             <label for="company_types">Company Types:</label>
             <input
@@ -325,7 +330,7 @@
               name="company_types"
               placeholder="e.g., startup"
             />
-          </div>
+          </div> -->
           <div class="form-group" style="animation-delay: 1s">
             <label class="checkbox-container">
               <input
