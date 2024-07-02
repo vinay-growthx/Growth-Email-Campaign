@@ -13,7 +13,7 @@ async function searchPeople(locations, orgId, personaDesignation) {
 
   const body = {
     page: 1,
-    per_page: 2,
+    per_page: 50,
     organization_locations: locations,
     person_titles: personaDesignation?.length
       ? personaDesignation
