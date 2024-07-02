@@ -247,6 +247,21 @@ app.post("/search-jobs", async (req, res) => {
       radius,
       exclude_job_publishers,
     } = req.body;
+    console.log({
+      query,
+      page,
+      numPages,
+      datePosted,
+      remoteJobsOnly,
+      employmentTypes,
+      jobRequirements,
+      jobTitles,
+      companyTypes,
+      employer,
+      activelyHiring,
+      radius,
+      exclude_job_publishers,
+    });
     const reqUUID = uuidv4();
 
     const results = await searchJobs(
