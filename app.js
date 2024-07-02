@@ -278,7 +278,6 @@ app.post("/search-jobs", async (req, res) => {
         );
         if (salaryMatch) {
           salaryRange = `${salaryMatch[1]} - ${salaryMatch[2]}`;
-          c;
         }
       }
       job.salaryRange = salaryRange;
