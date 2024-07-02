@@ -1,6 +1,7 @@
 const axios = require("axios");
 
 async function searchPeople(locations, orgId, personaDesignation) {
+  console.log("persona designation ===>", personaDesignation);
   console.log("org ids ====>", orgId);
   console.log("location =====>", locations);
   const url = "https://api.apollo.io/v1/mixed_people/search";
