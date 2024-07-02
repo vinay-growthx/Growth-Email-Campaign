@@ -391,6 +391,94 @@
           transform: rotate(0deg) scale(1);
         }
       }
+      @media screen and (max-width: 768px) {
+        .content {
+          padding: 20px;
+          margin: 10px;
+        }
+
+        h1 {
+          font-size: 2em;
+        }
+
+        .person-card {
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 20px;
+        }
+
+        .person-photo {
+          margin-right: 0;
+          margin-bottom: 15px;
+          width: 100px;
+          height: 100px;
+        }
+
+        .person-details {
+          width: 100%;
+        }
+
+        .person-name {
+          font-size: 1.5em;
+        }
+
+        .person-title,
+        .person-organization {
+          font-size: 1.2em;
+        }
+
+        .person-contact {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .linkedin-url,
+        .email {
+          margin-right: 0;
+          margin-bottom: 10px;
+        }
+
+        .select-checkbox {
+          margin-right: 15px;
+        }
+
+        .submit-btn,
+        .download-btn {
+          padding: 12px 25px;
+          font-size: 1em;
+          width: 100%;
+          margin-top: 20px;
+        }
+
+        .results-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .select-all-container {
+          margin-bottom: 15px;
+        }
+
+        .selected-count {
+          font-size: 1.5em;
+        }
+
+        .checkbox-container {
+          padding-left: 30px;
+        }
+
+        .checkmark {
+          height: 20px;
+          width: 20px;
+        }
+
+        .checkbox-container .checkmark:after {
+          left: 7px;
+          top: 3px;
+          width: 4px;
+          height: 8px;
+        }
+      }
     </style>
   </head>
   <body>
