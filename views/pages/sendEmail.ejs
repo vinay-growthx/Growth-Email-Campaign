@@ -289,11 +289,11 @@
                                             alert("Please fill in the subject, body, and ensure emails are selected.");
                                             return;
                                           }
-                                          if (!reqId) {
-        console.log("reqId is missing");
-        alert("reqId is missing. Please try again or contact support.");
-        return;
-      }
+      //                                     if (!reqId) {
+      //   console.log("reqId is missing");
+      //   alert("reqId is missing. Please try again or contact support.");
+      //   return;
+      // }
 
                                           console.log('just before sending req id',reqId);
                                           fetch("/send-email", {
