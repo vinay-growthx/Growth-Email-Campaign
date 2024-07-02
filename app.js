@@ -283,10 +283,13 @@ app.post("/search-jobs", async (req, res) => {
       }
       job.salaryRange = salaryRange;
     });
+    console.log("result data -===>", results.data);
     const jobDataSave = await saveJobData(results.data);
     const updateJobData = await updateRequestWithJobIds(reqUUID, jobDataSave);
+    console.log("update job data ===>", updateJobData);
     res.redirect(`/get-jobs/${reqUUID}`);
   } catch (error) {
+    console.log("error ==>", error);
     res.status(500).send(error.toString());
   }
 });
