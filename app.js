@@ -225,6 +225,8 @@ function convertToStringArray(commaString) {
 }
 app.post("/create-persona", async (req, res) => {
   try {
+    console.log("req body ===>", req.body);
+    return;
     const { jobSelect } = req.body;
     const selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
     const reqUUID = req.body.reqId || uuidv4();

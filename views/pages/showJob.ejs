@@ -675,6 +675,87 @@
           width: 100%;
         }
       }
+      .employee-size-container {
+        margin-bottom: 25px;
+        background: linear-gradient(145deg, #f0f4f8, #e6e9ec);
+        border-radius: 15px;
+        padding: 15px;
+        box-shadow: 5px 5px 15px #d1d9e6, -5px -5px 15px #ffffff;
+      }
+
+      .select-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #3498db;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .select-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+      }
+
+      .select-wrapper::after {
+        content: "\25BC";
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        font-size: 12px;
+        color: #3498db;
+        pointer-events: none;
+        transition: transform 0.3s ease;
+      }
+
+      #employeeSize {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 100%;
+        padding: 12px 40px 12px 15px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #2c3e50;
+        background-color: #ffffff;
+        border: 2px solid #3498db;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      #employeeSize:hover {
+        background-color: #f8f9fa;
+      }
+
+      #employeeSize:focus {
+        outline: none;
+        border-color: #2980b9;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+      }
+
+      #employeeSize option {
+        color: #2c3e50;
+        background-color: #ffffff;
+      }
+
+      #employeeSize option:first-child {
+        color: #7f8c8d;
+      }
+
+      @media screen and (min-width: 768px) {
+        .employee-size-container {
+          display: inline-block;
+          vertical-align: top;
+          margin-right: 20px;
+          width: calc(33.33% - 20px);
+        }
+      }
+
+      .select-wrapper:hover::after {
+        transform: translateY(-50%) rotate(180deg);
+      }
     </style>
   </head>
   <body>
@@ -693,12 +774,29 @@
           </div>
           <div class="filter-container">
             <select id="companyFilter" class="company-filter">
-              <option value="">All Companies</option>
+              <option value="">All Companies Filter</option>
               <% const companies = [...new Set(jobs.map(job =>
               job.employer_name))]; companies.forEach(company => { %>
               <option value="<%= company %>"><%= company %></option>
               <% }); %>
             </select>
+          </div>
+          <div class="form-group employee-size-container">
+            <div class="select-label">Company Size for Persona</div>
+            <div class="select-wrapper">
+              <select id="employeeSize" name="employeeSize">
+                <option value="" disabled selected>Select size range</option>
+                <option value="1,10">1-10 employees</option>
+                <option value="11,50">11-50 employees</option>
+                <option value="51,100">51-100 employees</option>
+                <option value="101,200">101-200 employees</option>
+                <option value="201,500">201-500 employees</option>
+                <option value="501,1000">501-1000 employees</option>
+                <option value="1001,5000">1001-5000 employees</option>
+                <option value="5001,10000">5001-10000 employees</option>
+                <option value="10001,">10001+ employees</option>
+              </select>
+            </div>
           </div>
           <button class="download-btn" onclick="downloadCSV()">Download</button>
         </div>
@@ -1291,6 +1389,47 @@
           });
           updateCounts();
         });
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+        const employeeSizeInput = document.getElementById("employeeSize");
+        const employeeSizeOptions = document.querySelector(
+          ".employee-size-options"
+        );
+
+        employeeSizeInput.addEventListener("click", function () {
+          employeeSizeOptions.style.display =
+            employeeSizeOptions.style.display === "none" ? "block" : "none";
+        });
+
+        employeeSizeOptions.addEventListener("click", function (e) {
+          if (e.target.tagName === "DIV") {
+            employeeSizeInput.value = e.target.textContent;
+            employeeSizeInput.dataset.value = e.target.dataset.value;
+            employeeSizeOptions.style.display = "none";
+          }
+        });
+
+        document.addEventListener("click", function (e) {
+          if (
+            !employeeSizeInput.contains(e.target) &&
+            !employeeSizeOptions.contains(e.target)
+          ) {
+            employeeSizeOptions.style.display = "none";
+          }
+        });
+
+        document
+          .getElementById("jobForm")
+          .addEventListener("submit", function (e) {
+            const employeeSizeValue = employeeSizeInput.dataset.value;
+            if (employeeSizeValue) {
+              const hiddenInput = document.createElement("input");
+              hiddenInput.type = "hidden";
+              hiddenInput.name = "employeeSize";
+              hiddenInput.value = employeeSizeValue;
+              this.appendChild(hiddenInput);
+            }
+          });
       });
     </script>
   </body>
