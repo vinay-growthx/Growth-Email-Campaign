@@ -4,8 +4,8 @@ async function searchPeople(locations, orgId, personaDesignation) {
   if (!orgId) return null;
   console.log("persona designation ===>", personaDesignation);
   console.log("org ids ====>", orgId);
-  console.log("location =====>", locations);
   let personLocations = processLocation(locations);
+  console.log("location =====>", personLocations);
   const url = "https://api.apollo.io/v1/mixed_people/search";
   const headers = {
     "Content-Type": "application/json",
