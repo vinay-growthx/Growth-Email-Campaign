@@ -178,6 +178,12 @@
         </style>
       </div>
       <form id="emailForm" action="/send-email" method="POST">
+        <input
+          type="hidden"
+          id="reqIdInput"
+          name="reqId"
+          value="<%= reqId %>"
+        />
         <div class="form-group">
           <label for="variableDropdown">Personalize:</label>
           <select id="variableDropdown" class="custom-dropdown">
@@ -260,6 +266,7 @@
                      document.addEventListener('DOMContentLoaded', (event) => {
             // Retrieve the emails from the server-side rendered data
             const emails = <%- JSON.stringify(enrichedData) %>;
+            const reqId = document.getElementById('reqIdInput').value;
 
             const emailsContainer = document.getElementById('emailsContainer');
 
@@ -290,6 +297,7 @@
             }
 
             localStorage.setItem('selectedEmails', JSON.stringify(emails));
+            localStorage.setItem('reqId', reqId);
           });                 document.getElementById("emailForm").onsubmit = function (event) {
                                           event.preventDefault();
 
@@ -303,11 +311,11 @@
                                             alert("Please fill in the subject, body, and ensure emails are selected.");
                                             return;
                                           }
-      //                                     if (!reqId) {
-      //   console.log("reqId is missing");
-      //   alert("reqId is missing. Please try again or contact support.");
-      //   return;
-      // }
+                                          if (!reqId) {
+        console.log("reqId is missing");
+        alert("reqId is missing. Please try again or contact support.");
+        return;
+      }
 
                                           console.log('just before sending req id',reqId);
                                           fetch("/send-email", {
