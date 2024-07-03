@@ -187,7 +187,7 @@ app.post("/send-email", async (req, res) => {
       const jobLocation = foundJob.map((job) => job.job_location).join(", ");
       console.log("job post", jobPost);
       const mailOptions = {
-        to: "vinay.prajapati@hirequotient.com",
+        to: email.email,
         from: req.body.fromEmail,
         subject: subject
           .replaceAll("{name}", personData?.name)
