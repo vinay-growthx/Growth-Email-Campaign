@@ -875,6 +875,62 @@
       .company-options::-webkit-scrollbar-thumb:hover {
         background: #2980b9;
       }
+      .source-filter {
+        position: relative;
+        width: 250px;
+        font-family: "Poppins", sans-serif;
+        margin-left: 15px;
+      }
+
+      .source-filter .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: #fff;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11),
+          0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+
+      .source-filter .filter-header:hover {
+        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1),
+          0 3px 6px rgba(0, 0, 0, 0.08);
+      }
+
+      .source-filter.active .filter-header i {
+        transform: rotate(180deg);
+      }
+
+      .source-options {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: #fff;
+        border-radius: 15px;
+        margin-top: 10px;
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+        box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1),
+          0 5px 15px rgba(0, 0, 0, 0.07);
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      .source-filter.active .source-options {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+      }
     </style>
   </head>
   <body>
@@ -909,6 +965,35 @@
                   %></label
                 >
                 <% }); %>
+              </div>
+            </div>
+          </div>
+          <div class="filter-container">
+            <div class="source-filter">
+              <div class="filter-header">
+                <span>Filter by Source</span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="source-options">
+                <label class="option-item"
+                  ><input type="checkbox" value="" checked /> All Sources</label
+                >
+                <label class="option-item"
+                  ><input type="checkbox" value="linkedin" /> LinkedIn</label
+                >
+                <label class="option-item"
+                  ><input type="checkbox" value="indeed" /> Indeed</label
+                >
+                <label class="option-item"
+                  ><input type="checkbox" value="ycombinator" /> Y
+                  Combinator</label
+                >
+                <label class="option-item"
+                  ><input type="checkbox" value="glassdoor" /> Glassdoor</label
+                >
+                <label class="option-item"
+                  ><input type="checkbox" value="other" /> Other</label
+                >
               </div>
             </div>
           </div>
@@ -1075,9 +1160,7 @@
       </div>
     </div>
     <script>
-      let designations = [];
-
-      document.addEventListener("DOMContentLoaded", (event) => {
+      document.addEventListener("DOMContentLoaded", function () {
         const selectAllCheckbox = document.getElementById("selectAll");
         const jobCheckboxes = document.querySelectorAll(
           'input[name="jobSelect"]'
@@ -1088,6 +1171,27 @@
         const defaultBtns = document.querySelectorAll(".designation-btn");
         const form = document.getElementById("jobForm");
         const createPersonaBtn = document.querySelector(".create-persona-btn");
+        const companyFilter = document.querySelector(".company-filter");
+        const companyFilterHeader =
+          companyFilter.querySelector(".filter-header");
+        const companyOptions = companyFilter.querySelector(".company-options");
+        const companyCheckboxes = companyFilter.querySelectorAll(
+          "input[type='checkbox']"
+        );
+        const allCompaniesCheckbox =
+          companyFilter.querySelector("input[value='']");
+        const jobCards = document.querySelectorAll(".job-card");
+        const totalCountElement = document.getElementById("total-count");
+        const sourceFilter = document.querySelector(".source-filter");
+        const sourceFilterHeader = sourceFilter.querySelector(".filter-header");
+        const sourceOptions = sourceFilter.querySelector(".source-options");
+        const sourceCheckboxes = sourceFilter.querySelectorAll(
+          "input[type='checkbox']"
+        );
+        const allSourcesCheckbox =
+          sourceFilter.querySelector("input[value='']");
+
+        let designations = [];
 
         // Create a hidden input for designations
         const hiddenInput = document.createElement("input");
@@ -1108,7 +1212,7 @@
 
         function updateInput() {
           input.value = designations.join(", ");
-          hiddenInput.value = designations.join(", "); // Update hidden input
+          hiddenInput.value = designations.join(", ");
         }
 
         function addDesignation(designation) {
@@ -1138,30 +1242,66 @@
           });
         }
 
+        function getJobSource(applyLink) {
+          if (applyLink.includes("linkedin.com")) return "linkedin";
+          if (applyLink.includes("indeed.com")) return "indeed";
+          if (applyLink.includes("ycombinator.com")) return "ycombinator";
+          if (applyLink.includes("glassdoor.com")) return "glassdoor";
+          return "other";
+        }
+
+        function updateJobVisibility() {
+          const selectedCompanies = Array.from(companyCheckboxes)
+            .filter((checkbox) => checkbox.checked && checkbox.value !== "")
+            .map((checkbox) => checkbox.value);
+
+          const selectedSources = Array.from(sourceCheckboxes)
+            .filter((checkbox) => checkbox.checked && checkbox.value !== "")
+            .map((checkbox) => checkbox.value);
+
+          jobCards.forEach((card) => {
+            const companyName = card.querySelector(".company-name").textContent;
+            const applyLink = card.querySelector(".job-apply-link").href;
+            const jobSource = getJobSource(applyLink);
+
+            const companyMatch =
+              selectedCompanies.length === 0 ||
+              selectedCompanies.includes(companyName);
+            const sourceMatch =
+              selectedSources.length === 0 ||
+              selectedSources.includes(jobSource);
+
+            if (companyMatch && sourceMatch) {
+              card.style.display = "flex";
+            } else {
+              card.style.display = "none";
+            }
+          });
+
+          updateCounts();
+        }
+
+        function updateCounts() {
+          const visibleJobs = document.querySelectorAll(
+            ".job-card:not([style*='display: none'])"
+          ).length;
+          totalCountElement.textContent = `Total Jobs: ${visibleJobs}`;
+          updateSelectedCount();
+        }
+
         selectAllCheckbox.addEventListener("change", function () {
           const isChecked = this.checked;
           jobCheckboxes.forEach((checkbox) => {
-            checkbox.checked = isChecked;
-            checkbox.parentElement.parentElement.classList.toggle(
-              "selected",
-              isChecked
-            );
+            const jobCard = checkbox.closest(".job-card");
+            if (window.getComputedStyle(jobCard).display !== "none") {
+              checkbox.checked = isChecked;
+            }
           });
           updateSelectedCount();
         });
 
         jobCheckboxes.forEach((checkbox) => {
-          checkbox.addEventListener("change", function () {
-            const allChecked = Array.from(jobCheckboxes).every(
-              (cb) => cb.checked
-            );
-            selectAllCheckbox.checked = allChecked;
-            this.parentElement.parentElement.classList.toggle(
-              "selected",
-              this.checked
-            );
-            updateSelectedCount();
-          });
+          checkbox.addEventListener("change", updateSelectedCount);
         });
 
         input.addEventListener("keydown", function (e) {
@@ -1192,8 +1332,6 @@
           const selectedJobs = document.querySelectorAll(
             'input[name="jobSelect"]:checked'
           );
-
-          // Update the hidden input value with current designations
           updateInput();
 
           if (selectedJobs.length === 0) {
@@ -1211,409 +1349,8 @@
             }, 10000);
           }
         });
-      });
-      function downloadCSV() {
-        const selectedJobs = Array.from(
-          document.querySelectorAll('input[name="jobSelect"]:checked')
-        )
-          .map((checkbox) => {
-            const jobCard = checkbox.closest(".job-card");
-            if (!jobCard) return null;
 
-            const jobDetails = jobCard.querySelectorAll(".job-detail");
-            const locationDetail = Array.from(jobDetails).find((detail) =>
-              detail.textContent.includes("Location:")
-            );
-            const typeDetail = Array.from(jobDetails).find((detail) =>
-              detail.textContent.includes("Type:")
-            );
-            const postedDateDetail = Array.from(jobDetails).find((detail) =>
-              detail.textContent.includes("Posted:")
-            );
-            const salaryRangeDetail = Array.from(jobDetails).find((detail) =>
-              detail.textContent.includes("Salary Range:")
-            );
-
-            // Get job description
-            const descriptionElement =
-              jobCard.querySelector(".job-description");
-            let description = "";
-            if (descriptionElement) {
-              const points = descriptionElement.querySelectorAll("li");
-              description = Array.from(points)
-                .map((point) => point.textContent.trim())
-                .join(" | ");
-            }
-
-            return {
-              job_title: jobCard.querySelector(".job-title").textContent,
-              company_name: jobCard.querySelector(".company-name")
-                ? jobCard.querySelector(".company-name").textContent
-                : "",
-              location: locationDetail
-                ? locationDetail.textContent.split("Location:")[1].trim()
-                : "",
-              type: typeDetail
-                ? typeDetail.textContent.split("Type:")[1].trim()
-                : "",
-              posted_date: postedDateDetail
-                ? postedDateDetail.textContent.split("Posted:")[1].trim()
-                : "",
-              salary_range: salaryRangeDetail
-                ? salaryRangeDetail.textContent.split("Salary Range:")[1].trim()
-                : "",
-              apply_link: jobCard.querySelector(".job-apply-link").href,
-              description: description,
-            };
-          })
-          .filter((job) => job !== null);
-
-        if (selectedJobs.length === 0) {
-          alert("Please select at least one job to download.");
-          return;
-        }
-
-        const csvContent =
-          "data:text/csv;charset=utf-8," +
-          [
-            Object.keys(selectedJobs[0]).join(","),
-            ...selectedJobs.map((job) =>
-              Object.values(job)
-                .map((value) => `"${value.replace(/"/g, '""')}"`)
-                .join(",")
-            ),
-          ].join("\n");
-
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "job_data.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-      document.addEventListener("DOMContentLoaded", (event) => {
-        const selectAllCheckbox = document.getElementById("selectAll");
-        const jobCheckboxes = document.querySelectorAll(
-          'input[name="jobSelect"]'
-        );
-        const selectedCountElement = document.getElementById("selected-count");
-
-        function updateSelectedCount() {
-          const selectedCount = document.querySelectorAll(
-            'input[name="jobSelect"]:checked'
-          ).length;
-          selectedCountElement.textContent = `${selectedCount} Job${
-            selectedCount !== 1 ? "s" : ""
-          } Selected`;
-          selectedCountElement.classList.add("party");
-          setTimeout(() => selectedCountElement.classList.remove("party"), 500);
-        }
-
-        selectAllCheckbox.addEventListener("change", function () {
-          const isChecked = this.checked;
-          jobCheckboxes.forEach((checkbox) => {
-            checkbox.checked = isChecked;
-            checkbox.parentElement.parentElement.classList.toggle(
-              "selected",
-              isChecked
-            );
-          });
-          updateSelectedCount();
-        });
-
-        jobCheckboxes.forEach((checkbox) => {
-          checkbox.addEventListener("change", function () {
-            const allChecked = Array.from(jobCheckboxes).every(
-              (cb) => cb.checked
-            );
-            selectAllCheckbox.checked = allChecked;
-            this.parentElement.parentElement.classList.toggle(
-              "selected",
-              this.checked
-            );
-            updateSelectedCount();
-          });
-        });
-      });
-      document.addEventListener("DOMContentLoaded", function () {
-        const input = document.getElementById("personaDesignations");
-        const tagsContainer = document.getElementById("designationTags");
-        const defaultBtns = document.querySelectorAll(".designation-btn");
-
-        let designations = [];
-
-        function updateInput() {
-          input.value = designations.join(", ");
-        }
-
-        function addDesignation(designation) {
-          if (!designations.includes(designation)) {
-            designations.push(designation);
-            updateInput();
-            renderTags();
-          }
-        }
-
-        function removeDesignation(designation) {
-          designations = designations.filter((d) => d !== designation);
-          updateInput();
-          renderTags();
-        }
-
-        function renderTags() {
-          tagsContainer.innerHTML = "";
-          designations.forEach((designation) => {
-            const tag = document.createElement("span");
-            tag.classList.add("designation-tag");
-            tag.innerHTML = `
-        ${designation}
-        <span class="remove" data-designation="${designation}">&times;</span>
-      `;
-            tagsContainer.appendChild(tag);
-          });
-        }
-
-        input.addEventListener("keydown", function (e) {
-          if (e.key === "Enter" || e.key === ",") {
-            e.preventDefault();
-            const newDesignation = this.value.trim();
-            if (newDesignation) {
-              addDesignation(newDesignation);
-              this.value = "";
-            }
-          }
-        });
-
-        tagsContainer.addEventListener("click", function (e) {
-          if (e.target.classList.contains("remove")) {
-            const designationToRemove = e.target.dataset.designation;
-            removeDesignation(designationToRemove);
-          }
-        });
-
-        defaultBtns.forEach((btn) => {
-          btn.addEventListener("click", function () {
-            addDesignation(this.dataset.designation);
-          });
-        });
-      });
-      document.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById("jobForm");
-        form.addEventListener("submit", function (event) {
-          const selectedJobs = document.querySelectorAll(
-            'input[name="jobSelect"]:checked'
-          );
-          if (selectedJobs.length === 0) {
-            event.preventDefault();
-            alert("Please select at least one job before creating a persona.");
-          }
-        });
-      });
-      document.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById("jobForm");
-        form.addEventListener("submit", function (event) {
-          const selectedJobs = document.querySelectorAll(
-            'input[name="jobSelect"]:checked'
-          );
-          const designationInput = document.getElementById(
-            "personaDesignations"
-          );
-          const designationTags = document.querySelectorAll(".designation-tag");
-
-          if (selectedJobs.length === 0) {
-            event.preventDefault();
-            alert("Please select at least one job before creating a persona.");
-          } else if (
-            designationInput.value.trim() === "" &&
-            designationTags.length === 0
-          ) {
-            event.preventDefault();
-            alert("Please enter at least one Persona Designation.");
-          }
-        });
-      });
-      document.addEventListener("DOMContentLoaded", function () {
-        const companyFilter = document.getElementById("companyFilter");
-        const jobCards = document.querySelectorAll(".job-card");
-
-        companyFilter.addEventListener("change", function () {
-          const selectedCompany = this.value;
-
-          jobCards.forEach((card) => {
-            const companyName = card.querySelector(".company-name").textContent;
-            if (selectedCompany === "" || companyName === selectedCompany) {
-              card.style.display = "flex";
-            } else {
-              card.style.display = "none";
-            }
-          });
-
-          const visibleJobs = document.querySelectorAll(
-            ".job-card[style='display: flex;']"
-          ).length;
-          document.getElementById(
-            "total-count"
-          ).textContent = `Total Jobs: ${visibleJobs}`;
-
-          document.getElementById("selectAll").checked = false;
-          updateSelectedCount();
-        });
-      });
-      document.addEventListener("DOMContentLoaded", function () {
-        const companyFilter = document.getElementById("companyFilter");
-        const jobCards = document.querySelectorAll(".job-card");
-        const totalCountElement = document.getElementById("total-count");
-        const selectAllCheckbox = document.getElementById("selectAll");
-        const selectedCountElement = document.getElementById("selected-count");
-
-        function updateCounts() {
-          const visibleJobs = document.querySelectorAll(
-            ".job-card:not([style*='display: none'])"
-          ).length;
-          totalCountElement.textContent = `Total Jobs: ${visibleJobs}`;
-
-          const selectedCount = document.querySelectorAll(
-            'input[name="jobSelect"]:checked'
-          ).length;
-          selectedCountElement.textContent = `${selectedCount} Job${
-            selectedCount !== 1 ? "s" : ""
-          } Selected`;
-          selectedCountElement.classList.add("party");
-          setTimeout(() => selectedCountElement.classList.remove("party"), 500);
-        }
-
-        companyFilter.addEventListener("change", function () {
-          const selectedCompany = this.value;
-
-          jobCards.forEach((card) => {
-            const companyName = card.querySelector(".company-name").textContent;
-            if (selectedCompany === "" || companyName === selectedCompany) {
-              card.style.display = "flex";
-            } else {
-              card.style.display = "none";
-            }
-          });
-
-          selectAllCheckbox.checked = false;
-          updateCounts();
-        });
-
-        // Update counts on page load
-        updateCounts();
-
-        // Add event listeners for job checkboxes
-        const jobCheckboxes = document.querySelectorAll(
-          'input[name="jobSelect"]'
-        );
-        jobCheckboxes.forEach((checkbox) => {
-          checkbox.addEventListener("change", updateCounts);
-        });
-
-        selectAllCheckbox.addEventListener("change", function () {
-          const isChecked = this.checked;
-          jobCheckboxes.forEach((checkbox) => {
-            const jobCard = checkbox.closest(".job-card");
-            if (window.getComputedStyle(jobCard).display !== "none") {
-              checkbox.checked = isChecked;
-            }
-          });
-          updateCounts();
-        });
-      });
-      document.addEventListener("DOMContentLoaded", function () {
-        const employeeSizeInput = document.getElementById("employeeSize");
-        const employeeSizeOptions = document.querySelector(
-          ".employee-size-options"
-        );
-
-        employeeSizeInput.addEventListener("click", function () {
-          employeeSizeOptions.style.display =
-            employeeSizeOptions.style.display === "none" ? "block" : "none";
-        });
-
-        employeeSizeOptions.addEventListener("click", function (e) {
-          if (e.target.tagName === "DIV") {
-            employeeSizeInput.value = e.target.textContent;
-            employeeSizeInput.dataset.value = e.target.dataset.value;
-            employeeSizeOptions.style.display = "none";
-          }
-        });
-
-        document.addEventListener("click", function (e) {
-          if (
-            !employeeSizeInput.contains(e.target) &&
-            !employeeSizeOptions.contains(e.target)
-          ) {
-            employeeSizeOptions.style.display = "none";
-          }
-        });
-
-        document
-          .getElementById("jobForm")
-          .addEventListener("submit", function (e) {
-            const employeeSizeValue = employeeSizeInput.dataset.value;
-            if (employeeSizeValue) {
-              const hiddenInput = document.createElement("input");
-              hiddenInput.type = "hidden";
-              hiddenInput.name = "employeeSize";
-              hiddenInput.value = employeeSizeValue;
-              this.appendChild(hiddenInput);
-            }
-          });
-      });
-      document.addEventListener("DOMContentLoaded", function () {
-        const companyFilter = document.querySelector(".company-filter");
-        const filterHeader = document.querySelector(".filter-header");
-        const companyOptions = document.querySelector(".company-options");
-        const companyCheckboxes = document.querySelectorAll(
-          ".company-options input[type='checkbox']"
-        );
-        const allCompaniesCheckbox = document.querySelector(
-          ".company-options input[value='']"
-        );
-        const jobCards = document.querySelectorAll(".job-card");
-        const totalCountElement = document.getElementById("total-count");
-        const selectAllCheckbox = document.getElementById("selectAll");
-        const selectedCountElement = document.getElementById("selected-count");
-
-        function updateCounts() {
-          const visibleJobs = document.querySelectorAll(
-            ".job-card:not([style*='display: none'])"
-          ).length;
-          totalCountElement.textContent = `Total Jobs: ${visibleJobs}`;
-
-          const selectedCount = document.querySelectorAll(
-            'input[name="jobSelect"]:checked'
-          ).length;
-          selectedCountElement.textContent = `${selectedCount} Job${
-            selectedCount !== 1 ? "s" : ""
-          } Selected`;
-          selectedCountElement.classList.add("party");
-          setTimeout(() => selectedCountElement.classList.remove("party"), 500);
-        }
-
-        function updateJobVisibility() {
-          const selectedCompanies = Array.from(companyCheckboxes)
-            .filter((checkbox) => checkbox.checked && checkbox.value !== "")
-            .map((checkbox) => checkbox.value);
-
-          jobCards.forEach((card) => {
-            const companyName = card.querySelector(".company-name").textContent;
-            if (
-              selectedCompanies.length === 0 ||
-              selectedCompanies.includes(companyName)
-            ) {
-              card.style.display = "flex";
-            } else {
-              card.style.display = "none";
-            }
-          });
-
-          updateCounts();
-        }
-
-        filterHeader.addEventListener("click", function () {
+        companyFilterHeader.addEventListener("click", function () {
           companyFilter.classList.toggle("active");
         });
 
@@ -1635,34 +1372,124 @@
           });
         });
 
-        // Close the options when clicking outside
+        sourceFilterHeader.addEventListener("click", function () {
+          sourceFilter.classList.toggle("active");
+        });
+
+        allSourcesCheckbox.addEventListener("change", function () {
+          sourceCheckboxes.forEach((checkbox) => {
+            if (checkbox !== allSourcesCheckbox) {
+              checkbox.checked = !this.checked;
+            }
+          });
+          updateJobVisibility();
+        });
+
+        sourceCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", function () {
+            if (this !== allSourcesCheckbox) {
+              allSourcesCheckbox.checked = false;
+            }
+            updateJobVisibility();
+          });
+        });
+
         document.addEventListener("click", function (event) {
           if (!event.target.closest(".company-filter")) {
             companyFilter.classList.remove("active");
           }
+          if (!event.target.closest(".source-filter")) {
+            sourceFilter.classList.remove("active");
+          }
         });
 
-        // Update counts on page load
-        updateCounts();
+        updateJobVisibility();
 
-        // Add event listeners for job checkboxes
-        const jobCheckboxes = document.querySelectorAll(
-          'input[name="jobSelect"]'
-        );
-        jobCheckboxes.forEach((checkbox) => {
-          checkbox.addEventListener("change", updateCounts);
-        });
+        function downloadCSV() {
+          const selectedJobs = Array.from(
+            document.querySelectorAll('input[name="jobSelect"]:checked')
+          )
+            .map((checkbox) => {
+              const jobCard = checkbox.closest(".job-card");
+              if (!jobCard) return null;
 
-        selectAllCheckbox.addEventListener("change", function () {
-          const isChecked = this.checked;
-          jobCheckboxes.forEach((checkbox) => {
-            const jobCard = checkbox.closest(".job-card");
-            if (window.getComputedStyle(jobCard).display !== "none") {
-              checkbox.checked = isChecked;
-            }
-          });
-          updateCounts();
-        });
+              const jobDetails = jobCard.querySelectorAll(".job-detail");
+              const locationDetail = Array.from(jobDetails).find((detail) =>
+                detail.textContent.includes("Location:")
+              );
+              const typeDetail = Array.from(jobDetails).find((detail) =>
+                detail.textContent.includes("Type:")
+              );
+              const postedDateDetail = Array.from(jobDetails).find((detail) =>
+                detail.textContent.includes("Posted:")
+              );
+              const salaryRangeDetail = Array.from(jobDetails).find((detail) =>
+                detail.textContent.includes("Salary Range:")
+              );
+
+              const descriptionElement =
+                jobCard.querySelector(".job-description");
+              let description = "";
+              if (descriptionElement) {
+                const points = descriptionElement.querySelectorAll("li");
+                description = Array.from(points)
+                  .map((point) => point.textContent.trim())
+                  .join(" | ");
+              }
+
+              return {
+                job_title: jobCard.querySelector(".job-title").textContent,
+                company_name: jobCard.querySelector(".company-name")
+                  ? jobCard.querySelector(".company-name").textContent
+                  : "",
+                location: locationDetail
+                  ? locationDetail.textContent.split("Location:")[1].trim()
+                  : "",
+                type: typeDetail
+                  ? typeDetail.textContent.split("Type:")[1].trim()
+                  : "",
+                posted_date: postedDateDetail
+                  ? postedDateDetail.textContent.split("Posted:")[1].trim()
+                  : "",
+                salary_range: salaryRangeDetail
+                  ? salaryRangeDetail.textContent
+                      .split("Salary Range:")[1]
+                      .trim()
+                  : "",
+                apply_link: jobCard.querySelector(".job-apply-link").href,
+                description: description,
+              };
+            })
+            .filter((job) => job !== null);
+
+          if (selectedJobs.length === 0) {
+            alert("Please select at least one job to download.");
+            return;
+          }
+
+          const csvContent =
+            "data:text/csv;charset=utf-8," +
+            [
+              Object.keys(selectedJobs[0]).join(","),
+              ...selectedJobs.map((job) =>
+                Object.values(job)
+                  .map((value) => `"${value.replace(/"/g, '""')}"`)
+                  .join(",")
+              ),
+            ].join("\n");
+
+          const encodedUri = encodeURI(csvContent);
+          const link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", "job_data.csv");
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+
+        document
+          .querySelector(".download-btn")
+          .addEventListener("click", downloadCSV);
       });
     </script>
   </body>
