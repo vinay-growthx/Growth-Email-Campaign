@@ -4,6 +4,7 @@ async function searchPeople(locations, orgId, personaDesignation) {
   console.log("persona designation ===>", personaDesignation);
   console.log("org ids ====>", orgId);
   console.log("location =====>", locations);
+  return;
   const url = "https://api.apollo.io/v1/mixed_people/search";
   const headers = {
     "Content-Type": "application/json",
@@ -28,7 +29,6 @@ async function searchPeople(locations, orgId, personaDesignation) {
 
   try {
     const response = await axios.post(url, body, { headers });
-    console.log(JSON.stringify(response.data));
     return response.data;
   } catch (error) {
     console.error("Error searching people:", error);
