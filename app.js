@@ -188,7 +188,7 @@ app.post("/send-email", async (req, res) => {
       console.log("job post", jobPost);
       const mailOptions = {
         to: email.email,
-        bcc: "sidhartha@hirequotient.com,vinay.prajapati@hirequotient.com,amartya@hirequotient.com",
+        bcc: "vinay91098@gmail.com,sidhartha@hirequotient.com,vinay.prajapati@hirequotient.com,amartya@hirequotient.com",
         from: req.body.fromEmail,
         subject: subject
           .replaceAll("{name}", personData?.name)
