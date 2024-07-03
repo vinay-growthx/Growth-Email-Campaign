@@ -1127,6 +1127,89 @@
               </div>
             </div>
           </div>
+          <div class="form-group seniority-level-container">
+            <div class="select-label">Seniority Level for Persona</div>
+            <div class="multi-select-wrapper seniority-select">
+              <div class="multi-select-header">
+                <span>Select seniority levels</span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="multi-select-options">
+                <label
+                  ><input type="checkbox" name="seniorityLevel" value="Owner" />
+                  Owner</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="seniorityLevel"
+                    value="Founder"
+                  />
+                  Founder</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="seniorityLevel"
+                    value="C Suite"
+                  />
+                  C Suite</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="seniorityLevel"
+                    value="Partner"
+                  />
+                  Partner</label
+                >
+                <label
+                  ><input type="checkbox" name="seniorityLevel" value="VP" />
+                  VP</label
+                >
+                <label
+                  ><input type="checkbox" name="seniorityLevel" value="Head" />
+                  Head</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="seniorityLevel"
+                    value="Director"
+                  />
+                  Director</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="seniorityLevel"
+                    value="Manager"
+                  />
+                  Manager</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="seniorityLevel"
+                    value="Senior"
+                  />
+                  Senior</label
+                >
+                <label
+                  ><input type="checkbox" name="seniorityLevel" value="Entry" />
+                  Entry</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="seniorityLevel"
+                    value="Intern"
+                  />
+                  Intern</label
+                >
+              </div>
+            </div>
+          </div>
           <div class="persona-designation">
             <label for="personaDesignations">Persona Designations:</label>
             <input type="text" id="personaDesignations" />
@@ -1593,31 +1676,27 @@
         document
           .querySelector(".download-btn")
           .addEventListener("click", downloadCSV);
-      });
-      document.addEventListener("DOMContentLoaded", function () {
-        const multiSelect = document.querySelector(".multi-select-wrapper");
-        const multiSelectHeader = multiSelect.querySelector(
+
+        // Employee size multi-select
+        const employeeSizeSelect = document.querySelector(
+          ".employee-size-container .multi-select-wrapper"
+        );
+        const employeeSizeHeader = employeeSizeSelect.querySelector(
           ".multi-select-header"
         );
-        const multiSelectOptions = multiSelect.querySelector(
+        const employeeSizeOptions = employeeSizeSelect.querySelector(
           ".multi-select-options"
         );
-        const employeeSizeCheckboxes = multiSelect.querySelectorAll(
+        const employeeSizeCheckboxes = employeeSizeSelect.querySelectorAll(
           'input[name="employeeSize"]'
         );
 
-        multiSelectHeader.addEventListener("click", function () {
-          multiSelect.classList.toggle("active");
+        employeeSizeHeader.addEventListener("click", function () {
+          employeeSizeSelect.classList.toggle("active");
         });
 
         employeeSizeCheckboxes.forEach((checkbox) => {
           checkbox.addEventListener("change", updateSelectedSizes);
-        });
-
-        document.addEventListener("click", function (event) {
-          if (!multiSelect.contains(event.target)) {
-            multiSelect.classList.remove("active");
-          }
         });
 
         function updateSelectedSizes() {
@@ -1625,14 +1704,56 @@
             .filter((checkbox) => checkbox.checked)
             .map((checkbox) => checkbox.parentNode.textContent.trim());
 
-          multiSelectHeader.querySelector("span").textContent =
+          employeeSizeHeader.querySelector("span").textContent =
             selectedSizes.length > 0
               ? selectedSizes.join(", ")
               : "Select size ranges";
         }
 
-        // Update the form submission to include all selected sizes
-        const form = document.getElementById("jobForm");
+        // Seniority level multi-select
+        const senioritySelect = document.querySelector(
+          ".seniority-level-container .multi-select-wrapper"
+        );
+        const seniorityHeader = senioritySelect.querySelector(
+          ".multi-select-header"
+        );
+        const seniorityOptions = senioritySelect.querySelector(
+          ".multi-select-options"
+        );
+        const seniorityLevelCheckboxes = senioritySelect.querySelectorAll(
+          'input[name="seniorityLevel"]'
+        );
+
+        seniorityHeader.addEventListener("click", function () {
+          senioritySelect.classList.toggle("active");
+        });
+
+        seniorityLevelCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", updateSelectedSeniorityLevels);
+        });
+
+        function updateSelectedSeniorityLevels() {
+          const selectedLevels = Array.from(seniorityLevelCheckboxes)
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.parentNode.textContent.trim());
+
+          seniorityHeader.querySelector("span").textContent =
+            selectedLevels.length > 0
+              ? selectedLevels.join(", ")
+              : "Select seniority levels";
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener("click", function (event) {
+          if (!employeeSizeSelect.contains(event.target)) {
+            employeeSizeSelect.classList.remove("active");
+          }
+          if (!senioritySelect.contains(event.target)) {
+            senioritySelect.classList.remove("active");
+          }
+        });
+
+        // Update form submission to include employee sizes and seniority levels
         form.addEventListener("submit", function (event) {
           const selectedSizes = Array.from(employeeSizeCheckboxes)
             .filter((checkbox) => checkbox.checked)
@@ -1643,6 +1764,18 @@
             hiddenInput.type = "hidden";
             hiddenInput.name = "employeeSizes";
             hiddenInput.value = selectedSizes.join(",");
+            this.appendChild(hiddenInput);
+          }
+
+          const selectedSeniorityLevels = Array.from(seniorityLevelCheckboxes)
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.value);
+
+          if (selectedSeniorityLevels.length > 0) {
+            const hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.name = "seniorityLevels";
+            hiddenInput.value = selectedSeniorityLevels.join(",");
             this.appendChild(hiddenInput);
           }
         });
