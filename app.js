@@ -142,6 +142,7 @@ function findJobPostByEmployerName(arr, employerName) {
   );
 }
 app.post("/send-email", async (req, res) => {
+  console.log("req body ===>", req.body);
   const { subject, body, emails } = req.body;
   console.log("req body ===>", req.body);
   const personaIds = emails.map((item) => item.id);
@@ -187,7 +188,7 @@ app.post("/send-email", async (req, res) => {
       console.log("job post", jobPost);
       const mailOptions = {
         to: "vinay.prajapati@hirequotient.com",
-        from: "EasySource <no-reply@hirequotient.com>",
+        from: req.body.fromEmail,
         subject: subject,
         html: body
           .replaceAll("{name}", personData?.name)
