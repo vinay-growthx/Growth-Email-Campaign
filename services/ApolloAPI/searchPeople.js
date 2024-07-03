@@ -4,7 +4,8 @@ async function searchPeople(
   locations,
   orgId,
   personaDesignation,
-  employeeSize
+  employeeSize,
+  seniorityLevel
 ) {
   if (!orgId) return null;
   console.log("persona designation ===>", personaDesignation);
@@ -35,6 +36,9 @@ async function searchPeople(
 
   if (employeeSize) {
     body.organization_num_employees_ranges = employeeSize;
+  }
+  if (seniorityLevel) {
+    body.person_seniorities = seniorityLevel;
   }
 
   try {

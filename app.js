@@ -226,6 +226,12 @@ function convertToStringArray(commaString) {
 app.post("/create-persona", async (req, res) => {
   try {
     console.log("req body ===>", req.body);
+    let seniorityLevel = req?.body?.seniorityLevel;
+    if (req?.body?.seniorityLevel?.length) {
+      const allItems = arr.flatMap((str) => str.split(","));
+      const uniqueItems = [...new Set(allItems)];
+      seniorityLevel = uniqueItems.join(",");
+    }
     const { jobSelect } = req.body;
     const employeeSize = req?.body?.employeeSize;
     const selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
@@ -258,7 +264,8 @@ app.post("/create-persona", async (req, res) => {
             jobLocations,
             orgId,
             personaDesignation,
-            employeeSize
+            employeeSize,
+            seniorityLevel
           );
           if (people?.people) {
             allPeople.push(...people.people);
