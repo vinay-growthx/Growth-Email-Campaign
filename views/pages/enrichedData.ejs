@@ -587,6 +587,18 @@
         const form = document.getElementById("enrichedForm");
         form.appendChild(hiddenInput);
 
+        // Get the reqId value
+        const reqId = document.querySelector('input[name="reqId"]').value;
+
+        // Create a hidden input for reqId if it doesn't exist
+        if (!form.querySelector('input[name="reqId"]')) {
+          const reqIdInput = document.createElement("input");
+          reqIdInput.type = "hidden";
+          reqIdInput.name = "reqId";
+          reqIdInput.value = reqId;
+          form.appendChild(reqIdInput);
+        }
+
         // Submit the form
         form.submit();
       }
