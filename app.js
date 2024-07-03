@@ -189,7 +189,14 @@ app.post("/send-email", async (req, res) => {
       const mailOptions = {
         to: "vinay.prajapati@hirequotient.com",
         from: req.body.fromEmail,
-        subject: subject,
+        subject: subject
+          .replaceAll("{name}", personData?.name)
+          .replaceAll("{companyName}", personData?.organization?.name)
+          .replaceAll("{role}", personData?.title)
+          .replaceAll("{hiringJobTitle}", jobPost)
+          .replaceAll("{dateOfJobPost}", jobDate)
+          .replaceAll("{hiringJobLocation}", jobLocation)
+          .replaceAll("{firstName}", personData?.first_name),
         html: body
           .replaceAll("{name}", personData?.name)
           .replaceAll("{companyName}", personData?.organization?.name)
