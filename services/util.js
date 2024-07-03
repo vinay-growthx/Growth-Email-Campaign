@@ -78,10 +78,13 @@ async function saveJobData(jobData) {
     if (newJobEntries.length > 0) {
       const savedJobs = await linkedinJobRepository.insertMany(newJobEntries);
       console.log(`Saved ${savedJobs.length} new jobs successfully.`);
+      const savedJobIds = savedJobs.map((job) => job.job_id);
+      console.log("all perocessed job ids ===>", allProcessedJobIds);
+      allProcessedJobIds = [...allProcessedJobIds, ...savedJobIds]; // Combine arrays
     } else {
       console.log("No new jobs to save.");
     }
-    console.log("all perocessed job ids ===>", allProcessedJobIds);
+
     return allProcessedJobIds;
   } catch (error) {
     console.log("Failed to save jobs:", error);
