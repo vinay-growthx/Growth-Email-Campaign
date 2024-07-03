@@ -146,7 +146,6 @@ app.post("/send-email", async (req, res) => {
   try {
     for (const email of emails) {
       const personData = findPersonById(email.id, persona);
-      console.log("person data", personData);
       const mailOptions = {
         to: "vinay.prajapati@hirequotient.com",
         from: "EasySource <no-reply@hirequotient.com>",
@@ -218,7 +217,6 @@ app.post("/create-persona", async (req, res) => {
           );
           if (people?.people) {
             allPeople.push(...people.people);
-            console.log("all people", allPeople);
             await savePersonaData(allPeople);
           }
           updateRequestWithPersonaIds(reqUUID, allPeople);
@@ -290,11 +288,9 @@ app.post("/search-jobs", async (req, res) => {
       }
       job.salaryRange = salaryRange;
     });
-    console.log("result data -===>", results.data);
     if (results?.data?.length) {
       const jobDataSave = await saveJobData(results.data);
-      const updateJobData = await updateRequestWithJobIds(reqUUID, jobDataSave);
-      console.log("update job data ===>", updateJobData);
+      updateRequestWithJobIds(reqUUID, jobDataSave);
     } else {
       console.log("inside else");
       const APIData = await fetchJobListings({
@@ -313,9 +309,7 @@ app.post("/search-jobs", async (req, res) => {
         exclude_job_publishers,
       });
       const jobDataSave = await saveJobDataJobListing(APIData);
-      const updateJobData = await updateRequestWithJobIds(reqUUID, jobDataSave);
-      console.log("jobDataSave", updateJobData);
-      console.log("api data ===>", JSON.stringify(APIData));
+      updateRequestWithJobIds(reqUUID, jobDataSave);
     }
     res.redirect(`/get-jobs/${reqUUID}`);
   } catch (error) {
