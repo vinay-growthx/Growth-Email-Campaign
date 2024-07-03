@@ -1231,6 +1231,67 @@
           updateSelectedCount();
         });
       });
+      document.addEventListener("DOMContentLoaded", function () {
+        const companyFilter = document.getElementById("companyFilter");
+        const jobCards = document.querySelectorAll(".job-card");
+        const totalCountElement = document.getElementById("total-count");
+        const selectAllCheckbox = document.getElementById("selectAll");
+        const selectedCountElement = document.getElementById("selected-count");
+
+        function updateCounts() {
+          const visibleJobs = document.querySelectorAll(
+            ".job-card:not([style*='display: none'])"
+          ).length;
+          totalCountElement.textContent = `Total Jobs: ${visibleJobs}`;
+
+          const selectedCount = document.querySelectorAll(
+            'input[name="jobSelect"]:checked'
+          ).length;
+          selectedCountElement.textContent = `${selectedCount} Job${
+            selectedCount !== 1 ? "s" : ""
+          } Selected`;
+          selectedCountElement.classList.add("party");
+          setTimeout(() => selectedCountElement.classList.remove("party"), 500);
+        }
+
+        companyFilter.addEventListener("change", function () {
+          const selectedCompany = this.value;
+
+          jobCards.forEach((card) => {
+            const companyName = card.querySelector(".company-name").textContent;
+            if (selectedCompany === "" || companyName === selectedCompany) {
+              card.style.display = "flex";
+            } else {
+              card.style.display = "none";
+            }
+          });
+
+          selectAllCheckbox.checked = false;
+          updateCounts();
+        });
+
+        // Update counts on page load
+        updateCounts();
+
+        // Add event listeners for job checkboxes
+        const jobCheckboxes = document.querySelectorAll(
+          'input[name="jobSelect"]'
+        );
+        jobCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", updateCounts);
+        });
+
+        selectAllCheckbox.addEventListener("change", function () {
+          const isChecked = this.checked;
+          jobCheckboxes.forEach((checkbox) => {
+            const jobCard = checkbox.closest(".job-card");
+            if (window.getComputedStyle(jobCard).display !== "none") {
+              checkbox.checked = isChecked;
+            }
+          });
+          updateCounts();
+        });
+      });
     </script>
   </body>
 </html>
