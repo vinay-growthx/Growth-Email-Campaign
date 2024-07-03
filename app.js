@@ -226,8 +226,8 @@ function convertToStringArray(commaString) {
 app.post("/create-persona", async (req, res) => {
   try {
     console.log("req body ===>", req.body);
-    return;
     const { jobSelect } = req.body;
+    const employeeSize = req?.body?.employeeSize;
     const selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
     const reqUUID = req.body.reqId || uuidv4();
     const linkedinJobs = await linkedinJobRepository.find(
@@ -242,7 +242,6 @@ app.post("/create-persona", async (req, res) => {
         .replace(/^,\s*|,\s*$/g, "")
     );
     const employerNames = linkedinJobs.map((job) => job.employer_name);
-    console.log("req body", req?.body);
     let personaDesignation = req?.body?.personaDesignations;
     console.log("persona designation", personaDesignation);
     personaDesignation = convertToStringArray(personaDesignation);
@@ -258,7 +257,8 @@ app.post("/create-persona", async (req, res) => {
           const people = await searchPeople(
             jobLocations,
             orgId,
-            personaDesignation
+            personaDesignation,
+            employeeSize
           );
           if (people?.people) {
             allPeople.push(...people.people);

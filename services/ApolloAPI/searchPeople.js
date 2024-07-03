@@ -1,6 +1,11 @@
 const axios = require("axios");
 const { processLocation } = require("../util");
-async function searchPeople(locations, orgId, personaDesignation) {
+async function searchPeople(
+  locations,
+  orgId,
+  personaDesignation,
+  employeeSize
+) {
   if (!orgId) return null;
   console.log("persona designation ===>", personaDesignation);
   console.log("org ids ====>", orgId);
@@ -27,6 +32,10 @@ async function searchPeople(locations, orgId, personaDesignation) {
         ],
     organization_ids: [orgId],
   };
+
+  if (employeeSize) {
+    body.organization_num_employees_ranges = [employeeSize];
+  }
 
   try {
     const response = await axios.post(url, body, { headers });
