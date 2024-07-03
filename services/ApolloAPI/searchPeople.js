@@ -14,7 +14,7 @@ async function searchPeople(locations, orgId, personaDesignation) {
   const body = {
     page: 1,
     per_page: 25,
-    organization_locations: locations,
+    person_locations: locations,
     person_titles: personaDesignation?.length
       ? personaDesignation
       : [
@@ -28,6 +28,7 @@ async function searchPeople(locations, orgId, personaDesignation) {
 
   try {
     const response = await axios.post(url, body, { headers });
+    console.log(JSON.stringify(response.data));
     return response.data;
   } catch (error) {
     console.error("Error searching people:", error);
