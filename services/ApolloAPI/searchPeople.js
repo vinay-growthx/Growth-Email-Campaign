@@ -10,6 +10,7 @@ async function searchPeople(
   if (!orgId) return null;
   console.log("persona designation ===>", personaDesignation);
   console.log("org ids ====>", orgId);
+  console.log("person seniority ====>", seniorityLevel);
   let personLocations = processLocation(locations);
   console.log("location =====>", personLocations);
   const url = "https://api.apollo.io/v1/mixed_people/search";
@@ -37,7 +38,7 @@ async function searchPeople(
   if (employeeSize) {
     body.organization_num_employees_ranges = employeeSize;
   }
-  if (seniorityLevel) {
+  if (seniorityLevel && seniorityLevel?.length) {
     body.person_seniorities = seniorityLevel;
   }
 
