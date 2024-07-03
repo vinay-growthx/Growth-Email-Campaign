@@ -206,7 +206,28 @@ app.post("/send-email", async (req, res) => {
           .replaceAll("{hiringJobLocation}", jobLocation)
           .replaceAll("{firstName}", personData?.first_name),
       };
-
+      console.log(
+        "generated subject",
+        subject
+          .replaceAll("{name}", personData?.name)
+          .replaceAll("{companyName}", personData?.organization?.name)
+          .replaceAll("{role}", personData?.title)
+          .replaceAll("{hiringJobTitle}", jobPost)
+          .replaceAll("{dateOfJobPost}", jobDate)
+          .replaceAll("{hiringJobLocation}", jobLocation)
+          .replaceAll("{firstName}", personData?.first_name)
+      );
+      console.log(
+        "generated body",
+        body
+          .replaceAll("{name}", personData?.name)
+          .replaceAll("{companyName}", personData?.organization?.name)
+          .replaceAll("{role}", personData?.title)
+          .replaceAll("{hiringJobTitle}", jobPost)
+          .replaceAll("{dateOfJobPost}", jobDate)
+          .replaceAll("{hiringJobLocation}", jobLocation)
+          .replaceAll("{firstName}", personData?.first_name)
+      );
       try {
         await smtpTransport.sendMail(mailOptions);
         // Optionally, you can log success here
