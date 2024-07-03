@@ -196,7 +196,8 @@ app.post("/send-email", async (req, res) => {
           .replaceAll("{role}", personData?.title)
           .replaceAll("{hiringJobTitle}", jobPost)
           .replaceAll("{dateOfJobPost}", jobDate)
-          .replaceAll("{hiringJobLocation}", jobLocation),
+          .replaceAll("{hiringJobLocation}", jobLocation)
+          .replaceAll("{firstName}", personData?.first_name),
       };
 
       try {
