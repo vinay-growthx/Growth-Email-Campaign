@@ -781,6 +781,17 @@
               <% }); %>
             </select>
           </div>
+
+          <button class="download-btn" onclick="downloadCSV()">Download</button>
+        </div>
+        <form id="jobForm" action="/create-persona" method="POST">
+          <input
+            checked
+            type="checkbox"
+            name="reqId"
+            value="<%= reqId%>"
+            hidden
+          />
           <div class="form-group employee-size-container">
             <div class="select-label">Company Size for Persona</div>
             <div class="select-wrapper">
@@ -798,16 +809,6 @@
               </select>
             </div>
           </div>
-          <button class="download-btn" onclick="downloadCSV()">Download</button>
-        </div>
-        <form id="jobForm" action="/create-persona" method="POST">
-          <input
-            checked
-            type="checkbox"
-            name="reqId"
-            value="<%= reqId%>"
-            hidden
-          />
           <div class="persona-designation">
             <label for="personaDesignations">Persona Designations:</label>
             <input type="text" id="personaDesignations" />
