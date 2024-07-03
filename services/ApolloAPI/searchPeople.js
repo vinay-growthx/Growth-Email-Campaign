@@ -1,10 +1,10 @@
 const axios = require("axios");
-
+const { processLocation } = require("../util");
 async function searchPeople(locations, orgId, personaDesignation) {
   console.log("persona designation ===>", personaDesignation);
   console.log("org ids ====>", orgId);
   console.log("location =====>", locations);
-  return;
+  let personLocations = processLocation(locations);
   const url = "https://api.apollo.io/v1/mixed_people/search";
   const headers = {
     "Content-Type": "application/json",
@@ -15,7 +15,7 @@ async function searchPeople(locations, orgId, personaDesignation) {
   const body = {
     page: 1,
     per_page: 25,
-    person_locations: locations,
+    person_locations: personLocations,
     person_titles: personaDesignation?.length
       ? personaDesignation
       : [

@@ -406,11 +406,24 @@ async function saveOrganizationData(orgData) {
 function findPersonById(id, data) {
   return data.find((person) => person.id === id);
 }
+function processLocation(arr) {
+  if (arr.length > 0) {
+    const firstElement = arr[0];
+    const parts = firstElement.split(",");
+    const lastPart = parts[parts.length - 1].trim();
+
+    if (!arr.includes(lastPart)) {
+      arr.push(lastPart);
+    }
+  }
+  return arr;
+}
 module.exports = {
   findAllJobs,
   saveJobData,
   findPersonById,
   findAllPersonas,
+  processLocation,
   savePersonaData,
   updateContactDetails,
   saveJobDataJobListing,
