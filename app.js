@@ -216,9 +216,11 @@ app.post("/create-persona", async (req, res) => {
             orgId,
             personaDesignation
           );
-          allPeople.push(...people.people);
-          console.log("all people", allPeople);
-          await savePersonaData(allPeople);
+          if (people?.people) {
+            allPeople.push(...people.people);
+            console.log("all people", allPeople);
+            await savePersonaData(allPeople);
+          }
           updateRequestWithPersonaIds(reqUUID, allPeople);
         } else {
           console.warn(`No company found for name: ${name}`);

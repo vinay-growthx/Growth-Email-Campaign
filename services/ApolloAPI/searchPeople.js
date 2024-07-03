@@ -1,6 +1,7 @@
 const axios = require("axios");
 const { processLocation } = require("../util");
 async function searchPeople(locations, orgId, personaDesignation) {
+  if (!orgId) return null;
   console.log("persona designation ===>", personaDesignation);
   console.log("org ids ====>", orgId);
   console.log("location =====>", locations);
