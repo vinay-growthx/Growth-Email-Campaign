@@ -228,7 +228,7 @@ app.post("/create-persona", async (req, res) => {
     console.log("req body ===>", req.body);
     let seniorityLevel = req?.body?.seniorityLevel;
     if (req?.body?.seniorityLevel?.length) {
-      const allItems = arr.flatMap((str) => str.split(","));
+      const allItems = seniorityLevel.flatMap((str) => str.split(","));
       const uniqueItems = [...new Set(allItems)];
       seniorityLevel = uniqueItems.join(",");
     }
