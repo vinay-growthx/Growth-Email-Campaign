@@ -23,7 +23,7 @@ async function searchPeople(locations, orgId, personaDesignation) {
           "VP of Talent Acquisition",
           "HR Director",
           "Director of Talent Acquisition",
-          "Head of Talent AcquisitionA",
+          "Head of Talent Acquisition",
         ],
     organization_ids: [orgId],
   };
