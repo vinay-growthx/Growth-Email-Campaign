@@ -227,7 +227,7 @@ async function updateRequestWithPersonaIds(reqId, personaIdsObject) {
     // Update or create a document using the base repository updateOne function
     const updatedRequest = await requestIdRepository.updateOne(
       { reqId: reqId },
-      { $push: { personaIds: { $each: idArray } } },
+      { $addToSet: { personaIds: { $each: idArray } } },
       { upsert: true }
     );
 
