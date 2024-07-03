@@ -189,7 +189,7 @@ app.post("/send-email", async (req, res) => {
       const mailOptions = {
         // to: email.email,
         to: "vinay.prajapati@hirequotient.com",
-        bcc: "sidhartha@hirequotient.com,vinay.prajapati@hirequotient.com,amarthya@hirequotient.com",
+        bcc: "sidhartha@hirequotient.com,vinay.prajapati@hirequotient.com,amartya@hirequotient.com",
         from: req.body.fromEmail,
         subject: subject
           .replaceAll("{name}", personData?.name)
