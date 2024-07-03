@@ -34,7 +34,7 @@ async function searchPeople(
   };
 
   if (employeeSize) {
-    body.organization_num_employees_ranges = [employeeSize];
+    body.organization_num_employees_ranges = employeeSize;
   }
 
   try {
