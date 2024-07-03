@@ -40,6 +40,7 @@ async function searchPeople(
   }
   if (seniorityLevel) {
     const resultArray = seniorityLevel.split(",");
+    console.log("person seniority ====>", resultArray);
     body.person_seniorities = resultArray;
   }
 
