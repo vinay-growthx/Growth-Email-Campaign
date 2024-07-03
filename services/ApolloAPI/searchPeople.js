@@ -38,8 +38,9 @@ async function searchPeople(
   if (employeeSize) {
     body.organization_num_employees_ranges = employeeSize;
   }
-  if (seniorityLevel && seniorityLevel?.length) {
-    body.person_seniorities = seniorityLevel;
+  if (seniorityLevel) {
+    const resultArray = seniorityLevel.split(",");
+    body.person_seniorities = resultArray;
   }
 
   try {
