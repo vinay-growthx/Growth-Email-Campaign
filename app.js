@@ -150,7 +150,7 @@ app.post("/send-email", async (req, res) => {
     {
       id: { $in: personaIds },
     },
-    "id name title organization.name"
+    "id name title organization.name first_name"
   );
   try {
     let reqId = req.body.reqId;
