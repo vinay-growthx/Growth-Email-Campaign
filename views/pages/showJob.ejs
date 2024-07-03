@@ -621,6 +621,60 @@
           font-size: 1.2em;
         }
       }
+      .filter-container {
+        margin-right: 15px;
+      }
+
+      .company-filter {
+        padding: 10px 15px;
+        border: 2px solid #3498db;
+        border-radius: 30px;
+        background-color: white;
+        color: #2c3e50;
+        font-size: 1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        outline: none;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="%233498db" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 10px top 50%;
+        padding-right: 30px;
+      }
+
+      .company-filter:hover,
+      .company-filter:focus {
+        border-color: #2980b9;
+        box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+      }
+
+      .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      @media screen and (max-width: 768px) {
+        .results-header {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .filter-container,
+        .download-container {
+          width: 100%;
+          margin-bottom: 10px;
+        }
+
+        .company-filter,
+        .download-btn {
+          width: 100%;
+        }
+      }
     </style>
   </head>
   <body>
@@ -636,6 +690,15 @@
           <div class="select-all-container">
             <input type="checkbox" id="selectAll" />
             <label for="selectAll" class="select-all-label">Select All</label>
+          </div>
+          <div class="filter-container">
+            <select id="companyFilter" class="company-filter">
+              <option value="">All Companies</option>
+              <% const companies = [...new Set(jobs.map(job =>
+              job.employer_name))]; companies.forEach(company => { %>
+              <option value="<%= company %>"><%= company %></option>
+              <% }); %>
+            </select>
           </div>
           <button class="download-btn" onclick="downloadCSV()">Download</button>
         </div>
@@ -1139,6 +1202,33 @@
             event.preventDefault();
             alert("Please enter at least one Persona Designation.");
           }
+        });
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+        const companyFilter = document.getElementById("companyFilter");
+        const jobCards = document.querySelectorAll(".job-card");
+
+        companyFilter.addEventListener("change", function () {
+          const selectedCompany = this.value;
+
+          jobCards.forEach((card) => {
+            const companyName = card.querySelector(".company-name").textContent;
+            if (selectedCompany === "" || companyName === selectedCompany) {
+              card.style.display = "flex";
+            } else {
+              card.style.display = "none";
+            }
+          });
+
+          const visibleJobs = document.querySelectorAll(
+            ".job-card[style='display: flex;']"
+          ).length;
+          document.getElementById(
+            "total-count"
+          ).textContent = `Total Jobs: ${visibleJobs}`;
+
+          document.getElementById("selectAll").checked = false;
+          updateSelectedCount();
         });
       });
     </script>
