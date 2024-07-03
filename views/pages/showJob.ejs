@@ -931,6 +931,67 @@
         opacity: 1;
         transform: translateY(0);
       }
+      .multi-select-wrapper {
+        position: relative;
+        width: 100%;
+      }
+
+      .multi-select-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        background-color: #ffffff;
+        border: 2px solid #3498db;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .multi-select-header:hover {
+        background-color: #f8f9fa;
+      }
+
+      .multi-select-header i {
+        transition: transform 0.3s ease;
+      }
+
+      .multi-select-wrapper.active .multi-select-header i {
+        transform: rotate(180deg);
+      }
+
+      .multi-select-options {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: #ffffff;
+        border: 2px solid #3498db;
+        border-top: none;
+        border-radius: 0 0 10px 10px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+
+      .multi-select-wrapper.active .multi-select-options {
+        display: block;
+      }
+
+      .multi-select-options label {
+        display: block;
+        padding: 8px 15px;
+        cursor: pointer;
+      }
+
+      .multi-select-options label:hover {
+        background-color: #f8f9fa;
+      }
+
+      .multi-select-options input[type="checkbox"] {
+        margin-right: 10px;
+      }
     </style>
   </head>
   <body>
@@ -1009,19 +1070,61 @@
           />
           <div class="form-group employee-size-container">
             <div class="select-label">Company Size for Persona</div>
-            <div class="select-wrapper">
-              <select id="employeeSize" name="employeeSize">
-                <option value="" disabled selected>Select size range</option>
-                <option value="1,10">1-10 employees</option>
-                <option value="11,50">11-50 employees</option>
-                <option value="51,100">51-100 employees</option>
-                <option value="101,200">101-200 employees</option>
-                <option value="201,500">201-500 employees</option>
-                <option value="501,1000">501-1000 employees</option>
-                <option value="1001,5000">1001-5000 employees</option>
-                <option value="5001,10000">5001-10000 employees</option>
-                <option value="10001,">10001+ employees</option>
-              </select>
+            <div class="multi-select-wrapper">
+              <div class="multi-select-header">
+                <span>Select size ranges</span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="multi-select-options">
+                <label
+                  ><input type="checkbox" name="employeeSize" value="1,10" />
+                  1-10 employees</label
+                >
+                <label
+                  ><input type="checkbox" name="employeeSize" value="11,50" />
+                  11-50 employees</label
+                >
+                <label
+                  ><input type="checkbox" name="employeeSize" value="51,100" />
+                  51-100 employees</label
+                >
+                <label
+                  ><input type="checkbox" name="employeeSize" value="101,200" />
+                  101-200 employees</label
+                >
+                <label
+                  ><input type="checkbox" name="employeeSize" value="201,500" />
+                  201-500 employees</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="employeeSize"
+                    value="501,1000"
+                  />
+                  501-1000 employees</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="employeeSize"
+                    value="1001,5000"
+                  />
+                  1001-5000 employees</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="employeeSize"
+                    value="5001,10000"
+                  />
+                  5001-10000 employees</label
+                >
+                <label
+                  ><input type="checkbox" name="employeeSize" value="10001," />
+                  10001+ employees</label
+                >
+              </div>
             </div>
           </div>
           <div class="persona-designation">
@@ -1490,6 +1593,59 @@
         document
           .querySelector(".download-btn")
           .addEventListener("click", downloadCSV);
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+        const multiSelect = document.querySelector(".multi-select-wrapper");
+        const multiSelectHeader = multiSelect.querySelector(
+          ".multi-select-header"
+        );
+        const multiSelectOptions = multiSelect.querySelector(
+          ".multi-select-options"
+        );
+        const employeeSizeCheckboxes = multiSelect.querySelectorAll(
+          'input[name="employeeSize"]'
+        );
+
+        multiSelectHeader.addEventListener("click", function () {
+          multiSelect.classList.toggle("active");
+        });
+
+        employeeSizeCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", updateSelectedSizes);
+        });
+
+        document.addEventListener("click", function (event) {
+          if (!multiSelect.contains(event.target)) {
+            multiSelect.classList.remove("active");
+          }
+        });
+
+        function updateSelectedSizes() {
+          const selectedSizes = Array.from(employeeSizeCheckboxes)
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.parentNode.textContent.trim());
+
+          multiSelectHeader.querySelector("span").textContent =
+            selectedSizes.length > 0
+              ? selectedSizes.join(", ")
+              : "Select size ranges";
+        }
+
+        // Update the form submission to include all selected sizes
+        const form = document.getElementById("jobForm");
+        form.addEventListener("submit", function (event) {
+          const selectedSizes = Array.from(employeeSizeCheckboxes)
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.value);
+
+          if (selectedSizes.length > 0) {
+            const hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.name = "employeeSizes";
+            hiddenInput.value = selectedSizes.join(",");
+            this.appendChild(hiddenInput);
+          }
+        });
       });
     </script>
   </body>
