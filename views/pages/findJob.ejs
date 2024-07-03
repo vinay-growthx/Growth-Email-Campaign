@@ -358,9 +358,28 @@
             />
           </div> -->
 
-          <button type="submit">Search Jobs</button>
+          <button type="submit" id="submitButton">Search Jobs</button>
         </form>
       </div>
     </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("form");
+        const submitButton = document.getElementById("submitButton");
+
+        form.addEventListener("submit", function (e) {
+          // Disable the button
+          submitButton.disabled = true;
+          submitButton.textContent = "Searching...";
+
+          // You can add a timeout to re-enable the button after a certain period
+          // if the form submission takes too long or fails
+          setTimeout(function () {
+            submitButton.disabled = false;
+            submitButton.textContent = "Search Jobs";
+          }, 10000); // Re-enable after 10 seconds
+        });
+      });
+    </script>
   </body>
 </html>

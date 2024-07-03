@@ -765,7 +765,11 @@
             </div>
           </div>
           <% }); %>
-          <button type="submit" class="create-persona-btn">
+          <button
+            type="submit"
+            id="createPersonaBtn"
+            class="create-persona-btn"
+          >
             Create Persona
           </button>
         </form>
@@ -784,6 +788,7 @@
         const tagsContainer = document.getElementById("designationTags");
         const defaultBtns = document.querySelectorAll(".designation-btn");
         const form = document.getElementById("jobForm");
+        const createPersonaBtn = document.querySelector(".create-persona-btn");
 
         // Create a hidden input for designations
         const hiddenInput = document.createElement("input");
@@ -898,6 +903,13 @@
           } else if (designations.length === 0) {
             event.preventDefault();
             alert("Please enter at least one Persona Designation.");
+          } else {
+            createPersonaBtn.disabled = true;
+            createPersonaBtn.textContent = "Creating Persona...";
+            setTimeout(function () {
+              createPersonaBtn.disabled = false;
+              createPersonaBtn.textContent = "Create Persona";
+            }, 10000);
           }
         });
       });
