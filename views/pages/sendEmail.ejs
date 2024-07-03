@@ -196,6 +196,7 @@
             <optgroup label="Job Related">
               <option value="{hiringJobTitle}">Job Post Title</option>
               <option value="{dateOfJobPost}">Date of Job Post</option>
+              <option value="{hiringJobLocation}">Job Post Location</option>
             </optgroup>
           </select>
         </div>
@@ -313,7 +314,7 @@
                                           }
                                           if (!reqId) {
         console.log("reqId is missing");
-        alert("reqId is missing. Please try again or contact support.");
+        alert("Please try again or contact support. Job Post and Person Data Mismatched");
         return;
       }
 

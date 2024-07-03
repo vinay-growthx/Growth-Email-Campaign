@@ -419,9 +419,19 @@ function processLocation(arr) {
   }
   return arr;
 }
+function addJobLocation(job) {
+  const locationParts = [];
+  if (job.job_city) locationParts.push(job.job_city);
+  if (job.job_state) locationParts.push(job.job_state);
+  if (job.job_country) locationParts.push(job.job_country);
+
+  job.job_location = locationParts.join(", ");
+  return job;
+}
 module.exports = {
   findAllJobs,
   saveJobData,
+  addJobLocation,
   findPersonById,
   findAllPersonas,
   processLocation,

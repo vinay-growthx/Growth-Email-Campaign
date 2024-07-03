@@ -13,7 +13,7 @@ const { v4: uuidv4 } = require("uuid");
 const healthRouter = require("./api/health/routes")();
 const logtail = require("./services/logtail");
 const { Sentry } = require("./services/sentry");
-const redisClient = require("./services/redis/index");
+// const redisClient = require("./services/redis/index");
 const { searchPeople } = require("./services/ApolloAPI/searchPeople");
 const { getEmailByLinkedInUrl } = require("./services/ApolloAPI/emailEnrich");
 const axios = require("axios");
@@ -31,12 +31,16 @@ const {
   updateRequestWithPersonaIds,
   findAllPersonas,
   findPersonById,
+  addJobLocation,
 } = require("./services/util");
 const { fetchJobListings } = require("./services/rapidAPI/jobListing");
 const LinkedinJobRepository = require("./repository/LinkedinJobRepository");
 const linkedinJobRepository = new LinkedinJobRepository();
 const ApolloPersonaRepository = require("./repository/ApolloPersonaRepository");
 const apolloPersonaRepository = new ApolloPersonaRepository();
+
+const RequestIdRepository = require("./repository/RequestIdRepository");
+const requestIdRepository = new RequestIdRepository();
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
@@ -132,7 +136,11 @@ app.get("/send-email", (req, res) => {
   console.log("enriched data --->", enrichedData);
   res.render("sendEmail", { enrichedData });
 });
-
+function findJobPostByEmployerName(arr, employerName) {
+  return arr.filter(
+    (job) => job.employer_name.toLowerCase() === employerName.toLowerCase()
+  );
+}
 app.post("/send-email", async (req, res) => {
   const { subject, body, emails } = req.body;
   console.log("req body ===>", req.body);
@@ -144,8 +152,39 @@ app.post("/send-email", async (req, res) => {
     "id name title organization.name"
   );
   try {
+    let reqId = req.body.reqId;
+
+    if (Array.isArray(reqId)) {
+      reqId = reqId[0];
+    }
+    const jobIdReq = await requestIdRepository.findOne({
+      reqId: reqId,
+    });
+    console.log("req id --->", reqId);
+    const jobIds = jobIdReq.jobIds;
+    let jobData = [];
+    if (jobIds.length) {
+      jobData = await linkedinJobRepository.find(
+        { job_id: { $in: jobIds } },
+        "job_title job_posted_at_datetime_utc job_city job_state job_country employer_name"
+      );
+      jobData = addJobLocation(jobData);
+      console.log("job data ====>", jobData);
+    }
     for (const email of emails) {
       const personData = findPersonById(email.id, persona);
+      console.log("person data ==>", personData);
+      const foundJob = findJobPostByEmployerName(
+        jobData,
+        personData.organization.name
+      );
+      console.log("job data", foundJob);
+      const jobPost = foundJob.map((job) => job.job_title).join(", ");
+      const jobDate = foundJob
+        .map((job) => job.job_posted_at_datetime_utc)
+        .join(", ");
+      const jobLocation = foundJob.map((job) => job.job_location).join(", ");
+      console.log("job post", jobPost);
       const mailOptions = {
         to: "vinay.prajapati@hirequotient.com",
         from: "EasySource <no-reply@hirequotient.com>",
@@ -153,7 +192,10 @@ app.post("/send-email", async (req, res) => {
         html: body
           .replaceAll("{name}", personData?.name)
           .replaceAll("{companyName}", personData?.organization?.name)
-          .replaceAll("{role}", personData?.title),
+          .replaceAll("{role}", personData?.title)
+          .replaceAll("{hiringJobTitle}", jobPost)
+          .replaceAll("{dateOfJobPost}", jobDate)
+          .replaceAll("{hiringJobLocation}", jobLocation),
       };
 
       try {
@@ -651,14 +693,14 @@ app.listen(port, function () {
   db.once("open", async function () {
     console.log(`Connected successfully with HQ-Sourcing database`);
     logtail.info("MongoDB:: Connected successfully with HQ-Sourcing database");
-    redisClient
-      .connectToRedis()
-      .then(() => {
-        console.log("Connected to Redis successfully.");
-      })
-      .catch((error) => {
-        console.error("Failed to connect to Redis:", error);
-      });
+    // redisClient
+    //   .connectToRedis()
+    //   .then(() => {
+    //     console.log("Connected to Redis successfully.");
+    //   })
+    //   .catch((error) => {
+    //     console.error("Failed to connect to Redis:", error);
+    //   });
 
     // Placeholder for message broker connection, if applicable
     // /*
@@ -674,6 +716,6 @@ app.listen(port, function () {
 
 process.on("SIGINT", async function () {
   await db.close();
-  await redisClient.disconnect();
+  // await redisClient.disconnect();
   process.exit(0);
 });
