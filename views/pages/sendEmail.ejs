@@ -179,16 +179,6 @@
       </div>
       <form id="emailForm" action="/send-email" method="POST">
         <div class="form-group">
-          <label for="fromEmail">From Email:</label>
-          <input
-            type="email"
-            id="fromEmail"
-            name="fromEmail"
-            placeholder="Enter sender's email address"
-            required
-          />
-        </div>
-        <div class="form-group">
           <label for="variableDropdown">Personalize:</label>
           <select id="variableDropdown" class="custom-dropdown">
             <option value="">Select an option</option>
@@ -232,6 +222,16 @@
               Leverage data for smarter hiring decisions.
             </option>
           </select>
+        </div>
+        <div class="form-group">
+          <label for="fromEmail">From Email:</label>
+          <input
+            type="email"
+            id="fromEmail"
+            name="fromEmail"
+            placeholder="Enter sender's email address"
+            required
+          />
         </div>
         <div class="form-group">
           <label for="emailSubject">Subject:</label>
