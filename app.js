@@ -1,6 +1,3 @@
-/**
- * Backend Server startup file, handles incoming APIs
- */
 "use strict";
 require("dotenv").config();
 const express = require("express");
@@ -38,7 +35,8 @@ const LinkedinJobRepository = require("./repository/LinkedinJobRepository");
 const linkedinJobRepository = new LinkedinJobRepository();
 const ApolloPersonaRepository = require("./repository/ApolloPersonaRepository");
 const apolloPersonaRepository = new ApolloPersonaRepository();
-
+const EmailRepository = require("./repository/EmailRepository");
+const emailRepository = new EmailRepository();
 const RequestIdRepository = require("./repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
 // Set EJS as the templating engine
@@ -186,6 +184,7 @@ app.post("/send-email", async (req, res) => {
         .join(", ");
       const jobLocation = foundJob.map((job) => job.job_location).join(", ");
       console.log("job post", jobPost);
+
       const mailOptions = {
         // to: email.email,
         to: "vinay.prajapati@hirequotient.com",
@@ -219,21 +218,28 @@ app.post("/send-email", async (req, res) => {
           .replaceAll("{hiringJobLocation}", jobLocation)
           .replaceAll("{firstName}", personData?.first_name)
       );
-      console.log(
-        "generated body",
-        body
-          .replaceAll("{name}", personData?.name)
-          .replaceAll("{companyName}", personData?.organization?.name)
-          .replaceAll("{role}", personData?.title)
-          .replaceAll("{hiringJobTitle}", jobPost)
-          .replaceAll("{dateOfJobPost}", jobDate)
-          .replaceAll("{hiringJobLocation}", jobLocation)
-          .replaceAll("{firstName}", personData?.first_name)
-      );
+      let personalizedBody = body
+        .replaceAll("{name}", personData?.name)
+        .replaceAll("{companyName}", personData?.organization?.name)
+        .replaceAll("{role}", personData?.title)
+        .replaceAll("{hiringJobTitle}", jobPost)
+        .replaceAll("{dateOfJobPost}", jobDate)
+        .replaceAll("{hiringJobLocation}", jobLocation)
+        .replaceAll("{firstName}", personData?.first_name);
+
+      const emailData = {
+        fromEmail: req?.body?.fromEmail,
+        toEmails: [email.email],
+        subject: subject,
+        originalBody: body,
+        personalizedBody: personalizedBody,
+        reqId,
+        status: "pending",
+      };
+      const createdEmail = await emailRepository.create(emailData);
       try {
         await smtpTransport.sendMail(mailOptions);
-        // Optionally, you can log success here
-        // console.log(`Email sent successfully to ${mailOptions.to}`);
+        console.log(`Email sent successfully to ${mailOptions.to}`);
       } catch (error) {
         // Handle or log any errors
         console.error(`Failed to send email to ${mailOptions.to}:`, error);
