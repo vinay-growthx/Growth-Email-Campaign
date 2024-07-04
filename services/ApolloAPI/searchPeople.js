@@ -39,9 +39,10 @@ async function searchPeople(
     body.organization_num_employees_ranges = employeeSize;
   }
   if (seniorityLevel) {
-    const resultArray = seniorityLevel.split(",");
+    let resultArray = seniorityLevel.split(",");
+    const res_seniority = resultArray.map((res) => res.toLowerCase());
     console.log("person seniority ====>", resultArray);
-    body.person_seniorities = resultArray;
+    body.person_seniorities = res_seniority;
   }
 
   try {
