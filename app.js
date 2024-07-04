@@ -40,7 +40,7 @@ const emailRepository = new EmailRepository();
 const RequestIdRepository = require("./repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
 
-const generateProfessionalSubject = require("./services/chatgpt");
+const { generateProfessionalSubject } = require("./services/chatgpt");
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
