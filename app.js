@@ -186,21 +186,24 @@ app.post("/send-email", async (req, res) => {
         .join(", ");
       const jobLocation = foundJob.map((job) => job.job_location).join(", ");
       console.log("job post", jobPost);
-      let aiGeneratedSubject = await generateProfessionalSubject(subject);
-      console.log("subject ====>", aiGeneratedSubject.subject);
+      let replacedSubject = subject
+        .replaceAll("{name}", personData?.name)
+        .replaceAll("{companyName}", personData?.organization?.name)
+        .replaceAll("{role}", personData?.title)
+        .replaceAll("{hiringJobTitle}", jobPost)
+        .replaceAll("{dateOfJobPost}", jobDate)
+        .replaceAll("{hiringJobLocation}", jobLocation)
+        .replaceAll("{firstName}", personData?.first_name);
+      let aiGeneratedSubject = await generateProfessionalSubject(
+        replacedSubject
+      );
+      aiGeneratedSubject = aiGeneratedSubject?.subject;
       const mailOptions = {
         // to: email.email,
         to: "vinay.prajapati@hirequotient.com",
         bcc: "vinay91098@gmail.com,sidhartha@hirequotient.com,vinay.prajapati@hirequotient.com,amartya@hirequotient.com",
         from: req.body.fromEmail,
-        subject: subject
-          .replaceAll("{name}", personData?.name)
-          .replaceAll("{companyName}", personData?.organization?.name)
-          .replaceAll("{role}", personData?.title)
-          .replaceAll("{hiringJobTitle}", jobPost)
-          .replaceAll("{dateOfJobPost}", jobDate)
-          .replaceAll("{hiringJobLocation}", jobLocation)
-          .replaceAll("{firstName}", personData?.first_name),
+        subject: aiGeneratedSubject || replacedSubject,
         html: body
           .replaceAll("{name}", personData?.name)
           .replaceAll("{companyName}", personData?.organization?.name)
@@ -210,17 +213,6 @@ app.post("/send-email", async (req, res) => {
           .replaceAll("{hiringJobLocation}", jobLocation)
           .replaceAll("{firstName}", personData?.first_name),
       };
-      console.log(
-        "generated subject",
-        subject
-          .replaceAll("{name}", personData?.name)
-          .replaceAll("{companyName}", personData?.organization?.name)
-          .replaceAll("{role}", personData?.title)
-          .replaceAll("{hiringJobTitle}", jobPost)
-          .replaceAll("{dateOfJobPost}", jobDate)
-          .replaceAll("{hiringJobLocation}", jobLocation)
-          .replaceAll("{firstName}", personData?.first_name)
-      );
       let personalizedBody = body
         .replaceAll("{name}", personData?.name)
         .replaceAll("{companyName}", personData?.organization?.name)
@@ -234,7 +226,7 @@ app.post("/send-email", async (req, res) => {
         fromEmail: req?.body?.fromEmail,
         toEmails: [email.email],
         subject: subject,
-        aiGeneratedSubject: aiGeneratedSubject?.subject || subject,
+        aiGeneratedSubject: aiGeneratedSubject || replacedSubject,
         originalBody: body,
         personalizedBody: personalizedBody,
         reqId,
