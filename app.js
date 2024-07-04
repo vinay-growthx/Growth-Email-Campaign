@@ -416,7 +416,6 @@ app.post("/email-enrich-process", async (req, res) => {
     if (typeof selectedPeople === "string") {
       selectedPeople = selectedPeople.split(",").map((id) => id.trim());
     } else if (!Array.isArray(selectedPeople)) {
-      // If it's neither a string nor an array, wrap it in an array
       selectedPeople = [selectedPeople];
     }
     const personas = await apolloPersonaRepository.find(
@@ -441,13 +440,19 @@ app.post("/email-enrich-process", async (req, res) => {
         updatedData.push(item);
       }
     }
-    const personaValidData = updatedData.map((item) => {
+    const personaValidData = updatedData.reduce((acc, item) => {
       const newItem = { ...item };
       if (!newItem.email) {
         delete newItem.email;
       }
-      return newItem;
-    });
+
+      const existingItem = acc.find((i) => i.email === newItem.email);
+      if (!existingItem) {
+        acc.push(newItem);
+      }
+
+      return acc;
+    }, []);
     res.render("sendEmail", { reqId, enrichedData: personaValidData });
   } catch (error) {
     console.error("Error creating persona:", error);
