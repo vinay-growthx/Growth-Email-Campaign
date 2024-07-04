@@ -245,8 +245,8 @@ app.post("/send-email", async (req, res) => {
         // Handle or log any errors
         console.error(`Failed to send email to ${mailOptions.to}:`, error);
       }
-      if (sesResponse.MessageId) {
-        emailData.sesMessageId = sesResponse.MessageId;
+      if (sesResponse.messageId) {
+        emailData.sesMessageId = sesResponse.sesMessageId;
       }
       await emailRepository.create(emailData);
     }
