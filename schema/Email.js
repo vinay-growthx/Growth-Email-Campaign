@@ -29,6 +29,9 @@ const EmailTemplateSchema = new Schema({
 
 const EmailSchema = new Schema(
   {
+    sesMessageId: {
+      type: String,
+    },
     fromEmail: {
       type: String,
       required: true,

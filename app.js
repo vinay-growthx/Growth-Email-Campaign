@@ -236,15 +236,19 @@ app.post("/send-email", async (req, res) => {
         reqId,
         status: "pending",
       };
-      const createdEmail = await emailRepository.create(emailData);
+      let sesResponse = {};
       try {
-        const sesEmailReponse = await smtpTransport.sendMail(mailOptions);
-        console.log("ses email response ====>", sesEmailReponse);
+        sesResponse = await smtpTransport.sendMail(mailOptions);
+        console.log("ses email response ====>", sesResponse);
         console.log(`Email sent successfully to ${mailOptions.to}`);
       } catch (error) {
         // Handle or log any errors
         console.error(`Failed to send email to ${mailOptions.to}:`, error);
       }
+      if (sesResponse.MessageId) {
+        emailData.sesMessageId = sesResponse.MessageId;
+      }
+      await emailRepository.create(emailData);
     }
 
     res.status(200).json({ message: "Emails sent successfully" });
