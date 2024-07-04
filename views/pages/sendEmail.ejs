@@ -245,6 +245,19 @@
           >
         </div>
         <div class="form-group">
+          <label for="yourName">Your Name:</label>
+          <input
+            type="text"
+            id="yourName"
+            name="yourName"
+            placeholder="Enter your name"
+            required
+          />
+          <small class="form-text text-muted"
+            >This name will replace {yourName} at the end of the email.</small
+          >
+        </div>
+        <div class="form-group">
           <label for="emailSubject">Subject:</label>
           <input
             type="text"
@@ -304,13 +317,15 @@
                                           event.preventDefault();
 
                                           const fromEmail = document.getElementById("fromEmail").value;
+                                          const yourName = document.getElementById("yourName").value;
                                           const subject = document.getElementById("emailSubject").value;
-                                          const body = document.querySelector("trix-editor").innerHTML;
+                                          let body = document.querySelector("trix-editor").innerHTML;
+                                          body = body.replace(/{yourName}/g, yourName);
 
                                           const emails = JSON.parse(localStorage.getItem('selectedEmails'));
                                           const reqId = localStorage.getItem('reqId');
-                                          if (!fromEmail || !subject || !body || emails.length === 0) {
-                                            alert("Please fill in the subject, body, and ensure emails are selected.");
+                                          if (!fromEmail || !yourName  || !subject || !body || emails.length === 0) {
+                                            alert("Please fill in all fields and ensure emails are selected.");
                                             return;
                                           }
                                           if (!reqId) {
@@ -347,7 +362,7 @@
 
                                 switch (selectedTemplate) {
                                   case "rapidTalentConnect":
-                                    subject = "Accelerate Your Hiring for {hiringJobTitle} with EasySource";
+                                    subject = "Accelerate Your Hiring for {hiringJobTitle} with AI";
                                     templateContent = `Dear {name},
 
                             I hope this email finds you well. I'm reaching out to introduce our Rapid Talent Connect service, which uses AI to quickly identify top candidates for your {hiringJobTitle} position at {companyName}.
@@ -366,7 +381,7 @@
                             {yourName}`;
                                     break;
                                   case "smartHireSpotlight":
-                                    subject = "Spotlight Top Talent for {hiringJobTitle} with EasySource";
+                                    subject = "Spotlight Top Talent for {hiringJobTitle} with AI";
                                     templateContent = `Hi {name},
 
                             I'm John Doe, founder of [Your Company Name]. We specialize in AI-driven hiring solutions that help companies like {companyName} identify and attract top talent.
@@ -384,7 +399,7 @@
                             {yourName}`;
                                     break;
                                   case "talentTransformationTech":
-                                    subject = "Revolutionize Your Hiring Process for {hiringJobTitle} with easySource";
+                                    subject = "Revolutionize Your Hiring Process for {hiringJobTitle} with AI";
                                     templateContent = `Dear {name},
 
                             I hope this message finds you well. I'm reaching out to introduce our Talent Transformation Tech, a revolutionary AI-driven hiring solution that I believe could transform your recruitment process for the {hiringJobTitle} role at {companyName}.
@@ -424,7 +439,7 @@
                             {yourName}`;
                                     break;
                                   case "insightDrivenRecruitment":
-                                    subject = "Elevate Your Hiring Decisions for {hiringJobTitle} with easySource Insights";
+                                    subject = "Elevate Your Hiring Decisions for {hiringJobTitle} with AI-Powered Insights";
                                     templateContent = `Dear {name},
 
                             I trust this email finds you well. I'm reaching out to introduce our Insight-Driven Recruitment service, which I believe could add significant value to your hiring process for the {hiringJobTitle} role at {companyName}.
