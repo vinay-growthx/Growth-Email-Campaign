@@ -347,7 +347,7 @@
 
                                 switch (selectedTemplate) {
                                   case "rapidTalentConnect":
-                                    subject = "Accelerate Your Hiring for [Position] with AI-Powered Talent Connect";
+                                    subject = "Accelerate Your Hiring for {hiringJobTitle} with AI-Powered Talent Connect";
                                     templateContent = `Dear {name},
 
                             I hope this email finds you well. I'm reaching out to introduce our Rapid Talent Connect service, which uses AI to quickly identify top candidates for your {hiringJobTitle} position at {companyName}.
@@ -363,10 +363,7 @@
                             Would you be available for a quick 15-minute demo this week? I'm confident you'll see the immediate value we can bring to your recruitment efforts.
 
                             Best regards,
-                            [Your Name]
-                            [Your Position]
-                            [Your Company]
-                            [Contact Information]`;
+                            {yourName}`;
                                     break;
                                   case "smartHireSpotlight":
                                     subject = "Spotlight Top Talent for [Marketing Manager – 150+ Applicants] with AI";
@@ -384,14 +381,10 @@
                             Can we discuss how we can enhance your hiring process for [Marketing Manager]? Are you available for a quick call this week?
 
                             Best,
-                            John Doe
-                            Founder & CEO
-                            [Your Company Name]
-                            [Email Address]
-                            [Website]`;
+                            {yourName}`;
                                     break;
                                   case "talentTransformationTech":
-                                    subject = "Revolutionize Your Hiring Process for [Position] with AI";
+                                    subject = "Revolutionize Your Hiring Process for {hiringJobTitle} with AI";
                                     templateContent = `Dear {name},
 
                             I hope this message finds you well. I'm reaching out to introduce our Talent Transformation Tech, a revolutionary AI-driven hiring solution that I believe could transform your recruitment process for the {hiringJobTitle} role at {companyName}.
@@ -410,13 +403,10 @@
                             Looking forward to potentially transforming your talent acquisition strategy.
 
                             Best regards,
-                            [Your Name]
-                            [Your Position]
-                            [Your Company]
-                            [Contact Information]`;
+                            {yourName}`;
                                     break;
                                   case "efficiencyBoostPitch":
-                                    subject = "Streamline Your Hiring for [Data Analyst – 300+ Applicants] with AI";
+                                    subject = "Streamline Your Hiring for {hiringJobTitle}";
                                     templateContent = `Hi {name},
 
                             I'm John Doe, founder of [Your Company Name]. We offer AI-driven hiring solutions designed to streamline your recruitment process and deliver faster results.
@@ -431,14 +421,10 @@
                             Let's explore how we can speed up your hiring process for [Data Analyst]. Are you free for a short call this week?
 
                             Best,
-                            John Doe
-                            Founder & CEO
-                            [Your Company Name]
-                            [Email Address]
-                            [Website]`;
+                            {yourName}`;
                                     break;
                                   case "insightDrivenRecruitment":
-                                    subject = "Elevate Your Hiring Decisions for [Position] with AI-Powered Insights";
+                                    subject = "Elevate Your Hiring Decisions for {hiringJobTitle} with AI-Powered Insights";
                                     templateContent = `Dear {name},
 
                             I trust this email finds you well. I'm reaching out to introduce our Insight-Driven Recruitment service, which I believe could add significant value to your hiring process for the {hiringJobTitle} role at {companyName}.
@@ -457,10 +443,7 @@
                             Looking forward to potentially revolutionizing your recruitment process with data-driven insights.
 
                             Best regards,
-                            [Your Name]
-                            [Your Position]
-                            [Your Company]
-                            [Contact Information]`;
+                            {yourName}`;
                                     break;
                                 }
 
