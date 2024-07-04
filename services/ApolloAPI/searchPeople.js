@@ -46,7 +46,12 @@ async function searchPeople(
 
   try {
     const response = await axios.post(url, body, { headers });
-    return;
+    console.log(
+      "response data 0",
+      response.data[0],
+      "response len",
+      response.data.length
+    );
     return response.data;
   } catch (error) {
     console.error("Error searching people:", error);
