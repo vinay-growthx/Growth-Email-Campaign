@@ -238,7 +238,8 @@ app.post("/send-email", async (req, res) => {
       };
       const createdEmail = await emailRepository.create(emailData);
       try {
-        await smtpTransport.sendMail(mailOptions);
+        const sesEmailReponse = await smtpTransport.sendMail(mailOptions);
+        console.log("ses email response ====>", sesEmailReponse);
         console.log(`Email sent successfully to ${mailOptions.to}`);
       } catch (error) {
         // Handle or log any errors
