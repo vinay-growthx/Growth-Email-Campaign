@@ -20,6 +20,9 @@ const EmailTemplateSchema = new Schema({
     type: String,
     required: true,
   },
+  aiGeneratedSubject: {
+    type: String,
+  },
   body: {
     type: String,
     required: true,

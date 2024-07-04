@@ -39,6 +39,8 @@ const EmailRepository = require("./repository/EmailRepository");
 const emailRepository = new EmailRepository();
 const RequestIdRepository = require("./repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
+
+const generateProfessionalSubject = require("./services/chatgpt");
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
@@ -184,7 +186,8 @@ app.post("/send-email", async (req, res) => {
         .join(", ");
       const jobLocation = foundJob.map((job) => job.job_location).join(", ");
       console.log("job post", jobPost);
-
+      let aiGeneratedSubject = await generateProfessionalSubject(subject);
+      console.log("subject ====>", aiGeneratedSubject);
       const mailOptions = {
         // to: email.email,
         to: "vinay.prajapati@hirequotient.com",
@@ -231,6 +234,7 @@ app.post("/send-email", async (req, res) => {
         fromEmail: req?.body?.fromEmail,
         toEmails: [email.email],
         subject: subject,
+        aiGeneratedSubject: aiGeneratedSubject,
         originalBody: body,
         personalizedBody: personalizedBody,
         reqId,
