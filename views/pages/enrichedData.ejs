@@ -559,7 +559,9 @@
           <% } %> <% }); %> <% } else { %>
           <p>No enriched data found.</p>
           <% } %>
-          <button type="submit" class="submit-btn">Initiate Email</button>
+          <button type="submit" class="submit-btn" id="submitBtn">
+            Initiate Email
+          </button>
         </form>
       </div>
     </div>
@@ -568,12 +570,18 @@
       function submitEmail(event) {
         event.preventDefault();
 
+        const submitButton = document.getElementById("submitBtn");
+
+        // Disable the button immediately
+        disableButton(submitButton);
+
         const selectedEmails = Array.from(
           document.querySelectorAll('input[name="selectedPeople"]:checked')
         ).map((checkbox) => checkbox.value);
 
         if (selectedEmails.length === 0) {
           alert("Please select at least one person.");
+          enableButton(submitButton); // Re-enable the button if no emails are selected
           return;
         }
 
@@ -601,6 +609,22 @@
 
         // Submit the form
         form.submit();
+      }
+
+      function disableButton(button) {
+        button.disabled = true;
+        button.style.opacity = "0.5";
+        button.textContent = "Processing...";
+
+        setTimeout(() => {
+          enableButton(button);
+        }, 20000); // 20 seconds
+      }
+
+      function enableButton(button) {
+        button.disabled = false;
+        button.style.opacity = "1";
+        button.textContent = "Initiate Email";
       }
       document.addEventListener("DOMContentLoaded", (event) => {
         const selectAllCheckbox = document.getElementById("selectAll");
