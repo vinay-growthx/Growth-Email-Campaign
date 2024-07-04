@@ -189,14 +189,24 @@ async function generateProfessionalSubject(originalSubject) {
   const retryDelay = 1000;
 
   const prompt = `
-      Original email subject: "${originalSubject}"
-      Please convert the above email subject into a more professional version. Follow these guidelines:
-      1. Remove any brackets or parentheses.
-      2. Improve the wording to sound more formal and business-like.
-      3. Ensure the subject is clear, concise, and engaging.
-      4. Maintain the core message of the original subject.
-      Provide only the revised subject line without any additional text or explanations.
-    `;
+  As an expert email copywriter, your task is to transform the following email subject line into a more professional, engaging, and effective version:
+
+  Original subject: "${originalSubject}"
+
+  Please rewrite the subject line following these guidelines:
+  1. Enhance the professionalism and formality of the language.
+  2. Ensure the subject is clear, concise, and compelling.
+  3. Maintain the core message and intent of the original subject.
+  4. Remove any unnecessary brackets, parentheses, or informal punctuation.
+  5. Use action-oriented words to create a sense of urgency or importance.
+  6. Optimize for email open rates by making it intriguing yet informative.
+  7. Keep the length between 30 to 50 characters for optimal display on various devices.
+  8. If applicable, personalize the subject line or make it more relevant to the recipient.
+  9. Avoid using all caps, excessive punctuation, or spam trigger words.
+  10. Consider the context of a professional business communication.
+
+  Provide only the revised subject line without any additional text, explanations, or quotation marks. Ensure the response is a complete, well-formed subject line ready for use in a professional email.
+`;
 
   console.log("Prompt sent to GPT:", prompt);
 
@@ -206,7 +216,7 @@ async function generateProfessionalSubject(originalSubject) {
         model: "gpt-3.5-turbo",
         messages: [{ role: "user", content: prompt }],
         temperature: 0.7,
-        max_tokens: 50,
+        max_tokens: 300,
         top_p: 1,
       });
 
