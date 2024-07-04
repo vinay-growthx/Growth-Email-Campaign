@@ -187,7 +187,7 @@ app.post("/send-email", async (req, res) => {
       const jobLocation = foundJob.map((job) => job.job_location).join(", ");
       console.log("job post", jobPost);
       let aiGeneratedSubject = await generateProfessionalSubject(subject);
-      console.log("subject ====>", aiGeneratedSubject);
+      console.log("subject ====>", aiGeneratedSubject.subject);
       const mailOptions = {
         // to: email.email,
         to: "vinay.prajapati@hirequotient.com",
@@ -234,7 +234,7 @@ app.post("/send-email", async (req, res) => {
         fromEmail: req?.body?.fromEmail,
         toEmails: [email.email],
         subject: subject,
-        aiGeneratedSubject: aiGeneratedSubject,
+        aiGeneratedSubject: aiGeneratedSubject?.subject || subject,
         originalBody: body,
         personalizedBody: personalizedBody,
         reqId,
