@@ -1252,7 +1252,8 @@
               </button>
             </div>
           </div>
-          <% jobs.forEach(function(job, index) { %>
+          <% if (jobs && jobs.length > 0) { %> <% jobs.forEach(function(job,
+          index) { %>
           <div class="job-card" style="animation-delay: <%= index * 0.1 %>s">
             <div class="job-select">
               <input
@@ -1265,33 +1266,43 @@
             <div style="flex-grow: 1">
               <div class="job-header">
                 <div>
-                  <div class="job-title"><%= job.job_title %></div>
-                  <div class="company-name"><%= job.employer_name %></div>
+                  <div class="job-title"><%= job.job_title || 'N/A' %></div>
+                  <div class="company-name">
+                    <%= job.employer_name || 'N/A' %>
+                  </div>
                 </div>
               </div>
               <div class="job-details">
                 <div class="job-detail">
                   <span>Location:</span>
                   <% if (job.job_city || job.job_state || job.job_country) { %>
-                  <%= job.job_city ? job.job_city : '' %><%= job.job_city &&
-                  (job.job_state || job.job_country) ? ', ' : '' %> <%=
-                  job.job_state ? job.job_state : '' %><%= job.job_state &&
-                  job.job_country ? ', ' : '' %> <%= job.job_country ?
-                  job.job_country : '' %> <% } else { %> Not specified <% } %>
+                  <%= job.job_city || '' %><%= job.job_city && (job.job_state ||
+                  job.job_country) ? ', ' : '' %> <%= job.job_state || '' %><%=
+                  job.job_state && job.job_country ? ', ' : '' %> <%=
+                  job.job_country || '' %> <% } else { %> N/A <% } %>
                 </div>
                 <div class="job-detail">
-                  <span>Type:</span> <%= job.job_employment_type %>
+                  <span>Type:</span> <%= job.job_employment_type || 'N/A' %>
                 </div>
                 <div class="job-detail">
-                  <span>Posted:</span> <%= new
-                  Date(job.job_posted_at_datetime_utc).toLocaleDateString() %>
+                  <span>Posted:</span> <%= job.job_posted_at_datetime_utc ? new
+                  Date(job.job_posted_at_datetime_utc).toLocaleDateString() :
+                  'N/A' %>
                 </div>
                 <div class="job-detail">
-                  <span>Salary Range:</span> <%= job.salaryRange %>
+                  <span>Salary Range:</span> <%= job.salaryRange || 'N/A' %>
                 </div>
               </div>
               <div class="job-detail">
                 <span>Job Post Link:</span>
+                <% if (job.job_apply_link) { %>
+                <a
+                  href="<%= job.job_apply_link %>"
+                  target="_blank"
+                  class="job-apply-link"
+                  ><%= job.job_apply_link %></a
+                >
+                <% } else { %> N/A <% } %>
                 <a
                   href="<%= job.job_apply_link %>"
                   target="_blank"
@@ -1334,7 +1345,9 @@
               </div>
             </div>
           </div>
-          <% }); %>
+          <% }); %> <% } else { %>
+          <p>No jobs available.</p>
+          <% } %>
           <button
             type="submit"
             id="createPersonaBtn"
@@ -1624,26 +1637,29 @@
               }
 
               return {
-                job_title: jobCard.querySelector(".job-title").textContent,
+                job_title:
+                  jobCard.querySelector(".job-title").textContent || "N/A",
                 company_name: jobCard.querySelector(".company-name")
                   ? jobCard.querySelector(".company-name").textContent
-                  : "",
+                  : "N/A",
                 location: locationDetail
                   ? locationDetail.textContent.split("Location:")[1].trim()
-                  : "",
+                  : "N/A",
                 type: typeDetail
                   ? typeDetail.textContent.split("Type:")[1].trim()
-                  : "",
+                  : "N/A",
                 posted_date: postedDateDetail
                   ? postedDateDetail.textContent.split("Posted:")[1].trim()
-                  : "",
+                  : "N/A",
                 salary_range: salaryRangeDetail
                   ? salaryRangeDetail.textContent
                       .split("Salary Range:")[1]
                       .trim()
-                  : "",
-                apply_link: jobCard.querySelector(".job-apply-link").href,
-                description: description,
+                  : "N/A",
+                apply_link: jobCard.querySelector(".job-apply-link")
+                  ? jobCard.querySelector(".job-apply-link").href
+                  : "N/A",
+                description: description || "N/A",
               };
             })
             .filter((job) => job !== null);
