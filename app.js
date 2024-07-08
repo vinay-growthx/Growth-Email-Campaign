@@ -446,17 +446,31 @@ app.post("/email-enrich-process", async (req, res) => {
     for (const item of personas) {
       // if (item.email === "email_not_unlocked@domain.com") {
       //   console.log(item.email);
-      const newEmail = await getEmailByLinkedInUrl(item?.linkedin_url, item.id);
-      console.log("new email ====>", newEmail);
+      let newEmail;
       if (
-        newEmail ||
-        (item.email && item.email != "email_not_unlocked@domain.com")
+        !item.email ||
+        (item.email && item.email == "email_not_unlocked@domain.com")
       ) {
-        updatedData.push({ ...item, email: newEmail || item.email });
+        newEmail = await getEmailByLinkedInUrl(item?.linkedin_url, item.id);
+        if (!newEmail && !item.email) {
+          newEmail = await fetchEmailViaContactOut(item?.linkedin_url, item.id);
+        }
+        if (!newEmail && !item.email) {
+          newEmail = await fetchWorkEmailFromRb2bapi(
+            item?.linkedin_url,
+            item.id
+          );
+        }
+        if (
+          newEmail ||
+          (item.email && item.email != "email_not_unlocked@domain.com")
+        ) {
+          console.log("new email ====>", newEmail);
+          updatedData.push({ ...item, email: newEmail || item.email });
+        } else {
+          if (item.email) updatedData.push(item);
+        }
       }
-      // } else {
-      if (item.email) updatedData.push(item);
-      // }
     }
     const personaValidData = updatedData.reduce((acc, item) => {
       const newItem = { ...item };
