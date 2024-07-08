@@ -39,7 +39,7 @@ const EmailRepository = require("./repository/EmailRepository");
 const emailRepository = new EmailRepository();
 const RequestIdRepository = require("./repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
-
+const { fetchLinkedInProfile } = require("./services/emailAPI/contactsout");
 const { generateProfessionalSubject } = require("./services/chatgpt");
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
@@ -505,7 +505,12 @@ app.post("/email-enrich", async (req, res) => {
 
     for (let i = 0; i < linkedinUrls.length; i++) {
       const emailEnrich = await getEmailByLinkedInUrl(linkedinUrls[i]);
-      enrichedData.push(emailEnrich);
+      if (!emailEnrich || emailEnrich.length === 0) {
+        emailEnrich = await fetchLinkedInProfile(linkedinUrls[i]);
+      }
+      if (emailEnrich) {
+        enrichedData.push(emailEnrich);
+      }
     }
     updateContactDetails(enrichedData);
     res.status(200).json({
