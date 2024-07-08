@@ -450,7 +450,9 @@ app.post("/email-enrich-process", async (req, res) => {
           item.id
         );
         console.log("new email ====>", newEmail);
-        updatedData.push({ ...item, email: newEmail || item.email });
+        if (newEmail || item.email) {
+          updatedData.push({ ...item, email: newEmail || item.email });
+        }
       } else {
         updatedData.push(item);
       }
