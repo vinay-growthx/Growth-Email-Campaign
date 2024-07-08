@@ -238,6 +238,7 @@ app.post("/send-email", async (req, res) => {
           sesResponse = await smtpTransport.sendMail(mailOptions);
           console.log("ses email response ====>", sesResponse);
           console.log(`Email sent successfully to ${mailOptions.to}`);
+          await new Promise((resolve) => setTimeout(resolve, 100));
         } catch (error) {
           // Handle or log any errors
           console.error(`Failed to send email to ${mailOptions.to}:`, error);
