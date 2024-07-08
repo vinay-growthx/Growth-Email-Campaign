@@ -479,9 +479,35 @@
           height: 8px;
         }
       }
+      .floating-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        display: inline-block;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: #fff;
+        text-decoration: none;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+        text-align: center;
+        font-size: 1.2em;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        z-index: 1000;
+      }
+
+      .floating-btn:hover {
+        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+      }
     </style>
   </head>
   <body>
+    <a href="#" class="floating-btn" id="scrollToBottomBtn">Scroll to Bottom</a>
     <div class="parallax-container">
       <div class="parallax-layer parallax-background"></div>
       <div class="parallax-layer content">
@@ -701,6 +727,18 @@
         link.click();
         document.body.removeChild(link);
       }
+      document.addEventListener("DOMContentLoaded", function () {
+        const scrollToBottomBtn = document.getElementById("scrollToBottomBtn");
+        const parallaxContainer = document.querySelector(".parallax-container");
+
+        scrollToBottomBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          parallaxContainer.scrollTo({
+            top: parallaxContainer.scrollHeight,
+            behavior: "smooth",
+          });
+        });
+      });
     </script>
   </body>
 </html>
