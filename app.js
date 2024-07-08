@@ -221,30 +221,36 @@ app.post("/send-email", async (req, res) => {
         .replaceAll("{dateOfJobPost}", jobDate)
         .replaceAll("{hiringJobLocation}", jobLocation)
         .replaceAll("{firstName}", personData?.first_name);
+      if (email.email) {
+        const emailData = {
+          fromEmail: req?.body?.fromEmail,
+          toEmails: [email.email],
+          subject: subject,
+          aiGeneratedSubject: aiGeneratedSubject || replacedSubject,
+          originalBody: body,
+          personalizedBody: personalizedBody,
+          reqId,
+          status: "pending",
+        };
 
-      const emailData = {
-        fromEmail: req?.body?.fromEmail,
-        toEmails: [email.email],
-        subject: subject,
-        aiGeneratedSubject: aiGeneratedSubject || replacedSubject,
-        originalBody: body,
-        personalizedBody: personalizedBody,
-        reqId,
-        status: "pending",
-      };
-      let sesResponse = {};
-      try {
-        sesResponse = await smtpTransport.sendMail(mailOptions);
-        console.log("ses email response ====>", sesResponse);
-        console.log(`Email sent successfully to ${mailOptions.to}`);
-      } catch (error) {
-        // Handle or log any errors
-        console.error(`Failed to send email to ${mailOptions.to}:`, error);
+        let sesResponse = {};
+        try {
+          sesResponse = await smtpTransport.sendMail(mailOptions);
+          console.log("ses email response ====>", sesResponse);
+          console.log(`Email sent successfully to ${mailOptions.to}`);
+        } catch (error) {
+          // Handle or log any errors
+          console.error(`Failed to send email to ${mailOptions.to}:`, error);
+        }
+        if (sesResponse.response) {
+          emailData.sesMessageId = sesResponse.response;
+        }
+        await emailRepository.create(emailData);
+      } else {
+        console.log(
+          `Skipping email: ${email.id} due to missing email address.`
+        );
       }
-      if (sesResponse.response) {
-        emailData.sesMessageId = sesResponse.response;
-      }
-      await emailRepository.create(emailData);
     }
 
     res.status(200).json({ message: "Emails sent successfully" });
