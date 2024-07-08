@@ -1385,217 +1385,452 @@
       </div>
     </div>
     <script>
-      document.addEventListener('DOMContentLoaded', (event) => {
-        // Retrieve the emails from the server-side rendered data and filter out undefined emails
-        const emails = <%- JSON.stringify(enrichedData) %>.filter(email => email.email !== 'undefined');
-        const reqId = document.getElementById('reqIdInput').value;
+      document.addEventListener("DOMContentLoaded", function () {
+        const selectAllCheckbox = document.getElementById("selectAll");
+        const jobCheckboxes = document.querySelectorAll(
+          'input[name="jobSelect"]'
+        );
+        const selectedCountElement = document.getElementById("selected-count");
+        const input = document.getElementById("personaDesignations");
+        const tagsContainer = document.getElementById("designationTags");
+        const defaultBtns = document.querySelectorAll(".designation-btn");
+        const form = document.getElementById("jobForm");
+        const createPersonaBtn = document.querySelector(".create-persona-btn");
+        const companyFilter = document.querySelector(".company-filter");
+        const companyFilterHeader =
+          companyFilter.querySelector(".filter-header");
+        const companyOptions = companyFilter.querySelector(".company-options");
+        const companyCheckboxes = companyFilter.querySelectorAll(
+          "input[type='checkbox']"
+        );
+        const allCompaniesCheckbox =
+          companyFilter.querySelector("input[value='']");
+        const jobCards = document.querySelectorAll(".job-card");
+        const totalCountElement = document.getElementById("total-count");
+        const sourceFilter = document.querySelector(".source-filter");
+        const sourceFilterHeader = sourceFilter.querySelector(".filter-header");
+        const sourceOptions = sourceFilter.querySelector(".source-options");
+        const sourceCheckboxes = sourceFilter.querySelectorAll(
+          "input[type='checkbox']"
+        );
+        const allSourcesCheckbox =
+          sourceFilter.querySelector("input[value='']");
 
-        const emailsContainer = document.getElementById('emailsContainer');
+        let designations = [];
 
-        if (emails.length > 0) {
-          const displayCount = Math.min(emails.length, 5);
-          for (let i = 0; i < displayCount; i++) {
-            const emailSpan = document.createElement('span');
-            emailSpan.textContent = `${emails[i].name} (${emails[i].email})`;
-            emailsContainer.appendChild(emailSpan);
+        // Create a hidden input for designations
+        const hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "personaDesignations";
+        form.appendChild(hiddenInput);
+
+        function updateSelectedCount() {
+          const selectedCount = document.querySelectorAll(
+            'input[name="jobSelect"]:checked'
+          ).length;
+          selectedCountElement.textContent = `${selectedCount} Job${
+            selectedCount !== 1 ? "s" : ""
+          } Selected`;
+          selectedCountElement.classList.add("party");
+          setTimeout(() => selectedCountElement.classList.remove("party"), 500);
+        }
+
+        function updateInput() {
+          input.value = designations.join(", ");
+          hiddenInput.value = designations.join(", ");
+        }
+
+        function addDesignation(designation) {
+          if (!designations.includes(designation)) {
+            designations.push(designation);
+            updateInput();
+            renderTags();
           }
-
-          if (emails.length > 5) {
-            const remainingCount = emails.length - 5;
-            const countSpan = document.createElement('span');
-            countSpan.textContent = `and ${remainingCount} more...`;
-            countSpan.style.fontWeight = 'bold';
-            emailsContainer.appendChild(countSpan);
-          }
-
-          const totalCountSpan = document.createElement('span');
-          totalCountSpan.textContent = `Total Emails found: ${emails.length}`;
-          totalCountSpan.style.display = 'block';
-          totalCountSpan.style.marginTop = '10px';
-          totalCountSpan.style.fontWeight = 'bold';
-          emailsContainer.appendChild(totalCountSpan);
-        } else {
-          emailsContainer.textContent = 'No valid emails found from selection. Please go back and select again.';
         }
 
-        localStorage.setItem('selectedEmails', JSON.stringify(emails));
-        localStorage.setItem('reqId', reqId);
-      });
-
-      document.getElementById("emailForm").onsubmit = function (event) {
-        event.preventDefault();
-
-        const fromEmail = document.getElementById("fromEmail").value;
-        const yourName = document.getElementById("yourName").value;
-        const subject = document.getElementById("emailSubject").value;
-        let body = document.querySelector("trix-editor").innerHTML;
-        body = body.replace(/{yourName}/g, yourName);
-
-        // Retrieve the emails from localStorage and filter out undefined emails
-        const emails = JSON.parse(localStorage.getItem('selectedEmails')).filter(email => email.email !== 'undefined');
-        const reqId = localStorage.getItem('reqId');
-
-        if (!fromEmail || !yourName || !subject || !body || emails.length === 0) {
-          alert("Please fill in all fields and ensure emails are selected.");
-          return;
+        function removeDesignation(designation) {
+          designations = designations.filter((d) => d !== designation);
+          updateInput();
+          renderTags();
         }
 
-        if (!reqId) {
-          console.log("reqId is missing");
-          alert("Please try again or contact support. Job Post and Person Data Mismatched");
-          return;
-        }
-
-        console.log('just before sending req id', reqId);
-        fetch("/send-email", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ fromEmail: fromEmail, subject: subject, body: body, emails: emails, reqId: reqId }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            alert("Email sent successfully!");
-            console.log(data);
-          })
-          .catch((error) => {
-            console.error("Error during email sending:", error);
-            alert("Failed to send email: " + error.message);
+        function renderTags() {
+          tagsContainer.innerHTML = "";
+          designations.forEach((designation) => {
+            const tag = document.createElement("span");
+            tag.classList.add("designation-tag");
+            tag.innerHTML = `
+              ${designation}
+              <span class="remove" data-designation="${designation}">&times;</span>
+            `;
+            tagsContainer.appendChild(tag);
           });
-      };
+        }
 
-      document.getElementById("templateDropdown").addEventListener("change", function (event) {
-        const selectedTemplate = event.target.value;
-        if (selectedTemplate) {
-          const editor = document.querySelector("trix-editor").editor;
-          let templateContent = "";
-          let subject = "";
+        function getJobSource(applyLink) {
+          if (applyLink.includes("linkedin.com")) return "linkedin";
+          if (applyLink.includes("indeed.com")) return "indeed";
+          if (applyLink.includes("ycombinator.com")) return "ycombinator";
+          if (applyLink.includes("glassdoor.com")) return "glassdoor";
+          return "other";
+        }
 
-          switch (selectedTemplate) {
-            case "rapidTalentConnect":
-              subject = "Accelerate Your Hiring for {hiringJobTitle} with AI";
-              templateContent = `<p>Dear {name},</p>
+        function updateJobVisibility() {
+          const selectedCompanies = Array.from(companyCheckboxes)
+            .filter((checkbox) => checkbox.checked && checkbox.value !== "")
+            .map((checkbox) => checkbox.value);
 
-      <p>I hope this email finds you well. I'm reaching out to introduce our Rapid Talent Connect service, which uses AI to quickly identify top candidates for your {hiringJobTitle} position at {companyName}.</p>
+          const selectedSources = Array.from(sourceCheckboxes)
+            .filter((checkbox) => checkbox.checked && checkbox.value !== "")
+            .map((checkbox) => checkbox.value);
 
-      <p>Our AI-powered system can process applications rapidly, ensuring you don't miss out on high-potential candidates in this competitive market. Here's how we can help:</p>
+          jobCards.forEach((card) => {
+            const companyName = card.querySelector(".company-name").textContent;
+            const applyLink = card.querySelector(".job-apply-link").href;
+            const jobSource = getJobSource(applyLink);
 
-      <ul>
-        <li>Swift Candidate Matching: Our AI analyzes applicants in real-time, presenting you with the best matches instantly.</li>
-        <li>Reduced Time-to-Hire: Cut your hiring process time by up to 50% without sacrificing quality.</li>
-        <li>Customized Screening: Our AI adapts to your specific requirements, ensuring a perfect fit for your team.</li>
-      </ul>
+            const companyMatch =
+              selectedCompanies.length === 0 ||
+              selectedCompanies.includes(companyName);
+            const sourceMatch =
+              selectedSources.length === 0 ||
+              selectedSources.includes(jobSource);
 
-      <p>We'd love to show you how we can streamline your hiring process and connect you with ideal candidates faster than ever.</p>
+            if (companyMatch && sourceMatch) {
+              card.style.display = "flex";
+            } else {
+              card.style.display = "none";
+            }
+          });
 
-      <p>Would you be available for a quick 15-minute demo this week? I'm confident you'll see the immediate value we can bring to your recruitment efforts.</p>
+          updateCounts();
+        }
 
-      <p>Best regards,<br>{yourName}</p>`;
-              break;
+        function updateCounts() {
+          const visibleJobs = document.querySelectorAll(
+            ".job-card:not([style*='display: none'])"
+          ).length;
+          totalCountElement.textContent = `Total Jobs: ${visibleJobs}`;
+          updateSelectedCount();
+        }
 
-            case "smartHireSpotlight":
-              subject = "Spotlight Top Talent for {hiringJobTitle} with AI";
-              templateContent = `<p>Hi {name},</p>
+        selectAllCheckbox.addEventListener("change", function () {
+          const isChecked = this.checked;
+          jobCheckboxes.forEach((checkbox) => {
+            const jobCard = checkbox.closest(".job-card");
+            if (window.getComputedStyle(jobCard).display !== "none") {
+              checkbox.checked = isChecked;
+            }
+          });
+          updateSelectedCount();
+        });
 
-      <p>I'm John Doe, founder of [Your Company Name]. We specialize in AI-driven hiring solutions that help companies like {companyName} identify and attract top talent.</p>
+        jobCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", updateSelectedCount);
+        });
 
-      <p><strong>Why Choose Us?</strong></p>
-      <ul>
-        <li>Precision: Our AI highlights the best candidates for {hiringJobTitle}.</li>
-        <li>Efficiency: Save time by focusing on the most qualified applicants.</li>
-        <li>Integration: Easy to implement with your existing HR systems.</li>
-      </ul>
-
-      <p>Navigating through 150+ applicants for [Marketing Manager] can be overwhelming. Our AI ensures you see only the top-tier candidates, making your job easier.</p>
-
-      <p>Can we discuss how we can enhance your hiring process for [Marketing Manager]? Are you available for a quick call this week?</p>
-
-      <p>Best,<br>{yourName}</p>`;
-              break;
-
-            case "talentTransformationTech":
-              subject = "Revolutionize Your Hiring Process for {hiringJobTitle} with AI";
-              templateContent = `<p>Dear {name},</p>
-
-      <p>I hope this message finds you well. I'm reaching out to introduce our Talent Transformation Tech, a revolutionary AI-driven hiring solution that I believe could transform your recruitment process for the {hiringJobTitle} role at {companyName}.</p>
-
-      <p>Our cutting-edge AI tools go beyond traditional hiring methods, offering:</p>
-
-      <ol>
-        <li>Predictive Success Modeling: Identify candidates most likely to excel in your specific work environment.</li>
-        <li>Skill Gap Analysis: Understand how candidates can complement your existing team's strengths.</li>
-        <li>Bias Mitigation: Ensure a fair and diverse hiring process with our advanced algorithms.</li>
-        <li>Dynamic Interview Guides: AI-generated, role-specific questions to dig deeper into each candidate's potential.</li>
-      </ol>
-
-      <p>We're not just filling a position – we're helping you build the future of your company.</p>
-
-      <p>I'd be thrilled to offer you a personalized demo of our technology. When would be a convenient time to showcase how we can revolutionize your hiring process?</p>
-
-      <p>Looking forward to potentially transforming your talent acquisition strategy.</p>
-
-      <p>Best regards,<br>{yourName}</p>`;
-              break;
-
-            case "efficiencyBoostPitch":
-              subject = "Streamline Your Hiring for {hiringJobTitle}";
-              templateContent = `<p>Hi {name},</p>
-
-      <p>I'm John Doe, founder of [Your Company Name]. We offer AI-driven hiring solutions designed to streamline your recruitment process and deliver faster results.</p>
-
-      <p><strong>Why Choose Us?</strong></p>
-      <ul>
-        <li>Speed: Quickly sort through 300+ applicants for [Data Analyst].</li>
-        <li>Efficiency: Our AI identifies the most qualified candidates swiftly.</li>
-        <li>Simplicity: Seamlessly integrates with your current HR tools.</li>
-      </ul>
-
-      <p>Handling 300+ applicants for [Data Analyst] is a daunting task. Our AI simplifies this, ensuring you focus on the best candidates and reduce time-to-hire.</p>
-
-      <p>Let's explore how we can speed up your hiring process for [Data Analyst]. Are you free for a short call this week?</p>
-
-      <p>Best,<br>{yourName}</p>`;
-              break;
-
-            case "insightDrivenRecruitment":
-              subject = "Elevate Your Hiring Decisions for {hiringJobTitle} with AI-Powered Insights";
-              templateContent = `<p>Dear {name},</p>
-
-      <p>I trust this email finds you well. I'm reaching out to introduce our Insight-Driven Recruitment service, which I believe could add significant value to your hiring process for the {hiringJobTitle} role at {companyName}.</p>
-
-      <p>Our AI-powered analytics provide deep insights into your candidate pool, helping you make data-driven decisions:</p>
-
-      <ol>
-        <li>Predictive Success Modeling: Forecast a candidate's potential performance and longevity in your organization.</li>
-        <li>Team Dynamics Analysis: Understand how a new hire might impact your existing team's productivity and culture.</li>
-        <li>Skill Gap Identification: Pinpoint areas where candidates can bring unique value to your organization.</li>
-        <li>Customized Interview Strategies: AI-generated, candidate-specific questions to uncover key traits and abilities.</li>
-      </ol>
-
-      <p>I'd love to share a sample insights report we've prepared for a similar role. This report demonstrates how our AI can uncover hidden potential and flag potential concerns that traditional hiring methods might miss.</p>
-
-      <p>When would be a good time to walk you through how these insights can enhance your hiring decisions for the {hiringJobTitle} position?</p>
-
-      <p>Looking forward to potentially revolutionizing your recruitment process with data-driven insights.</p>
-
-      <p>Best regards,<br>{yourName}</p>`;
-              break;
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === ",") {
+            e.preventDefault();
+            const newDesignation = this.value.trim();
+            if (newDesignation) {
+              addDesignation(newDesignation);
+              this.value = "";
+            }
           }
-          editor.loadHTML(templateContent.split('\n').map(line => `<div>${line}</div>`).join(''));
-          // Set the email subject
-          document.getElementById("emailSubject").value = subject;
-        }
-      });
+        });
 
-      document.getElementById("variableDropdown").addEventListener("change", function (event) {
-        const selectedVariable = event.target.value;
-        if (selectedVariable) {
-          const editor = document.querySelector("trix-editor").editor;
-          const currentPosition = editor.getSelectedRange()[0];
-          editor.insertString(selectedVariable);
-          editor.setSelectedRange([currentPosition + selectedVariable.length, currentPosition + selectedVariable.length]);
+        tagsContainer.addEventListener("click", function (e) {
+          if (e.target.classList.contains("remove")) {
+            const designationToRemove = e.target.dataset.designation;
+            removeDesignation(designationToRemove);
+          }
+        });
+
+        defaultBtns.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            addDesignation(this.dataset.designation);
+          });
+        });
+
+        form.addEventListener("submit", function (event) {
+          const selectedJobs = document.querySelectorAll(
+            'input[name="jobSelect"]:checked'
+          );
+          updateInput();
+
+          if (selectedJobs.length === 0) {
+            event.preventDefault();
+            alert("Please select at least one job before creating a persona.");
+          } else if (designations.length === 0) {
+            event.preventDefault();
+            alert("Please enter at least one Persona Designation.");
+          } else {
+            createPersonaBtn.disabled = true;
+            createPersonaBtn.textContent = "Creating Persona...";
+            setTimeout(function () {
+              createPersonaBtn.disabled = false;
+              createPersonaBtn.textContent = "Create Persona";
+            }, 25000);
+          }
+        });
+
+        companyFilterHeader.addEventListener("click", function () {
+          companyFilter.classList.toggle("active");
+        });
+
+        allCompaniesCheckbox.addEventListener("change", function () {
+          companyCheckboxes.forEach((checkbox) => {
+            if (checkbox !== allCompaniesCheckbox) {
+              checkbox.checked = !this.checked;
+            }
+          });
+          updateJobVisibility();
+        });
+
+        companyCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", function () {
+            if (this !== allCompaniesCheckbox) {
+              allCompaniesCheckbox.checked = false;
+            }
+            updateJobVisibility();
+          });
+        });
+
+        sourceFilterHeader.addEventListener("click", function () {
+          sourceFilter.classList.toggle("active");
+        });
+
+        allSourcesCheckbox.addEventListener("change", function () {
+          sourceCheckboxes.forEach((checkbox) => {
+            if (checkbox !== allSourcesCheckbox) {
+              checkbox.checked = !this.checked;
+            }
+          });
+          updateJobVisibility();
+        });
+
+        sourceCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", function () {
+            if (this !== allSourcesCheckbox) {
+              allSourcesCheckbox.checked = false;
+            }
+            updateJobVisibility();
+          });
+        });
+
+        document.addEventListener("click", function (event) {
+          if (!event.target.closest(".company-filter")) {
+            companyFilter.classList.remove("active");
+          }
+          if (!event.target.closest(".source-filter")) {
+            sourceFilter.classList.remove("active");
+          }
+        });
+
+        updateJobVisibility();
+
+        function downloadCSV() {
+          const selectedJobs = Array.from(
+            document.querySelectorAll('input[name="jobSelect"]:checked')
+          )
+            .map((checkbox) => {
+              const jobCard = checkbox.closest(".job-card");
+              if (!jobCard) return null;
+
+              const jobDetails = jobCard.querySelectorAll(".job-detail");
+              const locationDetail = Array.from(jobDetails).find((detail) =>
+                detail.textContent.includes("Location:")
+              );
+              const typeDetail = Array.from(jobDetails).find((detail) =>
+                detail.textContent.includes("Type:")
+              );
+              const postedDateDetail = Array.from(jobDetails).find((detail) =>
+                detail.textContent.includes("Posted:")
+              );
+              const salaryRangeDetail = Array.from(jobDetails).find((detail) =>
+                detail.textContent.includes("Salary Range:")
+              );
+
+              const descriptionElement =
+                jobCard.querySelector(".job-description");
+              let description = "";
+              if (descriptionElement) {
+                const points = descriptionElement.querySelectorAll("li");
+                description = Array.from(points)
+                  .map((point) => point.textContent.trim())
+                  .join(" | ");
+              }
+
+              return {
+                job_title:
+                  jobCard.querySelector(".job-title").textContent || "N/A",
+                company_name: jobCard.querySelector(".company-name")
+                  ? jobCard.querySelector(".company-name").textContent
+                  : "N/A",
+                location: locationDetail
+                  ? locationDetail.textContent.split("Location:")[1].trim()
+                  : "N/A",
+                type: typeDetail
+                  ? typeDetail.textContent.split("Type:")[1].trim()
+                  : "N/A",
+                posted_date: postedDateDetail
+                  ? postedDateDetail.textContent.split("Posted:")[1].trim()
+                  : "N/A",
+                salary_range: salaryRangeDetail
+                  ? salaryRangeDetail.textContent
+                      .split("Salary Range:")[1]
+                      .trim()
+                  : "N/A",
+                apply_link: jobCard.querySelector(".job-apply-link")
+                  ? jobCard.querySelector(".job-apply-link").href
+                  : "N/A",
+                description: description || "N/A",
+              };
+            })
+            .filter((job) => job !== null);
+
+          if (selectedJobs.length === 0) {
+            alert("Please select at least one job to download.");
+            return;
+          }
+
+          const csvContent =
+            "data:text/csv;charset=utf-8," +
+            [
+              Object.keys(selectedJobs[0]).join(","),
+              ...selectedJobs.map((job) =>
+                Object.values(job)
+                  .map((value) => `"${value.replace(/"/g, '""')}"`)
+                  .join(",")
+              ),
+            ].join("\n");
+
+          const encodedUri = encodeURI(csvContent);
+          const link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", "job_data.csv");
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
         }
+
+        document
+          .querySelector(".download-btn")
+          .addEventListener("click", downloadCSV);
+
+        // Employee size multi-select
+        const employeeSizeSelect = document.querySelector(
+          ".employee-size-container .multi-select-wrapper"
+        );
+        const employeeSizeHeader = employeeSizeSelect.querySelector(
+          ".multi-select-header"
+        );
+        const employeeSizeOptions = employeeSizeSelect.querySelector(
+          ".multi-select-options"
+        );
+        const employeeSizeCheckboxes = employeeSizeSelect.querySelectorAll(
+          'input[name="employeeSize"]'
+        );
+
+        employeeSizeHeader.addEventListener("click", function () {
+          employeeSizeSelect.classList.toggle("active");
+        });
+
+        employeeSizeCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", updateSelectedSizes);
+        });
+
+        function updateSelectedSizes() {
+          const selectedSizes = Array.from(employeeSizeCheckboxes)
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.parentNode.textContent.trim());
+
+          employeeSizeHeader.querySelector("span").textContent =
+            selectedSizes.length > 0
+              ? selectedSizes.join(", ")
+              : "Select size ranges";
+        }
+
+        // Seniority level multi-select
+        const senioritySelect = document.querySelector(
+          ".seniority-level-container .multi-select-wrapper"
+        );
+        const seniorityHeader = senioritySelect.querySelector(
+          ".multi-select-header"
+        );
+        const seniorityOptions = senioritySelect.querySelector(
+          ".multi-select-options"
+        );
+        const seniorityLevelCheckboxes = senioritySelect.querySelectorAll(
+          'input[name="seniorityLevel"]'
+        );
+
+        seniorityHeader.addEventListener("click", function () {
+          senioritySelect.classList.toggle("active");
+        });
+
+        seniorityLevelCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", updateSelectedSeniorityLevels);
+        });
+
+        function updateSelectedSeniorityLevels() {
+          const selectedLevels = Array.from(seniorityLevelCheckboxes)
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.parentNode.textContent.trim());
+
+          seniorityHeader.querySelector("span").textContent =
+            selectedLevels.length > 0
+              ? selectedLevels.join(", ")
+              : "Select seniority levels";
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener("click", function (event) {
+          if (!employeeSizeSelect.contains(event.target)) {
+            employeeSizeSelect.classList.remove("active");
+          }
+          if (!senioritySelect.contains(event.target)) {
+            senioritySelect.classList.remove("active");
+          }
+        });
+
+        // Update form submission to include employee sizes and seniority levels
+        form.addEventListener("submit", function (event) {
+          const selectedSizes = Array.from(employeeSizeCheckboxes)
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.value);
+
+          if (selectedSizes.length > 0) {
+            const hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.name = "employeeSizes";
+            hiddenInput.value = selectedSizes.join(",");
+            this.appendChild(hiddenInput);
+          }
+
+          const selectedSeniorityLevels = Array.from(seniorityLevelCheckboxes)
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.value);
+
+          if (selectedSeniorityLevels.length > 0) {
+            const hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.name = "seniorityLevels";
+            hiddenInput.value = selectedSeniorityLevels.join(",");
+            this.appendChild(hiddenInput);
+          }
+        });
+      });
+      const scrollToBottomBtn = document.getElementById("scrollToBottomBtn");
+      const parallaxContainer = document.querySelector(".parallax-container");
+
+      scrollToBottomBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        parallaxContainer.scrollTo({
+          top: parallaxContainer.scrollHeight,
+          behavior: "smooth",
+        });
       });
     </script>
   </body>
