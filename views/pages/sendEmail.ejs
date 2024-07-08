@@ -280,7 +280,7 @@
     <script>
                                                          document.addEventListener('DOMContentLoaded', (event) => {
                                                 // Retrieve the emails from the server-side rendered data
-                                                const emails = <%- JSON.stringify(enrichedData) %>;
+                                                const emails = <%- JSON.stringify(enrichedData) %>.filter(email => email.email !== 'undefined');
                                                 const reqId = document.getElementById('reqIdInput').value;
 
                                                 const emailsContainer = document.getElementById('emailsContainer');
@@ -308,8 +308,9 @@
                                                   totalCountSpan.style.fontWeight = 'bold';
                                                   emailsContainer.appendChild(totalCountSpan);
                                                 } else {
-                                                  emailsContainer.textContent = 'No emails found from selected. Please go back and select again.';
+                                                  emailsContainer.textContent = 'No valid emails found from selection. Please go back and select again.';
                                                 }
+
 
                                                 localStorage.setItem('selectedEmails', JSON.stringify(emails));
                                                 localStorage.setItem('reqId', reqId);
@@ -322,8 +323,7 @@
                                                                               let body = document.querySelector("trix-editor").innerHTML;
                                                                               body = body.replace(/{yourName}/g, yourName);
 
-                                                                              const emails = JSON.parse(localStorage.getItem('selectedEmails'));
-                                                                              const reqId = localStorage.getItem('reqId');
+                                                                              const emails = JSON.parse(localStorage.getItem('selectedEmails')).filter(email => email.email !== 'undefined');                                                                              const reqId = localStorage.getItem('reqId');
                                                                               if (!fromEmail || !yourName  || !subject || !body || emails.length === 0) {
                                                                                 alert("Please fill in all fields and ensure emails are selected.");
                                                                                 return;
