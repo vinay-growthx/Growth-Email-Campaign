@@ -1,6 +1,8 @@
 const axios = require("axios");
+const ApolloPersonaRepository = require("../../repository/ApolloPersonaRepository");
+const apolloPersonaRepository = new ApolloPersonaRepository();
 
-async function fetchLinkedInProfile(profileUrl) {
+async function fetchEmailViaContactOut(profileUrl, personaId) {
   try {
     const apiKey = process.env.CONTACT_OUT; // Make sure to set this environment variable
     const encodedProfileUrl = encodeURIComponent(profileUrl);
@@ -13,8 +15,11 @@ async function fetchLinkedInProfile(profileUrl) {
       },
     });
 
-    const workEmail = response.data.profile.work_email;
-
+    const workEmail = response?.data?.profile?.work_email?.[0] || "";
+    await apolloPersonaRepository.updateOne(
+      { id: personaId },
+      { $set: { email: response?.data?.profile?.work_email?.[0] } }
+    );
     return workEmail;
   } catch (error) {
     console.error("Error fetching LinkedIn profile:", error);
@@ -22,4 +27,4 @@ async function fetchLinkedInProfile(profileUrl) {
   }
 }
 
-module.exports = { fetchLinkedInProfile };
+module.exports = { fetchEmailViaContactOut };

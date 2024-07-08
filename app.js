@@ -30,6 +30,8 @@ const {
   findPersonById,
   addJobLocation,
 } = require("./services/util");
+const { fetchEmailViaContactOut } = require("./services/emailAPI/contactsout");
+const { fetchWorkEmailFromRb2bapi } = require("./services/emailAPI/r2b2b");
 const { fetchJobListings } = require("./services/rapidAPI/jobListing");
 const LinkedinJobRepository = require("./repository/LinkedinJobRepository");
 const linkedinJobRepository = new LinkedinJobRepository();
@@ -39,7 +41,6 @@ const EmailRepository = require("./repository/EmailRepository");
 const emailRepository = new EmailRepository();
 const RequestIdRepository = require("./repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
-const { fetchLinkedInProfile } = require("./services/emailAPI/contactsout");
 const { generateProfessionalSubject } = require("./services/chatgpt");
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
@@ -443,19 +444,19 @@ app.post("/email-enrich-process", async (req, res) => {
     const updatedData = [];
 
     for (const item of personas) {
-      if (item.email === "email_not_unlocked@domain.com") {
-        console.log(item.email);
-        const newEmail = await getEmailByLinkedInUrl(
-          item?.linkedin_url,
-          item.id
-        );
-        console.log("new email ====>", newEmail);
-        if (newEmail || item.email) {
-          updatedData.push({ ...item, email: newEmail || item.email });
-        }
-      } else {
-        if (item.email) updatedData.push(item);
+      // if (item.email === "email_not_unlocked@domain.com") {
+      //   console.log(item.email);
+      const newEmail = await getEmailByLinkedInUrl(item?.linkedin_url, item.id);
+      console.log("new email ====>", newEmail);
+      if (
+        newEmail ||
+        (item.email && item.email != "email_not_unlocked@domain.com")
+      ) {
+        updatedData.push({ ...item, email: newEmail || item.email });
       }
+      // } else {
+      if (item.email) updatedData.push(item);
+      // }
     }
     const personaValidData = updatedData.reduce((acc, item) => {
       const newItem = { ...item };
@@ -508,8 +509,12 @@ app.post("/email-enrich", async (req, res) => {
     for (let i = 0; i < linkedinUrls.length; i++) {
       const emailEnrich = await getEmailByLinkedInUrl(linkedinUrls[i]);
       if (!emailEnrich || emailEnrich.length === 0) {
-        emailEnrich = await fetchLinkedInProfile(linkedinUrls[i]);
+        emailEnrich = await fetchEmailViaContactOut(linkedinUrls[i]);
       }
+      if (!emailEnrich || emailEnrich.length === 0) {
+        emailEnrich = await fetchWorkEmailFromRb2bapi(linkedinUrls[i]);
+      }
+
       if (emailEnrich) {
         enrichedData.push(emailEnrich);
       }

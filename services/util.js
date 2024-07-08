@@ -6,6 +6,7 @@ const ApolloOrganizationRepository = require("../repository/ApolloOrganizationRe
 const apolloOrganizationRepository = new ApolloOrganizationRepository();
 const RequestIdRepository = require("../repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
+const { fetchEmailViaContactOut } = require("../services/emailAPI/contactsout");
 async function saveJobData(jobData) {
   const jobEntries = jobData.map((job) => ({
     job_id: job.job_id || "",
@@ -428,6 +429,33 @@ function addJobLocation(job) {
   job.job_location = locationParts.join(", ");
   return job;
 }
+async function enrichPersonasData(personas) {
+  const updatedData = [];
+
+  for (const item of personas) {
+    let email = item.email;
+
+    if (!email || email === "email_not_unlocked@domain.com") {
+      const newEmail = await getEmailByLinkedInUrl(item.linkedin_url, item.id);
+      console.log("new email ====>", newEmail);
+
+      if (!newEmail) {
+        const contactOutEmail = await fetchEmailViaContactOut(
+          item.linkedin_url
+        );
+        email = contactOutEmail || item.email;
+      } else {
+        email = newEmail;
+      }
+    }
+
+    if (email && email !== "email_not_unlocked@domain.com") {
+      updatedData.push({ ...item, email });
+    }
+  }
+
+  return updatedData;
+}
 module.exports = {
   findAllJobs,
   saveJobData,
@@ -436,6 +464,7 @@ module.exports = {
   findAllPersonas,
   processLocation,
   savePersonaData,
+  enrichPersonasData,
   updateContactDetails,
   saveJobDataJobListing,
   saveOrganizationData,
