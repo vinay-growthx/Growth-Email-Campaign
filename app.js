@@ -454,7 +454,7 @@ app.post("/email-enrich-process", async (req, res) => {
           updatedData.push({ ...item, email: newEmail || item.email });
         }
       } else {
-        updatedData.push(item);
+        if (item.email) updatedData.push(item);
       }
     }
     const personaValidData = updatedData.reduce((acc, item) => {
