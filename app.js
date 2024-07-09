@@ -45,6 +45,7 @@ const emailRepository = new EmailRepository();
 const RequestIdRepository = require("./repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
 const { generateProfessionalSubject } = require("./services/chatgpt");
+const { getLinkedInData } = require("./services/rapidAPI/linkedInData");
 const {
   generateSalesNavUrl,
 } = require("./services/salesNav/salesNavConversation");
@@ -213,7 +214,7 @@ app.post("/send-email", async (req, res) => {
       const mailOptions = {
         // to: email.email,
         to: "vinay.prajapati@hirequotient.com",
-        bcc: "vinay91098@gmail.com,sidhartha@hirequotient.com,vinay.prajapati@hirequotient.com,amartya@hirequotient.com",
+        // bcc: "vinay91098@gmail.com,sidhartha@hirequotient.com,vinay.prajapati@hirequotient.com,amartya@hirequotient.com",
         from: req.body.fromEmail,
         subject: aiGeneratedSubject || replacedSubject,
         html: body
@@ -323,10 +324,19 @@ app.post("/create-persona", async (req, res) => {
         const salesNavUrl = await generateSalesNavUrl(convertedObj);
         console.log("sales nav url", salesNavUrl);
         const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
-        console.log(
-          "search people lix ====>",
-          JSON.stringify(searchPeopleLixData.people[0])
-        );
+
+        for (let i = 0; i < searchCompanyApollo?.people?.length; i++) {
+          if (i == 0) {
+            console.log(
+              "search people lix ====>",
+              JSON.stringify(searchPeopleLixData.people[0].salesNavId)
+            );
+          }
+          const personData = await getLinkedInData(
+            searchPeopleLixData.people[i]?.salesNavId
+          );
+          console.log("json stringify", JSON.stringify(personData));
+        }
         const company = await searchCompanyApollo(name);
         let orgId = company?.accounts?.[0]?.organization_id;
         if (company) {

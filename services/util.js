@@ -647,6 +647,74 @@ function updatePageQueryParam(url, startPage) {
   }
   return newUrl.href;
 }
+function convertData(data) {
+  const convertedData = {
+    id: data.salesNavId || "",
+    first_name: data.firstName || "",
+    last_name: data.lastName || "",
+    name: data.name || "",
+    linkedin_url: data.salesNavLink || "",
+    title: data.experience[0]?.title || "",
+    photo_url: data.img || "",
+    headline: data.aboutSummaryText || "",
+    employment_history: data.experience.map((exp) => ({
+      created_at: new Date(),
+      current: exp.dateEnded === "Present",
+      description: "",
+      emails: [],
+      end_date:
+        exp.dateEnded === "Present" ? undefined : new Date(exp.dateEnded),
+      grade_level: "",
+      kind: "",
+      major: "",
+      organization_id: "",
+      organization_name: exp.organisation.name || "",
+      raw_address: "",
+      start_date: new Date(exp.dateStarted),
+      title: exp.title || "",
+      updated_at: new Date(),
+      id: "",
+      key: "",
+    })),
+    state: data.location?.split(", ")[1] || "",
+    city: data.location?.split(", ")[0] || "",
+    country: data.location?.split(", ")[2] || "",
+    organization: {
+      id: "",
+      name: data.experience[0]?.organisation.name || "",
+      website_url: "",
+      blog_url: "",
+      angellist_url: "",
+      linkedin_url: data.experience[0]?.organisation.salesNavLink || "",
+      twitter_url: "",
+      facebook_url: "",
+      primary_phone: {},
+      languages: [],
+      alexa_ranking: 0,
+      phone: "",
+      linkedin_uid: "",
+      founded_year: 0,
+      publicly_traded_symbol: "",
+      publicly_traded_exchange: "",
+      logo_url: "",
+      crunchbase_url: "",
+      primary_domain:
+        data.experience[0]?.organisation.salesNavLink?.split("/")[2] || "",
+      sanitized_phone: "",
+    },
+    is_likely_to_engage: false,
+    departments: [],
+    subdepartments: [],
+    seniority: "",
+    functions: [],
+    phone_numbers: [],
+    intent_strength: 0,
+    show_intent: false,
+    revealed_for_current_team: false,
+  };
+
+  return convertedData;
+}
 const jobFunctionArr = [
   {
     label: "Accounting",
@@ -149176,6 +149244,7 @@ const locationArr = [
   },
 ];
 module.exports = {
+  convertData,
   findAllJobs,
   saveJobData,
   industryArr,
