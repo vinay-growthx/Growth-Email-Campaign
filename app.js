@@ -325,7 +325,7 @@ app.post("/create-persona", async (req, res) => {
         console.log("sales nav url", salesNavUrl);
         const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
 
-        for (let i = 0; i < searchCompanyApollo?.people?.length; i++) {
+        for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
           if (i == 0) {
             console.log(
               "search people lix ====>",
