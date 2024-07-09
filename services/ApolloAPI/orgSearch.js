@@ -16,7 +16,7 @@ async function searchCompanyApollo(organizationName) {
 
   try {
     const response = await axios.post(url, data, { headers });
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error in making request:", error.message);

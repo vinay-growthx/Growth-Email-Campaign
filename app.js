@@ -323,7 +323,10 @@ app.post("/create-persona", async (req, res) => {
         const salesNavUrl = await generateSalesNavUrl(convertedObj);
         console.log("sales nav url", salesNavUrl);
         const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
-        console.log("search people lix ====>", searchPeopleLixData.people[0]);
+        console.log(
+          "search people lix ====>",
+          JSON.stringify(searchPeopleLixData.people[0])
+        );
         const company = await searchCompanyApollo(name);
         let orgId = company?.accounts?.[0]?.organization_id;
         if (company) {
