@@ -363,12 +363,14 @@ app.post("/search-jobs", async (req, res) => {
       radius,
       exclude_job_publishers,
       location_hidden,
+      industry_hidden,
       role_function,
     } = req.body;
     const convertedObject = {
       title: job_titles,
       location: location_hidden,
       roleFunction: role_function,
+      industryFunction: industry_hidden,
     };
 
     const reqUUID = uuidv4();

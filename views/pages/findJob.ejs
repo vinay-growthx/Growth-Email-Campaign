@@ -275,7 +275,8 @@
           </div> -->
           <div class="form-group" style="animation-delay: 0.2s">
             <label for="role_function">Job Function:</label>
-            <select id="role_function" name="role_function">
+            <select id="role_function" name="role_function" required>
+              <option value="" disabled selected>Select a job function</option>
               <% jobFunctionArr.forEach(function(role) { %>
               <option
                 value="<%= JSON.stringify({ label: role.label, value: role.value }) %>"
