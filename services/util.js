@@ -149281,13 +149281,12 @@ async function convertToApolloPersona(user, reqUUID) {
 
     // Create the ApolloPersona object
 
-    const personId = uuidv4();
     const apolloPersona = {
-      id: personId,
+      id: user.username,
       first_name: user.firstName,
       last_name: user.lastName,
       name: `${user.firstName} ${user.lastName}`,
-      linkedin_url: user.profilePicture,
+      linkedin_url: `https://linkedin.com/in/${user.username}`,
       title: user.headline,
       email_status: "unavailable", // Assuming status as unavailable
       photo_url: user.profilePicture,
@@ -149321,7 +149320,7 @@ async function convertToApolloPersona(user, reqUUID) {
     const apolloCreated = await apolloPersonaRepository.create(apolloPersona);
     const updatedRequest = await requestIdRepository.updateOne(
       { reqId: reqUUID },
-      { $addToSet: { personaIds: personId } },
+      { $addToSet: { personaIds: user.username } },
       { upsert: true }
     );
     console.log("updated req", updatedRequest);
