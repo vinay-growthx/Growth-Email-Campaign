@@ -1,33 +1,29 @@
 const axios = require("axios");
 
-async function searchLinkedInPeopleViaLix(params) {
+const axios = require("axios");
+
+async function searchPeopleLix(url) {
+  const url = "https://api.lix-it.com/v1/li/sales/search/people";
+  const apiKey = process.env.LIX_API_KEY;
+
+  const config = {
+    headers: {
+      Authorization: apiKey,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    params: {
+      viewAllFilters: true,
+      url: url,
+    },
+  };
+
   try {
-    const url = "https://api.lix-it.com/v1/li/sales/search/people";
-    const authorization = process.env.LIX_IT_AUTH_TOKEN;
-
-    if (!authorization) {
-      throw new Error("LIX_IT_AUTH_TOKEN is not set in environment variables");
-    }
-
-    const response = await axios.post(
-      url,
-      new URLSearchParams({
-        viewAllFilters: params.viewAllFilters || "true",
-        url: params.linkedInSearchUrl,
-      }),
-      {
-        headers: {
-          Authorization: authorization,
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
-
+    const response = await axios.get(url, config);
     return response.data;
   } catch (error) {
-    console.error("Error searching LinkedIn people:", error);
+    console.error("Error:", error.message);
     throw error;
   }
 }
 
-module.exports = { searchLinkedInPeopleViaLix };
+module.exports = { searchPeopleLix };

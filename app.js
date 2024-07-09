@@ -292,6 +292,8 @@ app.post("/create-persona", async (req, res) => {
     const employeeSize = req?.body?.employeeSize;
     const selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
     const reqUUID = req.body.reqId || uuidv4();
+    let convertedObj = await requestIdRepository.find(req.body.reqId);
+    convertedObj = convertedObj.convertJobObject;
     const linkedinJobs = await linkedinJobRepository.find(
       {
         _id: selectedIds,
@@ -309,7 +311,11 @@ app.post("/create-persona", async (req, res) => {
     personaDesignation = convertToStringArray(personaDesignation);
 
     const allPeople = [];
-
+    const salesNavUrl = await generateSalesNavUrl(convertedObj);
+    console.log("sales nav url", salesNavUrl);
+    const searchPeopleLix = await searchPeopleLix(salesNavUrl);
+    console.log("search people lix ====>", searchPeopleLix);
+    return;
     for (const name of employerNames) {
       try {
         const company = await searchCompanyApollo(name);
