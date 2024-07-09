@@ -222,6 +222,29 @@
         color: #2c3e50;
         font-weight: 500;
       }
+      .form-group select {
+        width: 100%;
+        padding: 10px;
+        font-size: 1em;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1.5 4.5l.707-.707L6 7.586l3.793-3.793.707.707z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        padding-right: 30px;
+      }
+
+      .form-group select:focus {
+        border-color: #3498db;
+        outline: none;
+        box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+      }
     </style>
   </head>
   <body>
@@ -230,7 +253,17 @@
       <div class="parallax-layer content">
         <h1>Advanced Job Search</h1>
         <form action="/search-jobs" method="POST">
-          <div class="form-group" style="animation-delay: 0.1s">
+          <div class="form-group" style="animation-delay: 0.5s">
+            <label for="job_title">Job Title:</label>
+            <input
+              type="text"
+              id="job_title"
+              name="job_title"
+              placeholder="e.g., Backend developer"
+              required
+            />
+          </div>
+          <!-- <div class="form-group" style="animation-delay: 0.1s">
             <label for="query">Job Title and Location:</label>
             <input
               type="text"
@@ -239,8 +272,57 @@
               placeholder="e.g., Python developer in Texas, USA"
               required
             />
+          </div> -->
+          <div class="form-group" style="animation-delay: 0.2s">
+            <label for="role_function">Job Function:</label>
+            <select id="role_function" name="role_function">
+              <% jobFunctionArr.forEach(function(role) { %>
+              <option
+                value="<%= JSON.stringify({ label: role.label, value: role.value }) %>"
+              >
+                <%= role.label %>
+              </option>
+              <% }); %>
+            </select>
           </div>
-
+          <div class="form-group" style="animation-delay: 0.3s">
+            <label for="industry">Industry:</label>
+            <input
+              type="text"
+              id="industry"
+              name="industry"
+              placeholder="Type an industry"
+              list="industry-suggestions"
+              data-value=""
+              required
+            />
+            <datalist id="industry-suggestions"></datalist>
+            <input
+              type="hidden"
+              id="industry_hidden"
+              name="industry_hidden"
+              value=""
+            />
+          </div>
+          <div class="form-group" style="animation-delay: 0.4s">
+            <label for="location">Location:</label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              placeholder="Type a location"
+              list="location-suggestions"
+              data-value=""
+              required
+            />
+            <datalist id="location-suggestions"></datalist>
+            <input
+              type="hidden"
+              id="location_hidden"
+              name="location_hidden"
+              value=""
+            />
+          </div>
           <div class="form-group" style="animation-delay: 0.2s">
             <label for="page">Page Number:</label>
             <input
@@ -287,7 +369,7 @@
               <span class="checkbox-label">Remote Jobs Only</span>
             </label>
           </div>
-          <div class="form-group" style="animation-delay: 0.6s">
+          <div class="form-group" style="animation-delay: 0.2s">
             <label for="employment_types">Employment Types:</label>
             <select id="employment_types" name="employment_types">
               <option value="FULLTIME">FULLTIME</option>
@@ -297,7 +379,7 @@
             </select>
           </div>
 
-          <div class="form-group" style="animation-delay: 0.7s">
+          <div class="form-group" style="animation-delay: 0.2s">
             <label for="job_requirements">Job Requirements:</label>
             <select id="job_requirements" name="job_requirements">
               <option value="">Any</option>
@@ -331,7 +413,7 @@
               placeholder="e.g., startup"
             />
           </div> -->
-          <div class="form-group" style="animation-delay: 1s">
+          <div class="form-group" style="animation-delay: 0.1s">
             <label class="checkbox-container">
               <input
                 type="checkbox"
@@ -343,7 +425,7 @@
             </label>
           </div>
 
-          <div class="form-group" style="animation-delay: 1.1s">
+          <div class="form-group" style="animation-delay: 0.1s">
             <label for="radius">Radius (km):</label>
             <input type="number" id="radius" name="radius" min="0" value="27" />
           </div>
@@ -378,6 +460,102 @@
             submitButton.disabled = false;
             submitButton.textContent = "Search Jobs";
           }, 20000); // Re-enable after 10 seconds
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const locationInput = document.getElementById("location");
+        const locationArr = [
+          <% locationArr.forEach(function(location) { %>
+            {
+              label: "<%= location.label %>",
+              value: "<%= location.value %>"
+            },
+          <% }); %>
+        ];
+
+        function suggestLocations(input) {
+          const suggestions = locationArr.filter(location =>
+            location.label.toLowerCase().startsWith(input.toLowerCase())
+          );
+          suggestions.sort((a, b) => a.label.length - b.label.length);
+          return suggestions.slice(0, 5); // Limit to 5 suggestions
+        }
+
+        function displaySuggestions(suggestions) {
+          const datalist = document.getElementById("location-suggestions");
+          datalist.innerHTML = "";
+
+          suggestions.forEach(suggestion => {
+            const option = document.createElement("option");
+            option.value = suggestion.label;
+            option.dataset.value = JSON.stringify(suggestion);
+            datalist.appendChild(option);
+          });
+        }
+
+        locationInput.addEventListener("input", function () {
+          const input = this.value;
+          const suggestions = suggestLocations(input);
+          displaySuggestions(suggestions);
+        });
+
+        locationInput.addEventListener("change", function () {
+          const selectedOption = Array.from(locationInput.list.options).find(
+            option => option.value === locationInput.value
+          );
+          if (selectedOption) {
+            const selectedValue = JSON.parse(selectedOption.dataset.value);
+            document.getElementById("location_hidden").value = JSON.stringify(selectedValue);
+          }
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const industryInput = document.getElementById("industry");
+        const industryArr = [
+          <% industryArr.forEach(function(industry) { %>
+            {
+              label: "<%= industry.label %>",
+              value: "<%= industry.value %>"
+            },
+          <% }); %>
+        ];
+
+        function suggestIndustries(input) {
+          const suggestions = industryArr.filter(industry =>
+            industry.label.toLowerCase().startsWith(input.toLowerCase())
+          );
+          suggestions.sort((a, b) => a.label.length - b.label.length);
+          return suggestions.slice(0, 5); // Limit to 5 suggestions
+        }
+
+        function displayIndustrySuggestions(suggestions) {
+          const datalist = document.getElementById("industry-suggestions");
+          datalist.innerHTML = "";
+
+          suggestions.forEach(suggestion => {
+            const option = document.createElement("option");
+            option.value = suggestion.label;
+            option.dataset.value = JSON.stringify(suggestion);
+            datalist.appendChild(option);
+          });
+        }
+
+        industryInput.addEventListener("input", function () {
+          const input = this.value;
+          const suggestions = suggestIndustries(input);
+          displayIndustrySuggestions(suggestions);
+        });
+
+        industryInput.addEventListener("change", function () {
+          const selectedOption = Array.from(industryInput.list.options).find(
+            option => option.value === industryInput.value
+          );
+          if (selectedOption) {
+            const selectedValue = JSON.parse(selectedOption.dataset.value);
+            document.getElementById("industry_hidden").value = JSON.stringify(selectedValue);
+          }
         });
       });
     </script>

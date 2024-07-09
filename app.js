@@ -29,6 +29,9 @@ const {
   findAllPersonas,
   findPersonById,
   addJobLocation,
+  jobFunctionArr,
+  industryArr,
+  locationArr,
 } = require("./services/util");
 const { fetchEmailViaContactOut } = require("./services/emailAPI/contactsout");
 const { fetchWorkEmailFromRb2bapi } = require("./services/emailAPI/r2b2b");
@@ -42,6 +45,9 @@ const emailRepository = new EmailRepository();
 const RequestIdRepository = require("./repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
 const { generateProfessionalSubject } = require("./services/chatgpt");
+const {
+  generateSalesNavUrl,
+} = require("./services/salesNav/salesNavConversation");
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
@@ -87,7 +93,12 @@ app.use((req, res, next) => {
  */
 app.use("/", healthRouter);
 app.get("/find-jobs", (req, res) => {
-  res.render("findJob", { title: "Find the Best LinkedIn Jobs Available" });
+  res.render("findJob", {
+    title: "Find the Best LinkedIn Jobs Available",
+    jobFunctionArr: jobFunctionArr,
+    industryArr: industryArr,
+    locationArr: locationArr,
+  });
 });
 app.get("/get-jobs/:reqId", async (req, res) => {
   const reqId = req.params.reqId;
@@ -103,10 +114,9 @@ app.get("/get-jobs/:reqId", async (req, res) => {
     }
   } catch (error) {
     console.error("Error fetching jobs:", error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Please Refresh Page");
   }
 });
-
 app.get("/persona-reachout/:reqId", async (req, res) => {
   const reqId = req.params.reqId;
   try {
@@ -336,8 +346,10 @@ app.post("/create-persona", async (req, res) => {
 app.post("/search-jobs", async (req, res) => {
   try {
     console.log("req.body ===>", req.body);
+    let query = req.body.job_title.trim() + " in " + req.body.location.trim();
+
+    query = query.toLowerCase();
     const {
-      query,
       page,
       num_pages,
       date_posted,
@@ -350,7 +362,15 @@ app.post("/search-jobs", async (req, res) => {
       actively_hiring,
       radius,
       exclude_job_publishers,
+      location_hidden,
+      role_function,
     } = req.body;
+    const convertedObject = {
+      title: job_titles,
+      location: location_hidden,
+      roleFunction: role_function,
+    };
+
     const reqUUID = uuidv4();
 
     const results = await searchJobs(
@@ -388,7 +408,7 @@ app.post("/search-jobs", async (req, res) => {
     });
     if (results?.data?.length) {
       const jobDataSave = await saveJobData(results.data);
-      updateRequestWithJobIds(reqUUID, jobDataSave);
+      updateRequestWithJobIds(reqUUID, jobDataSave, convertedObject);
     } else {
       console.log("inside else");
       const APIData = await fetchJobListings({
@@ -601,7 +621,12 @@ app.post("/email-enrich-new", async (req, res) => {
 //   }
 // });
 app.get("/", (req, res) => {
-  res.render("findJob");
+  res.render("findJob", {
+    title: "Find the Best LinkedIn Jobs Available",
+    jobFunctionArr: jobFunctionArr,
+    industryArr: industryArr,
+    locationArr: locationArr,
+  });
 });
 
 // app.post("/send-email", async (req, res) => {
