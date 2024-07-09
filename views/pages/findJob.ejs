@@ -445,118 +445,141 @@
       </div>
     </div>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const form = document.querySelector("form");
-        const submitButton = document.getElementById("submitButton");
+                  document.addEventListener("DOMContentLoaded", function () {
+                    const form = document.querySelector("form");
+                    const submitButton = document.getElementById("submitButton");
 
-        form.addEventListener("submit", function (e) {
-          // Disable the button
-          submitButton.disabled = true;
-          submitButton.textContent = "Searching...";
+                    form.addEventListener("submit", function (e) {
+                      // Disable the button
+                      submitButton.disabled = true;
+                      submitButton.textContent = "Searching...";
 
-          // You can add a timeout to re-enable the button after a certain period
-          // if the form submission takes too long or fails
-          setTimeout(function () {
-            submitButton.disabled = false;
-            submitButton.textContent = "Search Jobs";
-          }, 20000); // Re-enable after 10 seconds
-        });
-      });
+                      // You can add a timeout to re-enable the button after a certain period
+                      // if the form submission takes too long or fails
+                      setTimeout(function () {
+                        submitButton.disabled = false;
+                        submitButton.textContent = "Search Jobs";
+                      }, 20000); // Re-enable after 10 seconds
+                    });
+                  });
 
-      document.addEventListener("DOMContentLoaded", function () {
-        const locationInput = document.getElementById("location");
-        const locationArr = [
-          <% locationArr.forEach(function(location) { %>
-            {
-              label: "<%= location.label %>",
-              value: "<%= location.value %>"
-            },
-          <% }); %>
-        ];
+                  document.addEventListener("DOMContentLoaded", function () {
+                    const locationInput = document.getElementById("location");
+                    const locationArr = [
+                      <% locationArr.forEach(function(location) { %>
+                        {
+                          label: "<%= location.label %>",
+                          value: "<%= location.value %>"
+                        },
+                      <% }); %>
+                    ];
 
-        function suggestLocations(input) {
-          const suggestions = locationArr.filter(location =>
-            location.label.toLowerCase().startsWith(input.toLowerCase())
-          );
-          suggestions.sort((a, b) => a.label.length - b.label.length);
-          return suggestions.slice(0, 5); // Limit to 5 suggestions
+                    function suggestLocations(input) {
+                      const suggestions = locationArr.filter(location =>
+                        location.label.toLowerCase().startsWith(input.toLowerCase())
+                      );
+                      suggestions.sort((a, b) => a.label.length - b.label.length);
+                      return suggestions.slice(0, 5); // Limit to 5 suggestions
+                    }
+
+                    function displaySuggestions(suggestions) {
+                      const datalist = document.getElementById("location-suggestions");
+                      datalist.innerHTML = "";
+
+                      suggestions.forEach(suggestion => {
+                        const option = document.createElement("option");
+                        option.value = suggestion.label;
+                        option.dataset.value = JSON.stringify(suggestion);
+                        datalist.appendChild(option);
+                      });
+                    }
+
+                    locationInput.addEventListener("input", function () {
+                      const input = this.value;
+                      const suggestions = suggestLocations(input);
+                      displaySuggestions(suggestions);
+                    });
+
+                    locationInput.addEventListener("change", function () {
+                      const selectedOption = Array.from(locationInput.list.options).find(
+                        option => option.value === locationInput.value
+                      );
+                      if (selectedOption) {
+                        const selectedValue = JSON.parse(selectedOption.dataset.value);
+                        document.getElementById("location_hidden").value = JSON.stringify(selectedValue);
+                      }
+                    });
+                  });
+
+                  document.addEventListener("DOMContentLoaded", function () {
+                    const industryInput = document.getElementById("industry");
+                    const industryArr = [
+                      <% industryArr.forEach(function(industry) { %>
+                        {
+                          label: "<%= industry.label %>",
+                          value: "<%= industry.value %>"
+                        },
+                      <% }); %>
+                    ];
+
+                    function suggestIndustries(input) {
+                      const suggestions = industryArr.filter(industry =>
+                        industry.label.toLowerCase().startsWith(input.toLowerCase())
+                      );
+                      suggestions.sort((a, b) => a.label.length - b.label.length);
+                      return suggestions.slice(0, 5); // Limit to 5 suggestions
+                    }
+
+                    function displayIndustrySuggestions(suggestions) {
+                      const datalist = document.getElementById("industry-suggestions");
+                      datalist.innerHTML = "";
+
+                      suggestions.forEach(suggestion => {
+                        const option = document.createElement("option");
+                        option.value = suggestion.label;
+                        option.dataset.value = JSON.stringify(suggestion);
+                        datalist.appendChild(option);
+                      });
+                    }
+
+                    industryInput.addEventListener("input", function () {
+                      const input = this.value;
+                      const suggestions = suggestIndustries(input);
+                      displayIndustrySuggestions(suggestions);
+                    });
+
+                    industryInput.addEventListener("change", function () {
+                      const selectedOption = Array.from(industryInput.list.options).find(
+                        option => option.value === industryInput.value
+                      );
+                      if (selectedOption) {
+                        const selectedValue = JSON.parse(selectedOption.dataset.value);
+                        document.getElementById("industry_hidden").value = JSON.stringify(selectedValue);
+                      }
+                    });
+                  });
+                  locationInput.addEventListener("change", function () {
+              const selectedOption = Array.from(locationInput.list.options).find(
+                option => option.value === locationInput.value
+              );
+              if (selectedOption) {
+                const selectedValue = JSON.parse(selectedOption.dataset.value);
+                document.getElementById("location_hidden").value = JSON.stringify(selectedValue);
+              } else {
+                // If no valid option is selected, set the hidden field to an empty string
+                document.getElementById("location_hidden").value = "";
+              }
+            });industryInput.addEventListener("change", function () {
+        const selectedOption = Array.from(industryInput.list.options).find(
+          option => option.value === industryInput.value
+        );
+        if (selectedOption) {
+          const selectedValue = JSON.parse(selectedOption.dataset.value);
+          document.getElementById("industry_hidden").value = JSON.stringify(selectedValue);
+        } else {
+          // If no valid option is selected, set the hidden field to an empty string
+          document.getElementById("industry_hidden").value = "";
         }
-
-        function displaySuggestions(suggestions) {
-          const datalist = document.getElementById("location-suggestions");
-          datalist.innerHTML = "";
-
-          suggestions.forEach(suggestion => {
-            const option = document.createElement("option");
-            option.value = suggestion.label;
-            option.dataset.value = JSON.stringify(suggestion);
-            datalist.appendChild(option);
-          });
-        }
-
-        locationInput.addEventListener("input", function () {
-          const input = this.value;
-          const suggestions = suggestLocations(input);
-          displaySuggestions(suggestions);
-        });
-
-        locationInput.addEventListener("change", function () {
-          const selectedOption = Array.from(locationInput.list.options).find(
-            option => option.value === locationInput.value
-          );
-          if (selectedOption) {
-            const selectedValue = JSON.parse(selectedOption.dataset.value);
-            document.getElementById("location_hidden").value = JSON.stringify(selectedValue);
-          }
-        });
-      });
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const industryInput = document.getElementById("industry");
-        const industryArr = [
-          <% industryArr.forEach(function(industry) { %>
-            {
-              label: "<%= industry.label %>",
-              value: "<%= industry.value %>"
-            },
-          <% }); %>
-        ];
-
-        function suggestIndustries(input) {
-          const suggestions = industryArr.filter(industry =>
-            industry.label.toLowerCase().startsWith(input.toLowerCase())
-          );
-          suggestions.sort((a, b) => a.label.length - b.label.length);
-          return suggestions.slice(0, 5); // Limit to 5 suggestions
-        }
-
-        function displayIndustrySuggestions(suggestions) {
-          const datalist = document.getElementById("industry-suggestions");
-          datalist.innerHTML = "";
-
-          suggestions.forEach(suggestion => {
-            const option = document.createElement("option");
-            option.value = suggestion.label;
-            option.dataset.value = JSON.stringify(suggestion);
-            datalist.appendChild(option);
-          });
-        }
-
-        industryInput.addEventListener("input", function () {
-          const input = this.value;
-          const suggestions = suggestIndustries(input);
-          displayIndustrySuggestions(suggestions);
-        });
-
-        industryInput.addEventListener("change", function () {
-          const selectedOption = Array.from(industryInput.list.options).find(
-            option => option.value === industryInput.value
-          );
-          if (selectedOption) {
-            const selectedValue = JSON.parse(selectedOption.dataset.value);
-            document.getElementById("industry_hidden").value = JSON.stringify(selectedValue);
-          }
-        });
       });
     </script>
   </body>
