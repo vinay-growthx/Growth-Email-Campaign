@@ -28,7 +28,7 @@ async function getEmailByLinkedInUrl(linkedinUrl, personaId) {
     return response?.data?.person?.email || "";
   } catch (error) {
     console.error("Error during API call:", error.message);
-    return null;
+    return "";
   }
 }
 module.exports = { getEmailByLinkedInUrl };

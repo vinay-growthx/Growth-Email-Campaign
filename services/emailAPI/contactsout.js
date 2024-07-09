@@ -23,7 +23,7 @@ async function fetchEmailViaContactOut(profileUrl, personaId) {
     return workEmail;
   } catch (error) {
     console.error("Error fetching LinkedIn profile:", error);
-    throw error;
+    return "";
   }
 }
 

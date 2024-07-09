@@ -26,6 +26,7 @@ async function fetchWorkEmailFromRb2bapi(linkedinUrl, personaId) {
     return workEmail;
   } catch (error) {
     console.error("Error fetching emails from rb2bapi:", error);
+    return "";
   }
 }
 module.exports = { fetchWorkEmailFromRb2bapi };
