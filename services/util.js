@@ -149247,6 +149247,7 @@ const locationArr = [
 ];
 
 async function convertToApolloPersona(user, reqUUID) {
+  try{
   // Helper function to format dates
   const formatDate = (year, month, day) => {
     if (year && month && day) return new Date(year, month - 1, day);
@@ -149321,6 +149322,10 @@ async function convertToApolloPersona(user, reqUUID) {
   );
   console.log("updated req", updatedRequest);
   return apolloPersona;
+  }
+  catch(err){
+    console.log('err',err);
+  }
 }
 
 module.exports = {

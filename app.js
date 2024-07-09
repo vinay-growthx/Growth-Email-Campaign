@@ -337,7 +337,6 @@ app.post("/create-persona", async (req, res) => {
             searchPeopleLixData.people[i]?.salesNavId
           );
           convertToApolloPersona(personData, reqUUID);
-          console.log("json stringify", JSON.stringify(personData));
         }
         const company = await searchCompanyApollo(name);
         let orgId = company?.accounts?.[0]?.organization_id;
