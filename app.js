@@ -315,8 +315,10 @@ app.post("/create-persona", async (req, res) => {
     personaDesignation = convertToStringArray(personaDesignation);
     console.log("persona designation", personaDesignation);
     const allPeople = [];
+    convertedObj.title = personaDesignation;
     const salesNavUrl = await generateSalesNavUrl(convertedObj);
     console.log("sales nav url", salesNavUrl);
+    console.log("converted obj ===>", convertedObj);
     const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
     console.log("search people lix ====>", searchPeopleLixData);
     for (const name of employerNames) {
