@@ -292,7 +292,9 @@ app.post("/create-persona", async (req, res) => {
     const employeeSize = req?.body?.employeeSize;
     const selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
     const reqUUID = req.body.reqId || uuidv4();
-    let convertedObj = await requestIdRepository.findOne(req.body.reqId);
+    let convertedObj = await requestIdRepository.findOne({
+      reqId: req.body.reqId,
+    });
     console.log("converted obj ===>", convertedObj);
     convertedObj = convertedObj.convertJobObject;
     const linkedinJobs = await linkedinJobRepository.find(
