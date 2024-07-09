@@ -149248,6 +149248,7 @@ const locationArr = [
 ];
 
 async function convertToApolloPersona(user, reqUUID) {
+  console.log("json stringify ====>", user);
   try {
     // Helper function to format dates
     const formatDate = (year, month, day) => {
