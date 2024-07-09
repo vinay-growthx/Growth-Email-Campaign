@@ -48,6 +48,7 @@ const { generateProfessionalSubject } = require("./services/chatgpt");
 const {
   generateSalesNavUrl,
 } = require("./services/salesNav/salesNavConversation");
+const { searchPeopleLix } = require("./services/LixAPI/lix");
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
@@ -312,12 +313,12 @@ app.post("/create-persona", async (req, res) => {
     let personaDesignation = req?.body?.personaDesignations;
     console.log("persona designation", personaDesignation);
     personaDesignation = convertToStringArray(personaDesignation);
-
+    console.log("persona designation", personaDesignation);
     const allPeople = [];
     const salesNavUrl = await generateSalesNavUrl(convertedObj);
     console.log("sales nav url", salesNavUrl);
-    const searchPeopleLix = await searchPeopleLix(salesNavUrl);
-    console.log("search people lix ====>", searchPeopleLix);
+    const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
+    console.log("search people lix ====>", searchPeopleLixData);
     for (const name of employerNames) {
       try {
         const company = await searchCompanyApollo(name);
