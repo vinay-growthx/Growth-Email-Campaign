@@ -149243,6 +149243,79 @@ const locationArr = [
     value: "90000028",
   },
 ];
+
+async function convertToApolloPersona(user) {
+  // Helper function to format dates
+  const formatDate = (year, month, day) => {
+    if (year && month && day) return new Date(year, month - 1, day);
+    if (year && month) return new Date(year, month - 1);
+    return null;
+  };
+
+  // Create employment history entries
+  const employmentHistory = user.position.map((pos) => ({
+    _id: new mongoose.Types.ObjectId(),
+    created_at: new Date(),
+    current: !pos.end.year,
+    degree: pos.degree || "",
+    description: pos.description,
+    emails: [], // Assuming no emails provided in position
+    end_date: formatDate(pos.end.year, pos.end.month, pos.end.day),
+    grade_level: "", // Not provided
+    kind: "employment", // Assuming all are employment
+    major: "", // Not provided
+    organization_id: pos.companyUsername || "", // Assuming organization ID is the username
+    organization_name: pos.companyName,
+    raw_address: pos.location,
+    start_date: formatDate(pos.start.year, pos.start.month, pos.start.day),
+    title: pos.title,
+    updated_at: new Date(),
+    id: pos.companyUsername, // Assuming unique identifier is the companyUsername
+    key: pos.title + "_" + pos.location, // Custom key made of title and location
+  }));
+
+  // Create the ApolloPersona object
+  const apolloPersona = {
+    id: user.urn,
+    first_name: user.firstName,
+    last_name: user.lastName,
+    name: `${user.firstName} ${user.lastName}`,
+    linkedin_url: user.profilePicture,
+    title: user.headline,
+    email_status: "unavailable", // Assuming status as unavailable
+    photo_url: user.profilePicture,
+    twitter_url: "", // Not provided
+    github_url: "", // Not provided
+    facebook_url: "", // Not provided
+    extrapolated_email_confidence: 0, // Assuming no confidence score
+    headline: user.headline,
+    email: "", // Assuming no email provided
+    organization_id: user.position[0].companyUsername, // Assuming first position's company as current organization
+    employment_history: employmentHistory,
+    state: "", // Not directly provided, could be parsed from geo.full if needed
+    city: user.geo.city,
+    country: user.geo.country,
+    organization: {
+      id: user.position[0].companyUsername, // Assuming first position's company as current organization
+      name: user.position[0].companyName,
+      website_url: user.position[0].companyURL,
+      // Other URLs and phone details are not provided in the data
+    },
+    is_likely_to_engage: false, // Assuming default engagement likelihood
+    departments: [], // Assuming no departments provided
+    subdepartments: [],
+    seniority: "", // Not provided
+    functions: [], // Assuming no functions provided
+    phone_numbers: [], // Assuming no phone numbers provided
+    intent_strength: 0, // Assuming default intent strength
+    show_intent: false,
+    revealed_for_current_team: false,
+  };
+ const apolloCreated = await apolloPersonaRepository.create(apolloPersona);
+ console.log('apollo created',apolloCreated);
+  return apolloPersona;
+}
+
 module.exports = {
   convertData,
   findAllJobs,
@@ -149263,6 +149336,7 @@ module.exports = {
   updateContactDetails,
   saveJobDataJobListing,
   saveOrganizationData,
+  convertToApolloPersona,
   updateRequestWithJobIds,
   updateRequestWithPersonaIds,
 };

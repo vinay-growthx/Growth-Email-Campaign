@@ -32,6 +32,7 @@ const {
   jobFunctionArr,
   industryArr,
   locationArr,
+  convertToApolloPersona,
 } = require("./services/util");
 const { fetchEmailViaContactOut } = require("./services/emailAPI/contactsout");
 const { fetchWorkEmailFromRb2bapi } = require("./services/emailAPI/r2b2b");
@@ -335,6 +336,7 @@ app.post("/create-persona", async (req, res) => {
           const personData = await getLinkedInData(
             searchPeopleLixData.people[i]?.salesNavId
           );
+          convertToApolloPersona(personData);
           console.log("json stringify", JSON.stringify(personData));
         }
         const company = await searchCompanyApollo(name);
