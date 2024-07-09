@@ -213,8 +213,8 @@ app.post("/send-email", async (req, res) => {
       );
       aiGeneratedSubject = aiGeneratedSubject?.subject;
       const mailOptions = {
-        // to: email.email,
-        to: "vinay.prajapati@hirequotient.com",
+        to: email.email,
+        // to: "vinay.prajapati@hirequotient.com",
         // bcc: "vinay91098@gmail.com,sidhartha@hirequotient.com,vinay.prajapati@hirequotient.com,amartya@hirequotient.com",
         from: req.body.fromEmail,
         subject: aiGeneratedSubject || replacedSubject,
