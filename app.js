@@ -336,7 +336,7 @@ app.post("/create-persona", async (req, res) => {
           const personData = await getLinkedInData(
             searchPeopleLixData.people[i]?.salesNavId
           );
-          convertToApolloPersona(personData);
+          convertToApolloPersona(personData, reqUUID);
           console.log("json stringify", JSON.stringify(personData));
         }
         const company = await searchCompanyApollo(name);
