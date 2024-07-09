@@ -296,7 +296,6 @@ app.post("/create-persona", async (req, res) => {
     let convertedObj = await requestIdRepository.findOne({
       reqId: req.body.reqId,
     });
-    console.log("converted obj ===>", convertedObj);
     convertedObj = convertedObj.convertJobObject;
     const linkedinJobs = await linkedinJobRepository.find(
       {
@@ -316,13 +315,15 @@ app.post("/create-persona", async (req, res) => {
     console.log("persona designation", personaDesignation);
     const allPeople = [];
     convertedObj.title = personaDesignation;
-    const salesNavUrl = await generateSalesNavUrl(convertedObj);
-    console.log("sales nav url", salesNavUrl);
-    console.log("converted obj ===>", convertedObj);
-    const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
-    console.log("search people lix ====>", searchPeopleLixData);
+
     for (const name of employerNames) {
       try {
+        convertedObj.currentCompany = name;
+        console.log("converted obj ===>", convertedObj);
+        const salesNavUrl = await generateSalesNavUrl(convertedObj);
+        console.log("sales nav url", salesNavUrl);
+        const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
+        console.log("search people lix ====>", searchPeopleLixData);
         const company = await searchCompanyApollo(name);
         let orgId = company?.accounts?.[0]?.organization_id;
         if (company) {
