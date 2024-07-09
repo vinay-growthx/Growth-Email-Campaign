@@ -8,11 +8,11 @@ async function searchPeople(
   seniorityLevel
 ) {
   if (!orgId) return null;
-  console.log("persona designation ===>", personaDesignation);
-  console.log("org ids ====>", orgId);
-  console.log("person seniority ====>", seniorityLevel);
+  // console.log("persona designation ===>", personaDesignation);
+  // console.log("org ids ====>", orgId);
+  // console.log("person seniority ====>", seniorityLevel);
   let personLocations = processLocation(locations);
-  console.log("location =====>", personLocations);
+  // console.log("location =====>", personLocations);
   const url = "https://api.apollo.io/v1/mixed_people/search";
   const headers = {
     "Content-Type": "application/json",
@@ -41,15 +41,15 @@ async function searchPeople(
   if (seniorityLevel) {
     let resultArray = seniorityLevel.split(",");
     const res_seniority = resultArray.map((res) => res.toLowerCase());
-    console.log("person seniority ====>", resultArray);
+    // console.log("person seniority ====>", resultArray);
     body.person_seniorities = res_seniority;
   }
 
   try {
     const response = await axios.post(url, body, { headers });
     console.log(
-      "response data 0",
-      response.data[0],
+      // "response data 0",
+      // response.data[0],
       "response len",
       response.data.length
     );

@@ -203,12 +203,12 @@ async function updateRequestWithJobIds(reqId, jobIdsObject, convertJobObject) {
   }
 }
 async function updateRequestWithPersonaIds(reqId, personaIdsObject) {
-  console.log(
-    "Updating request:",
-    reqId,
-    "with job personas object:",
-    personaIdsObject
-  );
+  // console.log(
+  //   "Updating request:",
+  //   reqId,
+  //   "with job personas object:",
+  //   personaIdsObject
+  // );
   try {
     // Ensure jobIdsObject is an object and not null
 
@@ -219,7 +219,7 @@ async function updateRequestWithPersonaIds(reqId, personaIdsObject) {
     // Create a new document using the base repository create function
     // Assuming personaIdsObject is the object from your image
     const idArray = personaIdsObject.map((id) => String(id.id));
-    console.log("Converted persona IDs array:", idArray);
+    // console.log("Converted persona IDs array:", idArray);
 
     // Validate that the conversion has been successful
     if (
