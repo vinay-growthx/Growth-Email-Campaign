@@ -9,6 +9,8 @@ const apolloOrganizationRepository = new ApolloOrganizationRepository();
 const RequestIdRepository = require("../repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
 const { fetchEmailViaContactOut } = require("../services/emailAPI/contactsout");
+const mongoose = require("mongoose");
+
 async function saveJobData(jobData) {
   const jobEntries = jobData.map((job) => ({
     job_id: job.job_id || "",
@@ -149311,8 +149313,8 @@ async function convertToApolloPersona(user) {
     show_intent: false,
     revealed_for_current_team: false,
   };
- const apolloCreated = await apolloPersonaRepository.create(apolloPersona);
- console.log('apollo created',apolloCreated);
+  const apolloCreated = await apolloPersonaRepository.create(apolloPersona);
+  console.log("apollo created", apolloCreated);
   return apolloPersona;
 }
 
