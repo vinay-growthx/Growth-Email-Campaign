@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-async function searchPeopleLix(url) {
+async function searchPeopleLix(searchUrl) {
   const url = "https://api.lix-it.com/v1/li/sales/search/people";
   const apiKey = process.env.LIX_API_KEY;
 
@@ -11,7 +11,7 @@ async function searchPeopleLix(url) {
     },
     params: {
       viewAllFilters: true,
-      url: url,
+      url: searchUrl,
     },
   };
 
