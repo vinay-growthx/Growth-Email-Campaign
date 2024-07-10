@@ -524,7 +524,6 @@
         text-decoration: none;
         transition: color 0.3s ease;
         word-break: break-all;
-        display: block;
       }
 
       .job-apply-link:hover {
@@ -1503,7 +1502,6 @@
           if (applyLink.includes("glassdoor.com")) return "glassdoor";
           return "other";
         }
-
         function updateJobVisibility() {
           const selectedCompanies = Array.from(companyCheckboxes)
             .filter((checkbox) => checkbox.checked && checkbox.value !== "")
@@ -1513,14 +1511,18 @@
             .filter((checkbox) => checkbox.checked && checkbox.value !== "")
             .map((checkbox) => checkbox.value);
 
+          const allCompaniesSelected =
+            allCompaniesCheckbox.checked || selectedCompanies.length === 0;
+
           jobCards.forEach((card) => {
-            const companyName = card.querySelector(".company-name").textContent;
-            const applyLink = card.querySelector(".job-apply-link").href;
+            const companyName = card
+              .querySelector(".company-name")
+              .textContent.trim();
+            const applyLink = card.querySelector(".job-apply-link")?.href || "";
             const jobSource = getJobSource(applyLink);
 
             const companyMatch =
-              selectedCompanies.length === 0 ||
-              selectedCompanies.includes(companyName);
+              allCompaniesSelected || selectedCompanies.includes(companyName);
             const sourceMatch =
               selectedSources.length === 0 ||
               selectedSources.includes(jobSource);
@@ -1535,6 +1537,23 @@
           updateCounts();
         }
 
+        allCompaniesCheckbox.addEventListener("change", function () {
+          companyCheckboxes.forEach((checkbox) => {
+            if (checkbox !== allCompaniesCheckbox) {
+              checkbox.checked = false;
+            }
+          });
+          updateJobVisibility();
+        });
+
+        companyCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", function () {
+            if (this !== allCompaniesCheckbox) {
+              allCompaniesCheckbox.checked = false;
+            }
+            updateJobVisibility();
+          });
+        });
         function updateCounts() {
           const visibleJobs = document.querySelectorAll(
             ".job-card:not([style*='display: none'])"
@@ -1677,8 +1696,8 @@
               const postedDateDetail = Array.from(jobDetails).find((detail) =>
                 detail.textContent.includes("Posted:")
               );
-              const salaryRangeDetail = Array.from(jobDetails).find((detail) =>
-                detail.textContent.includes("Salary Range:")
+              const industryTypeDetail = Array.from(jobDetails).find((detail) =>
+                detail.textContent.includes("Industry Type:")
               );
 
               const descriptionElement =
@@ -1693,10 +1712,11 @@
 
               return {
                 job_title:
-                  jobCard.querySelector(".job-title").textContent || "N/A",
-                company_name: jobCard.querySelector(".company-name")
-                  ? jobCard.querySelector(".company-name").textContent
-                  : "N/A",
+                  jobCard.querySelector(".job-title").textContent.trim() ||
+                  "N/A",
+                company_name:
+                  jobCard.querySelector(".company-name").textContent.trim() ||
+                  "N/A",
                 location: locationDetail
                   ? locationDetail.textContent.split("Location:")[1].trim()
                   : "N/A",
@@ -1706,12 +1726,9 @@
                 posted_date: postedDateDetail
                   ? postedDateDetail.textContent.split("Posted:")[1].trim()
                   : "N/A",
-                industry_type: jobCard.querySelector(
-                  ".job-detail:nth-last-child(2)"
-                )
-                  ? jobCard
-                      .querySelector(".job-detail:nth-last-child(2)")
-                      .textContent.split("Industry Type:")[1]
+                industry_type: industryTypeDetail
+                  ? industryTypeDetail.textContent
+                      .split("Industry Type:")[1]
                       .trim()
                   : "N/A",
                 apply_link: jobCard.querySelector(".job-apply-link")
@@ -1746,7 +1763,6 @@
           link.click();
           document.body.removeChild(link);
         }
-
         document
           .querySelector(".download-btn")
           .addEventListener("click", downloadCSV);
