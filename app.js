@@ -331,25 +331,16 @@ app.post("/create-persona", async (req, res) => {
         redirectSent = true; // Ensure we don't attempt to send multiple HTTP responses
 
         // Break out of the loop and let the remaining processing continue in the background
-        employerNames
-          .slice(employerNames.indexOf(name) + 1)
-          .forEach((remainingName) => {
-            processEmployer(
-              remainingName,
-              reqUUID,
-              jobLocations,
-              personaDesignations,
-              employeeSize,
-              seniorityLevel,
-              allPeople
-            )
-              .then(() =>
-                console.log(`Continued processing for ${remainingName}`)
-              )
-              .catch((error) =>
-                console.error(`Error processing ${remainingName}:`, error)
-              );
-          });
+        await processRemainingEmployersSequentially(
+          employerNames.indexOf(name) + 1,
+          employerNames,
+          reqUUID,
+          jobLocations,
+          personaDesignations,
+          employeeSize,
+          seniorityLevel,
+          allPeople
+        );
 
         break;
       }
@@ -365,6 +356,35 @@ app.post("/create-persona", async (req, res) => {
     }
   }
 });
+async function processRemainingEmployersSequentially(
+  startIndex,
+  employerNames,
+  reqUUID,
+  jobLocations,
+  personaDesignations,
+  employeeSize,
+  seniorityLevel,
+  allPeople
+) {
+  for (let i = startIndex; i < employerNames.length; i++) {
+    const name = employerNames[i];
+    try {
+      await processEmployer(
+        name,
+        reqUUID,
+        jobLocations,
+        personaDesignations,
+        employeeSize,
+        seniorityLevel,
+        allPeople
+      );
+      console.log(`Continued processing for ${name}`);
+    } catch (error) {
+      console.error(`Error processing ${name}:`, error);
+    }
+  }
+}
+
 async function processEmployer(
   name,
   reqUUID,
