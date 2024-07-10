@@ -252,6 +252,7 @@
       <div class="parallax-layer parallax-background"></div>
       <div class="parallax-layer content">
         <h1>Advanced Job Search</h1>
+        <div id="error-message" style="color: red; display: none"></div>
         <form action="/search-jobs" method="POST">
           <div class="form-group" style="animation-delay: 0.5s">
             <label for="job_title">Job Title:</label>
@@ -446,141 +447,116 @@
       </div>
     </div>
     <script>
-                  document.addEventListener("DOMContentLoaded", function () {
-                    const form = document.querySelector("form");
-                    const submitButton = document.getElementById("submitButton");
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("form");
+        const submitButton = document.getElementById("submitButton");
+        const locationInput = document.getElementById("location");
+        const industryInput = document.getElementById("industry");
+        const errorMessage = document.getElementById("error-message");
 
-                    form.addEventListener("submit", function (e) {
-                      // Disable the button
-                      submitButton.disabled = true;
-                      submitButton.textContent = "Searching...";
+        const locationArr = [
+          <% locationArr.forEach(function(location) { %>
+            {
+              label: "<%= location.label %>",
+              value: "<%= location.value %>"
+            },
+          <% }); %>
+        ];
 
-                      // You can add a timeout to re-enable the button after a certain period
-                      // if the form submission takes too long or fails
-                      setTimeout(function () {
-                        submitButton.disabled = false;
-                        submitButton.textContent = "Search Jobs";
-                      }, 20000); // Re-enable after 10 seconds
-                    });
-                  });
+        const industryArr = [
+          <% industryArr.forEach(function(industry) { %>
+            {
+              label: "<%= industry.label %>",
+              value: "<%= industry.value %>"
+            },
+          <% }); %>
+        ];
 
-                  document.addEventListener("DOMContentLoaded", function () {
-                    const locationInput = document.getElementById("location");
-                    const locationArr = [
-                      <% locationArr.forEach(function(location) { %>
-                        {
-                          label: "<%= location.label %>",
-                          value: "<%= location.value %>"
-                        },
-                      <% }); %>
-                    ];
-
-                    function suggestLocations(input) {
-                      const suggestions = locationArr.filter(location =>
-                        location.label.toLowerCase().startsWith(input.toLowerCase())
-                      );
-                      suggestions.sort((a, b) => a.label.length - b.label.length);
-                      return suggestions.slice(0, 5); // Limit to 5 suggestions
-                    }
-
-                    function displaySuggestions(suggestions) {
-                      const datalist = document.getElementById("location-suggestions");
-                      datalist.innerHTML = "";
-
-                      suggestions.forEach(suggestion => {
-                        const option = document.createElement("option");
-                        option.value = suggestion.label;
-                        option.dataset.value = JSON.stringify(suggestion);
-                        datalist.appendChild(option);
-                      });
-                    }
-
-                    locationInput.addEventListener("input", function () {
-                      const input = this.value;
-                      const suggestions = suggestLocations(input);
-                      displaySuggestions(suggestions);
-                    });
-
-                    locationInput.addEventListener("change", function () {
-                      const selectedOption = Array.from(locationInput.list.options).find(
-                        option => option.value === locationInput.value
-                      );
-                      if (selectedOption) {
-                        const selectedValue = JSON.parse(selectedOption.dataset.value);
-                        document.getElementById("location_hidden").value = JSON.stringify(selectedValue);
-                      }
-                    });
-                  });
-
-                  document.addEventListener("DOMContentLoaded", function () {
-                    const industryInput = document.getElementById("industry");
-                    const industryArr = [
-                      <% industryArr.forEach(function(industry) { %>
-                        {
-                          label: "<%= industry.label %>",
-                          value: "<%= industry.value %>"
-                        },
-                      <% }); %>
-                    ];
-
-                    function suggestIndustries(input) {
-                      const suggestions = industryArr.filter(industry =>
-                        industry.label.toLowerCase().startsWith(input.toLowerCase())
-                      );
-                      suggestions.sort((a, b) => a.label.length - b.label.length);
-                      return suggestions.slice(0, 5); // Limit to 5 suggestions
-                    }
-
-                    function displayIndustrySuggestions(suggestions) {
-                      const datalist = document.getElementById("industry-suggestions");
-                      datalist.innerHTML = "";
-
-                      suggestions.forEach(suggestion => {
-                        const option = document.createElement("option");
-                        option.value = suggestion.label;
-                        option.dataset.value = JSON.stringify(suggestion);
-                        datalist.appendChild(option);
-                      });
-                    }
-
-                    industryInput.addEventListener("input", function () {
-                      const input = this.value;
-                      const suggestions = suggestIndustries(input);
-                      displayIndustrySuggestions(suggestions);
-                    });
-
-                    industryInput.addEventListener("change", function () {
-                      const selectedOption = Array.from(industryInput.list.options).find(
-                        option => option.value === industryInput.value
-                      );
-                      if (selectedOption) {
-                        const selectedValue = JSON.parse(selectedOption.dataset.value);
-                        document.getElementById("industry_hidden").value = JSON.stringify(selectedValue);
-                      }
-                    });
-                  });
-                  locationInput.addEventListener("change", function () {
-              const selectedOption = Array.from(locationInput.list.options).find(
-                option => option.value === locationInput.value
-              );
-              if (selectedOption) {
-                const selectedValue = JSON.parse(selectedOption.dataset.value);
-                document.getElementById("location_hidden").value = JSON.stringify(selectedValue);
-              } else {
-                // If no valid option is selected, set the hidden field to an empty string
-                document.getElementById("location_hidden").value = "";
-              }
-            });industryInput.addEventListener("change", function () {
-        const selectedOption = Array.from(industryInput.list.options).find(
-          option => option.value === industryInput.value
-        );
-        if (selectedOption) {
-          const selectedValue = JSON.parse(selectedOption.dataset.value);
-          document.getElementById("industry_hidden").value = JSON.stringify(selectedValue);
-        } else {
-          // If no valid option is selected, set the hidden field to an empty string
-          document.getElementById("industry_hidden").value = "";
+        function isValidLocation(input) {
+          return locationArr.some(location => location.label.toLowerCase() === input.toLowerCase());
         }
+
+        function isValidIndustry(input) {
+          return industryArr.some(industry => industry.label.toLowerCase() === input.toLowerCase());
+        }
+
+        form.addEventListener("submit", function (e) {
+          let isValid = true;
+          errorMessage.textContent = "";
+
+          if (!isValidLocation(locationInput.value)) {
+            errorMessage.textContent += "Please select a valid location from the list. ";
+            isValid = false;
+          }
+
+          if (!isValidIndustry(industryInput.value)) {
+            errorMessage.textContent += "Please select a valid industry from the list.";
+            isValid = false;
+          }
+
+          if (!isValid) {
+            e.preventDefault(); // Prevent form submission
+            errorMessage.style.display = "block";
+            return;
+          }
+
+          errorMessage.style.display = "none";
+          // Disable the button
+          submitButton.disabled = true;
+          submitButton.textContent = "Searching...";
+
+          // You can add a timeout to re-enable the button after a certain period
+          // if the form submission takes too long or fails
+          setTimeout(function () {
+            submitButton.disabled = false;
+            submitButton.textContent = "Search Jobs";
+          }, 20000); // Re-enable after 20 seconds
+        });
+
+        function suggestOptions(input, optionsArr) {
+          const suggestions = optionsArr.filter(option =>
+            option.label.toLowerCase().startsWith(input.toLowerCase())
+          );
+          suggestions.sort((a, b) => a.label.length - b.label.length);
+          return suggestions.slice(0, 5); // Limit to 5 suggestions
+        }
+
+        function displaySuggestions(suggestions, datalistId) {
+          const datalist = document.getElementById(datalistId);
+          datalist.innerHTML = "";
+
+          suggestions.forEach(suggestion => {
+            const option = document.createElement("option");
+            option.value = suggestion.label;
+            option.dataset.value = JSON.stringify(suggestion);
+            datalist.appendChild(option);
+          });
+        }
+
+        function handleInputChange(input, optionsArr, suggestionsId, hiddenFieldId) {
+          input.addEventListener("input", function () {
+            const suggestions = suggestOptions(this.value, optionsArr);
+            displaySuggestions(suggestions, suggestionsId);
+          });
+
+          input.addEventListener("change", function () {
+            const selectedOption = Array.from(input.list.options).find(
+              option => option.value === input.value
+            );
+            if (selectedOption) {
+              const selectedValue = JSON.parse(selectedOption.dataset.value);
+              document.getElementById(hiddenFieldId).value = JSON.stringify(selectedValue);
+              errorMessage.style.display = "none";
+            } else {
+              document.getElementById(hiddenFieldId).value = "";
+              errorMessage.textContent = `Please select a valid ${input.id} from the list.`;
+              errorMessage.style.display = "block";
+            }
+          });
+        }
+
+        handleInputChange(locationInput, locationArr, "location-suggestions", "location_hidden");
+        handleInputChange(industryInput, industryArr, "industry-suggestions", "industry_hidden");
       });
     </script>
   </body>
