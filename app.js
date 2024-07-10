@@ -327,7 +327,7 @@ app.post("/create-persona", async (req, res) => {
       // Check condition after processing each employer
       if (!redirectSent && personaLen?.length > 5) {
         // `shouldRedirect` is a placeholder for your actual condition
-        res.redirect(`/early-redirect/${reqUUID}`);
+        res.redirect(`/persona-reachout/${reqUUID}`);
         redirectSent = true; // Ensure we don't attempt to send multiple HTTP responses
 
         // Break out of the loop and let the remaining processing continue in the background
