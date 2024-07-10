@@ -323,9 +323,9 @@ app.post("/create-persona", async (req, res) => {
       );
       let personaLen = await requestIdRepository.findOne({ reqId: reqUUID });
       personaLen = personaLen.personaIds;
-      console.log("persona len ====>", personaLen);
+      console.log("persona len ====>", personaLen.length);
       // Check condition after processing each employer
-      if (!redirectSent && personaLen?.length > 25) {
+      if (!redirectSent && personaLen?.length > 3) {
         // `shouldRedirect` is a placeholder for your actual condition
         res.redirect(`/persona-reachout/${reqUUID}`);
         redirectSent = true; // Ensure we don't attempt to send multiple HTTP responses
