@@ -322,6 +322,7 @@ app.post("/create-persona", async (req, res) => {
     const allPeople = [];
     convertedObj.title = personaDesignation;
     let count = 0;
+    let flag = false;
     for (const name of employerNames) {
       try {
         convertedObj.currentCompany = name;
@@ -329,7 +330,6 @@ app.post("/create-persona", async (req, res) => {
         const salesNavUrl = await generateSalesNavUrl(convertedObj);
         console.log("sales nav url", salesNavUrl);
         const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
-        let flag = false;
         for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
           let personaLen = await requestIdRepository.findOne({
             reqId: reqUUID,
@@ -375,8 +375,7 @@ app.post("/create-persona", async (req, res) => {
         console.error(`Error processing company name ${name}:`, error);
       }
     }
-
-    res.redirect(`/persona-reachout/${reqUUID}`);
+    if (!flag) res.redirect(`/persona-reachout/${reqUUID}`);
   } catch (error) {
     console.error("Error creating persona:", error);
     res.status(500).json({ error: "Failed to create persona" });
