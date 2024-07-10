@@ -333,10 +333,18 @@ app.post("/create-persona", async (req, res) => {
         });
         personaLen = personaLen.personaIds;
         console.log("persona len ====>", personaLen);
-        if (personaLen.length > 25) {
+        if (personaLen.length > 5) {
           res.redirect(`/persona-reachout/${reqUUID}`);
         }
         for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
+          let personaLen = await requestIdRepository.findOne({
+            reqId: reqUUID,
+          });
+          personaLen = personaLen.personaIds;
+          console.log("persona len ====>", personaLen);
+          if (personaLen.length > 5) {
+            res.redirect(`/persona-reachout/${reqUUID}`);
+          }
           if (i == 0) {
             console.log(
               "search people lix ====>",
