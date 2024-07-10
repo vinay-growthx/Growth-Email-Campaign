@@ -34,6 +34,7 @@ const {
   locationArr,
   convertToApolloPersona,
   removeEmojiFromName,
+  removeDoubleQuotes,
 } = require("./services/util");
 const { fetchEmailViaContactOut } = require("./services/emailAPI/contactsout");
 const { fetchWorkEmailFromRb2bapi } = require("./services/emailAPI/r2b2b");
@@ -218,7 +219,9 @@ app.post("/send-email", async (req, res) => {
         to: "vinay.prajapati@hirequotient.com",
         // bcc: "vinay91098@gmail.com,sidhartha@hirequotient.com,vinay.prajapati@hirequotient.com,amartya@hirequotient.com",
         from: req.body.fromEmail,
-        subject: aiGeneratedSubject || replacedSubject,
+        subject:
+          removeDoubleQuotes(aiGeneratedSubject) ||
+          removeDoubleQuotes(replacedSubject),
         html: body
           .replaceAll("{name}", removeEmojiFromName(personData?.name))
           .replaceAll("{companyName}", personData?.organization?.name)

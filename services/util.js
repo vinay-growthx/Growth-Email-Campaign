@@ -149443,7 +149443,22 @@ function removeEmojiFromName(str) {
   }
 }
 // H. J.👨🏻‍💻 Y.
+function removeDoubleQuotes(str) {
+  if (typeof str !== "string") {
+    console.log("subject: Input must be a string");
+    return str;
+  }
 
+  if (str.length === 0) {
+    return str;
+  }
+
+  if (str.length >= 2 && str[0] === '"' && str[str.length - 1] === '"') {
+    return str.slice(1, -1);
+  }
+
+  return str;
+}
 module.exports = {
   convertData,
   findAllJobs,
@@ -149456,6 +149471,7 @@ module.exports = {
   findAllPersonas,
   processLocation,
   savePersonaData,
+  removeDoubleQuotes,
   removeEmojiFromName,
   constructLinkedInURL,
   getCleanedCompanies,
