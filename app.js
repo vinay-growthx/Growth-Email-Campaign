@@ -334,7 +334,7 @@ app.post("/create-persona", async (req, res) => {
           let personaLen = await requestIdRepository.findOne({
             reqId: reqUUID,
           });
-          personaLen = personaLen.length;
+          personaLen = personaLen.personaIds.length;
           console.log("persona len", personaLen);
           if (personaLen > 2) {
             flag = true;
