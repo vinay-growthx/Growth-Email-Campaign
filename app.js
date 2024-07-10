@@ -321,7 +321,6 @@ app.post("/create-persona", async (req, res) => {
     console.log("persona designation", personaDesignation);
     const allPeople = [];
     convertedObj.title = personaDesignation;
-    let count = 0;
     for (const name of employerNames) {
       try {
         convertedObj.currentCompany = name;
@@ -331,8 +330,6 @@ app.post("/create-persona", async (req, res) => {
         const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
 
         for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
-          if (count == 25) break;
-          count++;
           if (i == 0) {
             console.log(
               "search people lix ====>",
