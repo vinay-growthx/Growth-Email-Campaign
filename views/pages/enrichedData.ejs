@@ -504,6 +504,39 @@
         transform: translateY(-2px) scale(1.05);
         box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
       }
+      .floating-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        display: inline-block;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: #fff;
+        text-decoration: none;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+        text-align: center;
+        font-size: 1.2em;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        z-index: 1000;
+      }
+
+      .floating-btn:hover {
+        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+      }
+
+      .floating-btn.at-bottom {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+      }
+
+      .floating-btn.at-bottom:hover {
+        background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+      }
     </style>
   </head>
   <body>
@@ -738,6 +771,45 @@
             behavior: "smooth",
           });
         });
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+        const scrollButton = document.getElementById("scrollToBottomBtn");
+        const parallaxContainer = document.querySelector(".parallax-container");
+
+        function updateScrollButton() {
+          const scrollPosition = parallaxContainer.scrollTop;
+          const maxScroll =
+            parallaxContainer.scrollHeight - parallaxContainer.clientHeight;
+
+          if (scrollPosition >= maxScroll - 20) {
+            // Within 20px of the bottom
+            scrollButton.textContent = "Scroll to Top";
+            scrollButton.classList.add("at-bottom");
+          } else {
+            scrollButton.textContent = "Scroll to Bottom";
+            scrollButton.classList.remove("at-bottom");
+          }
+        }
+
+        scrollButton.addEventListener("click", function (e) {
+          e.preventDefault();
+          if (this.classList.contains("at-bottom")) {
+            parallaxContainer.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          } else {
+            parallaxContainer.scrollTo({
+              top: parallaxContainer.scrollHeight,
+              behavior: "smooth",
+            });
+          }
+        });
+
+        parallaxContainer.addEventListener("scroll", updateScrollButton);
+
+        // Initial update
+        updateScrollButton();
       });
     </script>
   </body>
