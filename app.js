@@ -33,6 +33,7 @@ const {
   industryArr,
   locationArr,
   convertToApolloPersona,
+  removeEmojiFromName,
 } = require("./services/util");
 const { fetchEmailViaContactOut } = require("./services/emailAPI/contactsout");
 const { fetchWorkEmailFromRb2bapi } = require("./services/emailAPI/r2b2b");
@@ -213,8 +214,8 @@ app.post("/send-email", async (req, res) => {
       );
       aiGeneratedSubject = aiGeneratedSubject?.subject;
       const mailOptions = {
-        to: email.email,
-        // to: "vinay.prajapati@hirequotient.com",
+        // to: email.email,
+        to: "vinay.prajapati@hirequotient.com",
         // bcc: "vinay91098@gmail.com,sidhartha@hirequotient.com,vinay.prajapati@hirequotient.com,amartya@hirequotient.com",
         from: req.body.fromEmail,
         subject: aiGeneratedSubject || replacedSubject,
@@ -228,7 +229,7 @@ app.post("/send-email", async (req, res) => {
           .replaceAll("{firstName}", personData?.first_name),
       };
       let personalizedBody = body
-        .replaceAll("{name}", personData?.name)
+        .replaceAll("{name}", removeEmojiFromName(personData?.name))
         .replaceAll("{companyName}", personData?.organization?.name)
         .replaceAll("{role}", personData?.title)
         .replaceAll("{hiringJobTitle}", jobPost)

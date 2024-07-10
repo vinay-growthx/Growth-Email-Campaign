@@ -149329,6 +149329,120 @@ async function convertToApolloPersona(user, reqUUID) {
     console.log("err", err);
   }
 }
+function removeEmojiFromName(str) {
+  try {
+    if (!str) return "there";
+    const namePrefixes = [
+      "Mr",
+      "Mrs",
+      "Ing",
+      "Ms",
+      "Miss",
+      "Dr",
+      "Prof",
+      "Phd",
+      "PhD",
+      "Rev",
+      "Sir",
+      "Lord",
+      "Lady",
+      "Honorable",
+      "Madam",
+      "Madame",
+      "Mademoiselle",
+      "Señor",
+      "Señora",
+      "Señorita",
+      "Herr",
+      "Frau",
+      "Fräulein",
+    ];
+    let inputName = str;
+    str = str.replace(/\d+/g, "");
+
+    if (!str) return inputName;
+    const res = str.replace(/[^\p{L}\p{N}\p{P}\p{Z}^$\n]/gu, "");
+    const specialCharactersRegex =
+      /[,\(\)\[\]\{\}\!\@\#\$\%\^\&\*\=\_\+\/\\\<\>\?\'\"\;\:\|.\\`~]/g;
+    const cleanedInput = res.replace(specialCharactersRegex, " ");
+    const words = cleanedInput.split(" ");
+    const isValidName = (word) => {
+      if (!word || word.length === 0) {
+        return false;
+      }
+      word = word.replace(
+        /[,\(\)\[\]\{\}\!\@\#\$\%\^\&\*\=\-\+\/\\\<\>\?\'\"\;\:\|.\\`~]/g,
+        ""
+      );
+      return word.length >= 3 && !namePrefixes.includes(word);
+    };
+    // Find the first valid name
+    let firstName = "";
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      // Case 1: Starting with spaces, and first word is <= 2 chars, pick next word with at least 3 letters
+      if (i === 0 && word.length <= 2) {
+        const nextWord = words[i + 1];
+        if (isValidName(nextWord)) {
+          firstName = nextWord;
+          break;
+        }
+      }
+      // Case 2: Starting word with a special character and emojis (basically anything that is not a letter)
+      if (i === 0 && !isValidName(word)) {
+        const nextWord = words[i + 1];
+        if (isValidName(nextWord)) {
+          firstName = nextWord;
+          break;
+        }
+      }
+      // Case 3: First name if is <= 2 chars, pick 2nd name
+      if (word.length <= 2 && isValidName(words[i + 1])) {
+        firstName = words[i + 1];
+        break;
+      }
+      // Case 4: In cases where there is first, middle and last name, if name is MD R. Colin, then third name should be picked.
+      if (
+        word.length >= 3 &&
+        isValidName(word) &&
+        words[i + 1] &&
+        words[i + 1].length === 1 &&
+        isValidName(words[i + 2]) &&
+        words[i + 3]
+      ) {
+        firstName = words[i];
+        break;
+      }
+      // Case 5: First word is a special character/s itself
+      if (i === 0 && !isValidName(word)) {
+        continue;
+      }
+      // If none of the above cases apply, pick the first valid name
+      if (isValidName(word)) {
+        firstName = word;
+        break;
+      }
+    }
+    // If the input string contains only numbers and special characters, return null
+    if (cleanedInput.length === 0) {
+      return "there";
+    }
+    // console.log(
+    //   "removeEmojiFromName Called:-->",
+    //   inputName,
+    //   "--to-->",
+    //   firstName
+    // );
+    return firstName
+      ? firstName.charAt(0).toUpperCase() + firstName.slice(1)
+      : inputName;
+  } catch (err) {
+    console.log("error", err);
+    Sentry.captureException(err);
+    return str;
+  }
+}
+// H. J.👨🏻‍💻 Y.
 
 module.exports = {
   convertData,
@@ -149342,6 +149456,7 @@ module.exports = {
   findAllPersonas,
   processLocation,
   savePersonaData,
+  removeEmojiFromName,
   constructLinkedInURL,
   getCleanedCompanies,
   getCleanedLocations,
