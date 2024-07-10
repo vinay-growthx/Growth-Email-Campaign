@@ -328,7 +328,13 @@ app.post("/create-persona", async (req, res) => {
         const salesNavUrl = await generateSalesNavUrl(convertedObj);
         console.log("sales nav url", salesNavUrl);
         const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
-
+        let personaLen = await requestIdRepository.findOne({
+          reqId: reqUUID,
+        });
+        personaLen = personaLen.personaIds;
+        if (personaLen.length > 25) {
+          res.redirect(`/persona-reachout/${reqUUID}`);
+        }
         for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
           if (i == 0) {
             console.log(
