@@ -7,7 +7,7 @@ async function fetchJobListings(data) {
     url: "https://jobs-api14.p.rapidapi.com/list",
     headers: {
       "x-rapidapi-host": "jobs-api14.p.rapidapi.com",
-      "x-rapidapi-key": "2de43991aemshe3b4baf8ce9c093p15c229jsn39aee9a08a04", // Replace YOUR_RAPIDAPI_KEY with your actual RapidAPI key
+      "x-rapidapi-key": process.env.LI_JOB_RAPIDAPI_KEY, // Replace YOUR_RAPIDAPI_KEY with your actual RapidAPI key
     },
     params: {
       query: `${data.job_titles} in ${data.query}`,
