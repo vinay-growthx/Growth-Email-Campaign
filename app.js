@@ -286,11 +286,111 @@ function convertToStringArray(commaString) {
     .map((item) => item.trim())
     .filter((item) => item !== "");
 }
+// app.post("/create-persona", async (req, res) => {
+//   try {
+//     console.log("req body ===>", req.body);
+//     let seniorityLevel = req?.body?.seniorityLevel;
+//     if (req?.body?.seniorityLevel?.length) {
+//       const allItems = seniorityLevel.flatMap((str) => str.split(","));
+//       const uniqueItems = [...new Set(allItems)];
+//       seniorityLevel = uniqueItems.join(",");
+//     }
+//     const { jobSelect } = req.body;
+//     const employeeSize = req?.body?.employeeSize;
+//     const selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
+//     const reqUUID = req.body.reqId || uuidv4();
+//     let convertedObj = await requestIdRepository.findOne({
+//       reqId: req.body.reqId,
+//     });
+//     convertedObj = convertedObj.convertJobObject;
+//     const linkedinJobs = await linkedinJobRepository.find(
+//       {
+//         _id: selectedIds,
+//       },
+//       "employer_name job_title employer_company_type job_description job_city job_state job_country"
+//     );
+//     const jobLocations = linkedinJobs.map((job) =>
+//       `${job.job_city || ""}, ${job.job_state || ""}, ${job.job_country || ""}`
+//         .trim()
+//         .replace(/^,\s*|,\s*$/g, "")
+//     );
+//     const employerNames = linkedinJobs.map((job) => job.employer_name);
+//     let personaDesignation = req?.body?.personaDesignations;
+//     console.log("persona designation", personaDesignation);
+//     personaDesignation = convertToStringArray(personaDesignation);
+//     console.log("persona designation", personaDesignation);
+//     const allPeople = [];
+//     convertedObj.title = personaDesignation;
+//     for (const name of employerNames) {
+//       try {
+//         convertedObj.currentCompany = name;
+//         console.log("converted obj ===>", convertedObj);
+//         const salesNavUrl = await generateSalesNavUrl(convertedObj);
+//         console.log("sales nav url", salesNavUrl);
+//         const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
+//         let personaLen = await requestIdRepository.findOne({
+//           reqId: reqUUID,
+//         });
+//         personaLen = personaLen.personaIds;
+//         console.log("persona len ====>", personaLen);
+//         if (personaLen.length > 5) {
+//           res.redirect(`/persona-reachout/${reqUUID}`);
+//         }
+//         for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
+//           let personaLen = await requestIdRepository.findOne({
+//             reqId: reqUUID,
+//           });
+//           personaLen = personaLen.personaIds;
+//           console.log("persona len ====>", personaLen);
+//           if (personaLen.length > 5) {
+//             res.redirect(`/persona-reachout/${reqUUID}`);
+//           }
+//           if (i == 0) {
+//             console.log(
+//               "search people lix ====>",
+//               JSON.stringify(searchPeopleLixData.people[0].salesNavId)
+//             );
+//           }
+//           const personData = await getLinkedInData(
+//             searchPeopleLixData.people[i]?.salesNavId
+//           );
+//           convertToApolloPersona(personData, reqUUID);
+//         }
+//         const company = await searchCompanyApollo(name);
+//         let orgId = company?.accounts?.[0]?.organization_id;
+//         if (company) {
+//           saveOrganizationData([company]);
+//           const people = await searchPeople(
+//             jobLocations,
+//             orgId,
+//             personaDesignation,
+//             employeeSize,
+//             seniorityLevel
+//           );
+//           if (people?.people) {
+//             allPeople.push(...people.people);
+//             await savePersonaData(allPeople);
+//           }
+//           updateRequestWithPersonaIds(reqUUID, allPeople);
+//         } else {
+//           console.warn(`No company found for name: ${name}`);
+//         }
+//       } catch (error) {
+//         console.log(`Error processing company name ${name}:`, error);
+//       }
+//     }
+
+//     res.redirect(`/persona-reachout/${reqUUID}`);
+//   } catch (error) {
+//     console.log("Error creating persona:", error);
+//     res.status(500).json({ error: "Failed to create persona" });
+//   }
+// });
 app.post("/create-persona", async (req, res) => {
   try {
     console.log("req body ===>", req.body);
     let seniorityLevel = req?.body?.seniorityLevel;
-    if (req?.body?.seniorityLevel?.length) {
+    if (seniorityLevel?.length) {
       const allItems = seniorityLevel.flatMap((str) => str.split(","));
       const uniqueItems = [...new Set(allItems)];
       seniorityLevel = uniqueItems.join(",");
@@ -299,10 +399,7 @@ app.post("/create-persona", async (req, res) => {
     const employeeSize = req?.body?.employeeSize;
     const selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
     const reqUUID = req.body.reqId || uuidv4();
-    let convertedObj = await requestIdRepository.findOne({
-      reqId: req.body.reqId,
-    });
-    convertedObj = convertedObj.convertJobObject;
+
     const linkedinJobs = await linkedinJobRepository.find(
       {
         _id: selectedIds,
@@ -315,50 +412,41 @@ app.post("/create-persona", async (req, res) => {
         .replace(/^,\s*|,\s*$/g, "")
     );
     const employerNames = linkedinJobs.map((job) => job.employer_name);
-    let personaDesignation = req?.body?.personaDesignations;
+
+    let personaDesignation = convertToStringArray(
+      req?.body?.personaDesignations
+    );
     console.log("persona designation", personaDesignation);
-    personaDesignation = convertToStringArray(personaDesignation);
-    console.log("persona designation", personaDesignation);
+
     const allPeople = [];
-    convertedObj.title = personaDesignation;
+    let redirectIssued = false;
+
     for (const name of employerNames) {
+      if (redirectIssued) break; // Stop processing if redirected
+
       try {
-        convertedObj.currentCompany = name;
+        const convertedObj = {
+          ...(await requestIdRepository.findOne({ reqId: req.body.reqId })
+            .convertJobObject),
+          title: personaDesignation,
+          currentCompany: name,
+        };
         console.log("converted obj ===>", convertedObj);
+
         const salesNavUrl = await generateSalesNavUrl(convertedObj);
         console.log("sales nav url", salesNavUrl);
         const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
-        let personaLen = await requestIdRepository.findOne({
-          reqId: reqUUID,
-        });
-        personaLen = personaLen.personaIds;
-        console.log("persona len ====>", personaLen);
-        if (personaLen.length > 5) {
-          res.redirect(`/persona-reachout/${reqUUID}`);
-        }
+
         for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
-          let personaLen = await requestIdRepository.findOne({
-            reqId: reqUUID,
-          });
-          personaLen = personaLen.personaIds;
-          console.log("persona len ====>", personaLen);
-          if (personaLen.length > 5) {
-            res.redirect(`/persona-reachout/${reqUUID}`);
-          }
-          if (i == 0) {
-            console.log(
-              "search people lix ====>",
-              JSON.stringify(searchPeopleLixData.people[0].salesNavId)
-            );
-          }
           const personData = await getLinkedInData(
             searchPeopleLixData.people[i]?.salesNavId
           );
-          convertToApolloPersona(personData, reqUUID);
+          await convertToApolloPersona(personData, reqUUID);
         }
+
         const company = await searchCompanyApollo(name);
-        let orgId = company?.accounts?.[0]?.organization_id;
         if (company) {
+          let orgId = company?.accounts?.[0]?.organization_id;
           saveOrganizationData([company]);
           const people = await searchPeople(
             jobLocations,
@@ -370,20 +458,35 @@ app.post("/create-persona", async (req, res) => {
           if (people?.people) {
             allPeople.push(...people.people);
             await savePersonaData(allPeople);
+            updateRequestWithPersonaIds(reqUUID, allPeople);
           }
-          updateRequestWithPersonaIds(reqUUID, allPeople);
         } else {
           console.warn(`No company found for name: ${name}`);
         }
+
+        // Check if we need to redirect
+        if (allPeople.length > 25 && !redirectIssued) {
+          res.redirect(`/persona-reachout/${reqUUID}`);
+          redirectIssued = true; // Ensure no further processing attempts to send another response
+        }
       } catch (error) {
-        console.log(`Error processing company name ${name}:`, error);
+        console.error(`Error processing company name ${name}:`, error);
+        if (!redirectIssued) {
+          res.status(500).json({ error: "Failed to create persona" });
+          redirectIssued = true;
+        }
       }
     }
 
-    res.redirect(`/persona-reachout/${reqUUID}`);
+    if (!redirectIssued) {
+      // Only send this if no redirect has occurred
+      res.redirect(`/persona-complete/${reqUUID}`);
+    }
   } catch (error) {
-    console.log("Error creating persona:", error);
-    res.status(500).json({ error: "Failed to create persona" });
+    console.error("Error creating persona:", error);
+    if (!res.headersSent) {
+      res.status(500).json({ error: "Failed to create persona" });
+    }
   }
 });
 
