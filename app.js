@@ -288,89 +288,127 @@ function convertToStringArray(commaString) {
 }
 app.post("/create-persona", async (req, res) => {
   try {
-    console.log("req body ===>", req.body);
-    let seniorityLevel = req?.body?.seniorityLevel;
-    if (req?.body?.seniorityLevel?.length) {
-      const allItems = seniorityLevel.flatMap((str) => str.split(","));
-      const uniqueItems = [...new Set(allItems)];
-      seniorityLevel = uniqueItems.join(",");
-    }
-    const { jobSelect } = req.body;
-    const employeeSize = req?.body?.employeeSize;
+    const {
+      seniorityLevel,
+      jobSelect,
+      employeeSize,
+      personaDesignations,
+      reqId,
+    } = req.body;
     const selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
-    const reqUUID = req.body.reqId || uuidv4();
-    let convertedObj = await requestIdRepository.findOne({
-      reqId: req.body.reqId,
+    const reqUUID = reqId || uuidv4();
+    const linkedinJobs = await linkedinJobRepository.find({
+      _id: selectedIds,
     });
-    convertedObj = convertedObj.convertJobObject;
-    const linkedinJobs = await linkedinJobRepository.find(
-      {
-        _id: selectedIds,
-      },
-      "employer_name job_title employer_company_type job_description job_city job_state job_country"
-    );
+
     const jobLocations = linkedinJobs.map((job) =>
       `${job.job_city || ""}, ${job.job_state || ""}, ${job.job_country || ""}`
         .trim()
         .replace(/^,\s*|,\s*$/g, "")
     );
     const employerNames = linkedinJobs.map((job) => job.employer_name);
-    let personaDesignation = req?.body?.personaDesignations;
-    console.log("persona designation", personaDesignation);
-    personaDesignation = convertToStringArray(personaDesignation);
-    console.log("persona designation", personaDesignation);
     const allPeople = [];
-    convertedObj.title = personaDesignation;
-    for (const name of employerNames) {
-      try {
-        convertedObj.currentCompany = name;
-        console.log("converted obj ===>", convertedObj);
-        const salesNavUrl = await generateSalesNavUrl(convertedObj);
-        console.log("sales nav url", salesNavUrl);
-        const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
 
-        for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
-          if (i == 0) {
-            console.log(
-              "search people lix ====>",
-              JSON.stringify(searchPeopleLixData.people[0].salesNavId)
-            );
-          }
-          const personData = await getLinkedInData(
-            searchPeopleLixData.people[i]?.salesNavId
-          );
-          convertToApolloPersona(personData, reqUUID);
-        }
-        const company = await searchCompanyApollo(name);
-        let orgId = company?.accounts?.[0]?.organization_id;
-        if (company) {
-          saveOrganizationData([company]);
-          const people = await searchPeople(
-            jobLocations,
-            orgId,
-            personaDesignation,
-            employeeSize,
-            seniorityLevel
-          );
-          if (people?.people) {
-            allPeople.push(...people.people);
-            await savePersonaData(allPeople);
-          }
-          updateRequestWithPersonaIds(reqUUID, allPeople);
-        } else {
-          console.warn(`No company found for name: ${name}`);
-        }
-      } catch (error) {
-        console.error(`Error processing company name ${name}:`, error);
+    let redirectSent = false;
+
+    for (const name of employerNames) {
+      await processEmployer(
+        name,
+        reqUUID,
+        jobLocations,
+        personaDesignations,
+        employeeSize,
+        seniorityLevel,
+        allPeople
+      );
+      let personaLen = await requestIdRepository.findOne({ reqId: reqUUID });
+      personaLen = personaLen.personaIds;
+      // Check condition after processing each employer
+      if (!redirectSent && personaLen > 5) {
+        // `shouldRedirect` is a placeholder for your actual condition
+        res.redirect(`/early-redirect/${reqUUID}`);
+        redirectSent = true; // Ensure we don't attempt to send multiple HTTP responses
+
+        // Break out of the loop and let the remaining processing continue in the background
+        employerNames
+          .slice(employerNames.indexOf(name) + 1)
+          .forEach((remainingName) => {
+            processEmployer(
+              remainingName,
+              reqUUID,
+              jobLocations,
+              personaDesignations,
+              employeeSize,
+              seniorityLevel,
+              allPeople
+            )
+              .then(() =>
+                console.log(`Continued processing for ${remainingName}`)
+              )
+              .catch((error) =>
+                console.error(`Error processing ${remainingName}:`, error)
+              );
+          });
+
+        break;
       }
     }
 
-    res.redirect(`/persona-reachout/${reqUUID}`);
+    if (!redirectSent) {
+      res.redirect(`/persona-reachout/${reqUUID}`);
+    }
   } catch (error) {
-    console.error("Error creating persona:", error);
-    res.status(500).json({ error: "Failed to create persona" });
+    if (!res.headersSent) {
+      console.error("Error creating persona:", error);
+      res.status(500).json({ error: "Failed to create persona" });
+    }
   }
 });
+async function processEmployer(
+  name,
+  reqUUID,
+  jobLocations,
+  personaDesignation,
+  employeeSize,
+  seniorityLevel,
+  allPeople
+) {
+  try {
+    console.log(`Processing company: ${name}`);
+    let convertedObj = { currentCompany: name };
+    const salesNavUrl = await generateSalesNavUrl(convertedObj);
+    const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
+
+    for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
+      const personData = await getLinkedInData(
+        searchPeopleLixData.people[i]?.salesNavId
+      );
+      convertToApolloPersona(personData, reqUUID);
+    }
+
+    const company = await searchCompanyApollo(name);
+    if (company) {
+      let orgId = company?.accounts?.[0]?.organization_id;
+      saveOrganizationData([company]);
+      const people = await searchPeople(
+        jobLocations,
+        orgId,
+        personaDesignation,
+        employeeSize,
+        seniorityLevel
+      );
+      if (people?.people) {
+        allPeople.push(...people.people);
+        await savePersonaData(allPeople);
+      }
+      updateRequestWithPersonaIds(reqUUID, allPeople);
+    } else {
+      console.warn(`No company found for name: ${name}`);
+    }
+  } catch (error) {
+    console.error(`Error processing company name ${name}:`, error);
+  }
+}
 
 app.post("/search-jobs", async (req, res) => {
   try {
