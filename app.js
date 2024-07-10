@@ -376,13 +376,13 @@ app.post("/create-persona", async (req, res) => {
           console.warn(`No company found for name: ${name}`);
         }
       } catch (error) {
-        console.error(`Error processing company name ${name}:`, error);
+        console.log(`Error processing company name ${name}:`, error);
       }
     }
 
     res.redirect(`/persona-reachout/${reqUUID}`);
   } catch (error) {
-    console.error("Error creating persona:", error);
+    console.log("Error creating persona:", error);
     res.status(500).json({ error: "Failed to create persona" });
   }
 });
