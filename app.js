@@ -332,6 +332,7 @@ app.post("/create-persona", async (req, res) => {
           reqId: reqUUID,
         });
         personaLen = personaLen.personaIds;
+        console.log("persona len ====>", personaLen);
         if (personaLen.length > 25) {
           res.redirect(`/persona-reachout/${reqUUID}`);
         }
