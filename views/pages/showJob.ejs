@@ -1315,9 +1315,13 @@
                   Date(job.job_posted_at_datetime_utc).toLocaleDateString() :
                   'N/A' %>
                 </div>
-                <div class="job-detail">
+                <!-- <div class="job-detail">
                   <span>Salary Range:</span> <%= job.salaryRange || 'N/A' %>
-                </div>
+                </div> -->
+              </div>
+              <div class="job-detail">
+                <span>Industry Type:</span> <%= job.employer_company_type ||
+                'N/A' %>
               </div>
               <div class="job-detail">
                 <span>Job Post Link:</span>
@@ -1677,9 +1681,12 @@
                 posted_date: postedDateDetail
                   ? postedDateDetail.textContent.split("Posted:")[1].trim()
                   : "N/A",
-                salary_range: salaryRangeDetail
-                  ? salaryRangeDetail.textContent
-                      .split("Salary Range:")[1]
+                industry_type: jobCard.querySelector(
+                  ".job-detail:nth-last-child(2)"
+                )
+                  ? jobCard
+                      .querySelector(".job-detail:nth-last-child(2)")
+                      .textContent.split("Industry Type:")[1]
                       .trim()
                   : "N/A",
                 apply_link: jobCard.querySelector(".job-apply-link")
