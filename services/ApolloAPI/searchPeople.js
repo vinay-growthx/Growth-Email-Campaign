@@ -24,14 +24,15 @@ async function searchPeople(
     page: 1,
     per_page: 25,
     person_locations: personLocations,
-    person_titles: personaDesignation?.length
-      ? personaDesignation
-      : [
-          "VP of Talent Acquisition",
-          "HR Director",
-          "Director of Talent Acquisition",
-          "Head of Talent Acquisition",
-        ],
+    person_titles:
+      Array.isArray(personaDesignation) && personaDesignation?.length
+        ? personaDesignation
+        : [
+            "VP of Talent Acquisition",
+            "HR Director",
+            "Director of Talent Acquisition",
+            "Head of Talent Acquisition",
+          ],
     organization_ids: [orgId],
   };
 
