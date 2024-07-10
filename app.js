@@ -220,7 +220,7 @@ app.post("/send-email", async (req, res) => {
         from: req.body.fromEmail,
         subject: aiGeneratedSubject || replacedSubject,
         html: body
-          .replaceAll("{name}", personData?.name)
+          .replaceAll("{name}", removeEmojiFromName(personData?.name))
           .replaceAll("{companyName}", personData?.organization?.name)
           .replaceAll("{role}", personData?.title)
           .replaceAll("{hiringJobTitle}", jobPost)
