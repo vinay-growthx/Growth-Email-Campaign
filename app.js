@@ -323,6 +323,7 @@ app.post("/create-persona", async (req, res) => {
       );
       let personaLen = await requestIdRepository.findOne({ reqId: reqUUID });
       personaLen = personaLen.personaIds;
+      console.log("persona len ====>", personaLen);
       // Check condition after processing each employer
       if (!redirectSent && personaLen > 5) {
         // `shouldRedirect` is a placeholder for your actual condition
