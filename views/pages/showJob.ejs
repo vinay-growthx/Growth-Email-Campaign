@@ -1891,64 +1891,6 @@
 
       // Initial update
       updateScrollButton();
-      document.addEventListener("DOMContentLoaded", function () {
-        const form = document.querySelector("form");
-        const submitButton = document.getElementById("submitButton");
-        const industryInput = document.getElementById("industry");
-        const locationInput = document.getElementById("location");
-
-        form.addEventListener("submit", function (e) {
-          e.preventDefault(); // Prevent form submission
-
-          const enteredIndustry = industryInput.value;
-          const enteredLocation = locationInput.value;
-
-          const industryValid = industryArr.some(
-            (industry) => industry.label === enteredIndustry
-          );
-          const locationValid = locationArr.some(
-            (location) => location.label === enteredLocation
-          );
-
-          if (!industryValid || !locationValid) {
-            if (!industryValid) {
-              displayErrorNotification(
-                "Please select an industry from the suggestions."
-              );
-            }
-            if (!locationValid) {
-              displayErrorNotification(
-                "Please select a location from the suggestions."
-              );
-            }
-            return; // Stop form submission
-          }
-
-          // Disable the button
-          submitButton.disabled = true;
-          submitButton.textContent = "Searching...";
-
-          // You can add a timeout to re-enable the button after a certain period
-          // if the form submission takes too long or fails
-          setTimeout(function () {
-            submitButton.disabled = false;
-            submitButton.textContent = "Search Jobs";
-          }, 20000); // Re-enable after 10 seconds
-
-          form.submit(); // Submit the form if industry and location are valid
-        });
-
-        function displayErrorNotification(message) {
-          const errorNotification = document.createElement("div");
-          errorNotification.textContent = message;
-          errorNotification.style.color = "red";
-          errorNotification.style.marginTop = "10px";
-          form.insertBefore(errorNotification, submitButton);
-          setTimeout(function () {
-            errorNotification.remove();
-          }, 3000); // Remove the error notification after 3 seconds
-        }
-      });
     </script>
   </body>
 </html>
