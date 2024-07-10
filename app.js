@@ -465,7 +465,7 @@ app.post("/create-persona", async (req, res) => {
         }
 
         // Check if we need to redirect
-        if (allPeople.length > 25 && !redirectIssued) {
+        if (allPeople.length > 5 && !redirectIssued) {
           res.redirect(`/persona-reachout/${reqUUID}`);
           redirectIssued = true; // Ensure no further processing attempts to send another response
         }
