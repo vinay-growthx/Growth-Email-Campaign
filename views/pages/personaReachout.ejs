@@ -779,6 +779,10 @@
       <div class="progress-bar">
         <div class="progress"></div>
       </div>
+
+      <button id="refreshButton" style="margin-top: 10px">
+        Refresh to get all Data
+      </button>
     </div>
     <a href="#" class="floating-btn" id="scrollToBottomBtn">Scroll to Bottom</a>
     <div class="parallax-container">
@@ -1269,6 +1273,13 @@
         updateScrollButton();
       });
       document.addEventListener("DOMContentLoaded", function () {
+        const refreshButton = document.getElementById("refreshButton");
+
+        // Event listener for the refresh button
+        refreshButton.addEventListener("click", function (e) {
+          e.preventDefault();
+          window.location.reload(); // Reload the page
+        });
         const processStatus = document.getElementById("process-status");
         const progressBar = processStatus.querySelector(".progress");
         const reqId = document.body.getAttribute("data-req-id"); // Assuming you've added this attribute to the body tag
@@ -1293,7 +1304,7 @@
                 processStatus.querySelector(
                   "p"
                 ).textContent = `${data.personaCount} personas found so far...
-                Refresh to get all Data`;
+                Refresh to get all Personas detail`;
                 // Check again in every 6 sec
                 setTimeout(checkStatus, 10000);
               }
