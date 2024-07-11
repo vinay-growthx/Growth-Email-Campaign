@@ -426,7 +426,6 @@ app.get("/api/check-status/:reqId", async (req, res) => {
     }
 
     // Prepare the response
-    return res.status(404).json({ error: "Request not found" });
   } catch (error) {
     console.error("Error checking status:", error);
     res.status(500).json({ error: `Failed to check status ${error}` });
