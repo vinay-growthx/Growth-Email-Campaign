@@ -29,14 +29,17 @@ const {
   findAllPersonas,
   findPersonById,
   addJobLocation,
-  jobFunctionArr,
-  industryArr,
-  locationArr,
+
   convertToApolloPersona,
   removeEmojiFromName,
   removeDoubleQuotes,
   formatJobDetailsForChatGPT,
 } = require("./services/util");
+const {
+  jobFunctionArr,
+  industryArr,
+  locationArr,
+} = require("./services/arrValues");
 const { fetchEmailViaContactOut } = require("./services/emailAPI/contactsout");
 const { fetchWorkEmailFromRb2bapi } = require("./services/emailAPI/r2b2b");
 const { fetchJobListings } = require("./services/rapidAPI/jobListing");
