@@ -1171,6 +1171,32 @@
           box-shadow: 0 0 40px #ffeb3b, 0 0 60px #ffeb3b;
         }
       }
+      .company-info {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .ai-industry-tag {
+        background-color: #3498db;
+        color: white;
+        font-size: 0.8em;
+        padding: 3px 8px;
+        border-radius: 12px;
+        display: inline-block;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      .ai-industry-tag:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(52, 152, 219, 0.3);
+      }
     </style>
   </head>
   <body>
@@ -1447,8 +1473,13 @@
               <div class="job-header">
                 <div>
                   <div class="job-title"><%= job.job_title || 'N/A' %></div>
-                  <div class="company-name">
-                    <%= job.employer_name || 'N/A' %>
+                  <div class="company-info">
+                    <span class="company-name"
+                      ><%= job.employer_name || 'N/A' %></span
+                    >
+                    <% if (job.ai_industry) { %>
+                    <span class="ai-industry-tag"><%= job.ai_industry %></span>
+                    <% } %>
                   </div>
                 </div>
               </div>

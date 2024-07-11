@@ -309,7 +309,7 @@ async function extractIndustryFromSummary(jobSummary) {
         top_p: 1,
       });
 
-      console.log("GPT response:", response);
+      // console.log("GPT response:", response);
 
       const industry = response.trim();
 

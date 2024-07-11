@@ -9,7 +9,10 @@ const apolloOrganizationRepository = new ApolloOrganizationRepository();
 const RequestIdRepository = require("../repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
 const { fetchEmailViaContactOut } = require("../services/emailAPI/contactsout");
-const { generateJobSummary } = require("../services/chatgpt");
+const {
+  generateJobSummary,
+  extractIndustryFromSummary,
+} = require("../services/chatgpt");
 
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require("uuid");
@@ -45,6 +48,7 @@ async function saveJobData(jobData) {
   const jobEntries = [];
   for (const job of jobData) {
     let summary = "";
+    let ai_industry = "";
     try {
       const generatedSummary = await generateJobSummary(formatJobDetails(job));
       summary = generatedSummary?.summary || "";
@@ -52,7 +56,10 @@ async function saveJobData(jobData) {
       console.error("Error generating summary for job", job.job_id, error);
       summary = ""; // Continue with an empty string if summary generation fails
     }
-
+    if (summary) {
+      ai_industry = await extractIndustryFromSummary(summary);
+      console.log("ai industry ===>", ai_industry);
+    }
     const formattedJob = {
       job_id: job.job_id || "",
       employer_name: job.employer_name || "",
@@ -106,6 +113,7 @@ async function saveJobData(jobData) {
       job_naics_code: job.job_naics_code || "",
       job_naics_name: job.job_naics_name || "",
       summary: summary,
+      ai_industry: ai_industry?.industry || "",
     };
     jobEntries.push(formattedJob);
   }
