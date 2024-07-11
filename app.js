@@ -390,6 +390,40 @@ app.post("/create-persona", async (req, res) => {
   }
 });
 
+app.get("/api/check-status/:reqId", async (req, res) => {
+  try {
+    const reqId = req.params.reqId;
+
+    // Find the request in the database
+    const request = await requestIdRepository.findOne({ reqId: reqId });
+
+    // Get the count of persona IDs
+    const personaCount = request.personaIds.length;
+
+    const completionThreshold = 100;
+
+    // Calculate progress percentage
+    const progress = Math.min((personaCount / completionThreshold) * 100, 100);
+
+    // Check if the process is completed
+    const completed = request?.personaProcessCompleted || false;
+    if (personaCompleted?.personaCompleted) {
+      const response = {
+        completed: completed,
+        progress: progress,
+        personaCount: personaCount,
+      };
+
+      res.json(response);
+    }
+
+    // Prepare the response
+    return res.status(404).json({ error: "Request not found" });
+  } catch (error) {
+    console.error("Error checking status:", error);
+    res.status(500).json({ error: "Failed to check status" });
+  }
+});
 app.post("/search-jobs", async (req, res) => {
   try {
     console.log("req.body ===>", req.body);

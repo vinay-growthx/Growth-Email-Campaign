@@ -9,646 +9,671 @@
       rel="stylesheet"
     />
     <style>
-                                                body,
-                                                html {
-                                                  font-family: "Poppins", Arial, sans-serif;
-                                                  background: linear-gradient(135deg, #f6f9fc 0%, #e9f2f9 100%);
-                                                  margin: 0;
-                                                  padding: 0;
-                                                  overflow-x: hidden;
+                                                      body,
+                                                      html {
+                                                        font-family: "Poppins", Arial, sans-serif;
+                                                        background: linear-gradient(135deg, #f6f9fc 0%, #e9f2f9 100%);
+                                                        margin: 0;
+                                                        padding: 0;
+                                                        overflow-x: hidden;
+                                                      }
+
+                                                      .parallax-container {
+                                                        perspective: 1px;
+                                                        height: 100vh;
+                                                        overflow-x: hidden;
+                                                        overflow-y: auto;
+                                                      }
+                                                      .parallax-layer {
+                                                        position: absolute;
+                                                        top: 0;
+                                                        right: 0;
+                                                        bottom: 0;
+                                                        left: 0;
+                                                      }
+                                                      .parallax-background {
+                                                        transform: translateZ(-1px) scale(2);
+                                                        background: url("https://source.unsplash.com/random/1920x1080?abstract")
+                                                          no-repeat center center fixed;
+                                                        background-size: cover;
+                                                        z-index: -1;
+                                                      }
+                                                      .content {
+                                                        transform: translateZ(0);
+                                                        position: relative;
+                                                        background-color: rgba(255, 255, 255, 0.9);
+                                                        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                                                        border-radius: 15px;
+                                                        margin: 20px auto;
+                                                        padding: 40px;
+                                                        max-width: 1200px;
+                                                      }
+                                                      h1 {
+                                                        text-align: center;
+                                                        font-size: 3em;
+                                                        color: #333;
+                                                        margin-bottom: 40px;
+                                                        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+                                                        animation: slideDown 1s ease-out;
+                                                      }
+                                                      @keyframes slideDown {
+                                                        from {
+                                                          opacity: 0;
+                                                          transform: translateY(-50px);
+                                                        }
+                                                        to {
+                                                          opacity: 1;
+                                                          transform: translateY(0);
+                                                        }
+                                                      }
+                                                      .person-card {
+                                                        background-color: #fff;
+                                                        border-radius: 12px;
+                                                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                                                        margin-bottom: 30px;
+                                                        padding: 30px;
+                                                        display: flex;
+                                                        flex-direction: row;
+                                                        align-items: center;
+                                                        transition: all 0.3s ease;
+                                                        animation: slideIn 0.5s ease-out forwards;
+                                                        opacity: 0;
+                                                        transform: translateX(-50px);
+                                                      }
+                                                      @keyframes slideIn {
+                                                        to {
+                                                          opacity: 1;
+                                                          transform: translateX(0);
+                                                        }
+                                                      }
+                                                      .person-card:hover {
+                                                        transform: translateY(-5px) scale(1.02);
+                                                        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+                                                      }
+                                                      .person-photo {
+                                                        border-radius: 50%;
+                                                        margin-right: 30px;
+                                                        width: 120px;
+                                                        height: 120px;
+                                                        object-fit: cover;
+                                                        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+                                                      }
+                                                      .person-details {
+                                                        flex-grow: 1;
+                                                      }
+                                                      .person-name {
+                                                        font-size: 1.8em;
+                                                        font-weight: 600;
+                                                        color: #2c3e50;
+                                                        transition: color 0.3s ease;
+                                                      }
+                                                      .person-card:hover .person-name {
+                                                        color: #3498db;
+                                                      }
+                                                      .person-title {
+                                                        font-size: 1.4em;
+                                                        color: #7f8c8d;
+                                                      }
+                                                      .person-organization {
+                                                        font-size: 1.2em;
+                                                        color: #555;
+                                                        margin-bottom: 15px;
+                                                      }
+                                                      .person-contact {
+                                                        margin-top: 10px;
+                                                        display: flex;
+                                                        align-items: center;
+                                                      }
+                                                      .contact-icon {
+                                                        margin-right: 5px;
+                                                      }
+                                                      .linkedin-url,
+                                                      .email {
+                                                        color: #3498db;
+                                                        text-decoration: none;
+                                                        margin-right: 20px;
+                                                      }
+                                                      .linkedin-url:hover,
+                                                      .email:hover {
+                                                        text-decoration: underline;
+                                                      }
+                                                      .employment-history {
+                                                        margin-top: 20px;
+                                                      }
+                                                      .employment-history h3 {
+                                                        font-size: 1.4em;
+                                                        color: #2c3e50;
+                                                        margin-bottom: 10px;
+                                                      }
+                                                      .employment-history ul {
+                                                        list-style-type: none;
+                                                        padding: 0;
+                                                      }
+                                                      .employment-history li {
+                                                        background-color: #f6f9fc;
+                                                        padding: 15px;
+                                                        border-radius: 10px;
+                                                        margin-bottom: 15px;
+                                                        transition: transform 0.3s ease;
+                                                      }
+                                                      .employment-history li:hover {
+                                                        transform: translateX(5px);
+                                                      }
+                                                      .employment-history li strong {
+                                                        color: #34495e;
+                                                      }
+                                                      .select-checkbox {
+                                                        appearance: none;
+                                                        -webkit-appearance: none;
+                                                        width: 25px;
+                                                        height: 25px;
+                                                        border: 2px solid #3498db;
+                                                        border-radius: 5px;
+                                                        outline: none;
+                                                        transition: all 0.3s;
+                                                        position: relative;
+                                                        cursor: pointer;
+                                                        margin-right: 30px;
+                                                      }
+                                                      .submit-btn {
+                                                        display: block;
+                                                        margin: 40px auto;
+                                                        padding: 15px 30px;
+                                                        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+                                                        color: #fff;
+                                                        text-decoration: none;
+                                                        border-radius: 30px;
+                                                        transition: all 0.3s ease;
+                                                        text-align: center;
+                                                        width: fit-content;
+                                                        font-size: 1.2em;
+                                                        font-weight: 600;
+                                                        border: none;
+                                                        cursor: pointer;
+                                                        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+                                                        animation: float 3s ease-in-out infinite;
+                                                      }
+                                                      @keyframes float {
+                                                        0% {
+                                                          transform: translateY(0px);
+                                                        }
+                                                        50% {
+                                                          transform: translateY(-10px);
+                                                        }
+                                                        100% {
+                                                          transform: translateY(0px);
+                                                        }
+                                                      }
+                                                      .submit-btn:hover {
+                                                        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+                                                        transform: translateY(-2px) scale(1.05);
+                                                        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+                                                      }
+
+                                                      .results-header {
+                                                        display: flex;
+                                                        justify-content: space-between;
+                                                        align-items: center;
+                                                        margin-bottom: 20px;
+                                                      }
+                                                      .select-all-container {
+                                                        display: flex;
+                                                        align-items: center;
+                                                        animation: fadeIn 1s ease-out;
+                                                      }
+                                                      .select-all-label {
+                                                        font-size: 1.1em;
+                                                        margin-left: 10px;
+                                                        color: #2c3e50;
+                                                      }
+                                                      #selectAll {
+                                                        appearance: none;
+                                                        -webkit-appearance: none;
+                                                        width: 25px;
+                                                        height: 25px;
+                                                        border: 2px solid #3498db;
+                                                        border-radius: 5px;
+                                                        outline: none;
+                                                        transition: all 0.3s;
+                                                        position: relative;
+                                                        cursor: pointer;
+                                                      }
+                                                      #selectAll:checked {
+                                                        background-color: #3498db;
+                                                        animation: pulse 0.5s;
+                                                      }
+                                                      #selectAll:checked::before {
+                                                        content: "✔";
+                                                        position: absolute;
+                                                        top: 50%;
+                                                        left: 50%;
+                                                        transform: translate(-50%, -50%);
+                                                        color: white;
+                                                        font-size: 16px;
+                                                      }
+                                                      .download-btn {
+                                                        padding: 15px 30px;
+                                                        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+                                                        color: #fff;
+                                                        text-decoration: none;
+                                                        border-radius: 30px;
+                                                        transition: all 0.3s ease;
+                                                        text-align: center;
+                                                        font-size: 1.2em;
+                                                        font-weight: 600;
+                                                        border: none;
+                                                        cursor: pointer;
+                                                        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+                                                      }
+                                                      .download-btn:hover {
+                                                        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+                                                        transform: translateY(-2px) scale(1.05);
+                                                        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+                                                      }
+                                                      .select-checkbox:checked {
+                                                        background-color: #3498db;
+                                                        animation: pulse 0.5s;
+                                                      }
+                                                      .select-checkbox:checked::before {
+                                                        content: "✔";
+                                                        position: absolute;
+                                                        top: 50%;
+                                                        left: 50%;
+                                                        transform: translate(-50%, -50%);
+                                                        color: white;
+                                                        font-size: 16px;
+                                                      }
+                                                      @keyframes pulse {
+                                                        0% {
+                                                          transform: scale(1);
+                                                        }
+                                                        50% {
+                                                          transform: scale(1.1);
+                                                        }
+                                                        100% {
+                                                          transform: scale(1);
+                                                        }
+                                                      }
+                                                      .selected-count {
+                                                        font-size: 2em;
+                                                        text-align: center;
+                                                        margin-bottom: 20px;
+                                                        color: #3498db;
+                                                        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+                                                        transition: all 0.3s ease;
+                                                        animation: pulse 1.5s infinite alternate;
+                                                      }
+
+                                                      @keyframes pulse {
+                                                        from {
+                                                          transform: scale(1);
+                                                        }
+                                                        to {
+                                                          transform: scale(1.1);
+                                                        }
+                                                      }
+
+                                                      .selected-count.party {
+                                                        animation: party 0.5s ease-in-out;
+                                                      }
+
+                                                      @keyframes party {
+                                                        0% {
+                                                          transform: rotate(0deg) scale(1);
+                                                        }
+                                                        25% {
+                                                          transform: rotate(-10deg) scale(1.2);
+                                                        }
+                                                        50% {
+                                                          transform: rotate(10deg) scale(1.2);
+                                                        }
+                                                        75% {
+                                                          transform: rotate(-10deg) scale(1.2);
+                                                        }
+                                                        100% {
+                                                          transform: rotate(0deg) scale(1);
+                                                        }
+                                                      }
+                                                      .selected-count-container {
+                                                        position: sticky;
+                                                        top: 0;
+                                                        z-index: 1000;
+                                                        background: rgba(255, 255, 255, 0.9);
+                                                        padding: 10px 0;
+                                                        backdrop-filter: blur(5px);
+                                                        border-bottom: 1px solid rgba(52, 152, 219, 0.3);
+                                                      }
+
+                                                      .selected-count {
+                                                        font-size: 2em;
+                                                        text-align: center;
+                                                        color: #3498db;
+                                                        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+                                                        transition: all 0.3s ease;
+                                                        animation: pulse 1.5s infinite alternate;
+                                                      }
+
+                                                      @keyframes pulse {
+                                                        from {
+                                                          transform: scale(1);
+                                                        }
+                                                        to {
+                                                          transform: scale(1.05);
+                                                        }
+                                                      }
+
+                                                      .selected-count.party {
+                                                        animation: party 0.5s ease-in-out;
+                                                      }
+
+                                                      @keyframes party {
+                                                        0% {
+                                                          transform: rotate(0deg) scale(1);
+                                                        }
+                                                        25% {
+                                                          transform: rotate(-5deg) scale(1.1);
+                                                        }
+                                                        50% {
+                                                          transform: rotate(5deg) scale(1.1);
+                                                        }
+                                                        75% {
+                                                          transform: rotate(-5deg) scale(1.1);
+                                                        }
+                                                        100% {
+                                                          transform: rotate(0deg) scale(1);
+                                                        }
+                                                      }
+                                                      .select-container {
+                                                  display: flex;
+                                                  align-items: center;
+                                                  margin-right: 15px;
                                                 }
 
-                                                .parallax-container {
-                                                  perspective: 1px;
-                                                  height: 100vh;
-                                                  overflow-x: hidden;
-                                                  overflow-y: auto;
-                                                }
-                                                .parallax-layer {
-                                                  position: absolute;
-                                                  top: 0;
-                                                  right: 0;
-                                                  bottom: 0;
-                                                  left: 0;
-                                                }
-                                                .parallax-background {
-                                                  transform: translateZ(-1px) scale(2);
-                                                  background: url("https://source.unsplash.com/random/1920x1080?abstract")
-                                                    no-repeat center center fixed;
-                                                  background-size: cover;
-                                                  z-index: -1;
-                                                }
-                                                .content {
-                                                  transform: translateZ(0);
-                                                  position: relative;
-                                                  background-color: rgba(255, 255, 255, 0.9);
-                                                  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-                                                  border-radius: 15px;
-                                                  margin: 20px auto;
-                                                  padding: 40px;
-                                                  max-width: 1200px;
-                                                }
-                                                h1 {
-                                                  text-align: center;
-                                                  font-size: 3em;
-                                                  color: #333;
-                                                  margin-bottom: 40px;
-                                                  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-                                                  animation: slideDown 1s ease-out;
-                                                }
-                                                @keyframes slideDown {
-                                                  from {
-                                                    opacity: 0;
-                                                    transform: translateY(-50px);
-                                                  }
-                                                  to {
-                                                    opacity: 1;
-                                                    transform: translateY(0);
-                                                  }
-                                                }
-                                                .person-card {
-                                                  background-color: #fff;
-                                                  border-radius: 12px;
-                                                  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-                                                  margin-bottom: 30px;
-                                                  padding: 30px;
-                                                  display: flex;
-                                                  flex-direction: row;
-                                                  align-items: center;
-                                                  transition: all 0.3s ease;
-                                                  animation: slideIn 0.5s ease-out forwards;
-                                                  opacity: 0;
-                                                  transform: translateX(-50px);
-                                                }
-                                                @keyframes slideIn {
-                                                  to {
-                                                    opacity: 1;
-                                                    transform: translateX(0);
-                                                  }
-                                                }
-                                                .person-card:hover {
-                                                  transform: translateY(-5px) scale(1.02);
-                                                  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-                                                }
-                                                .person-photo {
-                                                  border-radius: 50%;
-                                                  margin-right: 30px;
-                                                  width: 120px;
-                                                  height: 120px;
-                                                  object-fit: cover;
-                                                  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-                                                }
-                                                .person-details {
-                                                  flex-grow: 1;
-                                                }
-                                                .person-name {
-                                                  font-size: 1.8em;
-                                                  font-weight: 600;
-                                                  color: #2c3e50;
-                                                  transition: color 0.3s ease;
-                                                }
-                                                .person-card:hover .person-name {
+                                                .select-label {
+                                                  margin-left: 5px;
+                                                  cursor: pointer;
+                                                  font-size: 0.9em;
                                                   color: #3498db;
                                                 }
-                                                .person-title {
-                                                  font-size: 1.4em;
-                                                  color: #7f8c8d;
-                                                }
-                                                .person-organization {
-                                                  font-size: 1.2em;
-                                                  color: #555;
-                                                  margin-bottom: 15px;
-                                                }
-                                                .person-contact {
-                                                  margin-top: 10px;
-                                                  display: flex;
-                                                  align-items: center;
-                                                }
-                                                .contact-icon {
-                                                  margin-right: 5px;
-                                                }
-                                                .linkedin-url,
-                                                .email {
-                                                  color: #3498db;
-                                                  text-decoration: none;
-                                                  margin-right: 20px;
-                                                }
-                                                .linkedin-url:hover,
-                                                .email:hover {
-                                                  text-decoration: underline;
-                                                }
-                                                .employment-history {
-                                                  margin-top: 20px;
-                                                }
-                                                .employment-history h3 {
-                                                  font-size: 1.4em;
-                                                  color: #2c3e50;
-                                                  margin-bottom: 10px;
-                                                }
-                                                .employment-history ul {
-                                                  list-style-type: none;
-                                                  padding: 0;
-                                                }
-                                                .employment-history li {
-                                                  background-color: #f6f9fc;
-                                                  padding: 15px;
-                                                  border-radius: 10px;
-                                                  margin-bottom: 15px;
-                                                  transition: transform 0.3s ease;
-                                                }
-                                                .employment-history li:hover {
-                                                  transform: translateX(5px);
-                                                }
-                                                .employment-history li strong {
-                                                  color: #34495e;
-                                                }
-                                                .select-checkbox {
-                                                  appearance: none;
-                                                  -webkit-appearance: none;
-                                                  width: 25px;
-                                                  height: 25px;
-                                                  border: 2px solid #3498db;
-                                                  border-radius: 5px;
-                                                  outline: none;
-                                                  transition: all 0.3s;
-                                                  position: relative;
-                                                  cursor: pointer;
-                                                  margin-right: 30px;
-                                                }
-                                                .submit-btn {
-                                                  display: block;
-                                                  margin: 40px auto;
-                                                  padding: 15px 30px;
-                                                  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-                                                  color: #fff;
-                                                  text-decoration: none;
-                                                  border-radius: 30px;
-                                                  transition: all 0.3s ease;
-                                                  text-align: center;
-                                                  width: fit-content;
-                                                  font-size: 1.2em;
-                                                  font-weight: 600;
-                                                  border: none;
-                                                  cursor: pointer;
-                                                  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-                                                  animation: float 3s ease-in-out infinite;
-                                                }
-                                                @keyframes float {
-                                                  0% {
-                                                    transform: translateY(0px);
-                                                  }
-                                                  50% {
-                                                    transform: translateY(-10px);
-                                                  }
-                                                  100% {
-                                                    transform: translateY(0px);
-                                                  }
-                                                }
-                                                .submit-btn:hover {
-                                                  background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-                                                  transform: translateY(-2px) scale(1.05);
-                                                  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
-                                                }
 
-                                                .results-header {
-                                                  display: flex;
-                                                  justify-content: space-between;
-                                                  align-items: center;
-                                                  margin-bottom: 20px;
+                                                .select-label:hover {
+                                                  text-decoration
                                                 }
-                                                .select-all-container {
-                                                  display: flex;
-                                                  align-items: center;
-                                                  animation: fadeIn 1s ease-out;
-                                                }
-                                                .select-all-label {
-                                                  font-size: 1.1em;
-                                                  margin-left: 10px;
-                                                  color: #2c3e50;
-                                                }
-                                                #selectAll {
-                                                  appearance: none;
-                                                  -webkit-appearance: none;
-                                                  width: 25px;
-                                                  height: 25px;
-                                                  border: 2px solid #3498db;
-                                                  border-radius: 5px;
-                                                  outline: none;
-                                                  transition: all 0.3s;
-                                                  position: relative;
-                                                  cursor: pointer;
-                                                }
-                                                #selectAll:checked {
-                                                  background-color: #3498db;
-                                                  animation: pulse 0.5s;
-                                                }
-                                                #selectAll:checked::before {
-                                                  content: "✔";
-                                                  position: absolute;
-                                                  top: 50%;
-                                                  left: 50%;
-                                                  transform: translate(-50%, -50%);
-                                                  color: white;
-                                                  font-size: 16px;
-                                                }
-                                                .download-btn {
-                                                  padding: 15px 30px;
-                                                  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-                                                  color: #fff;
-                                                  text-decoration: none;
-                                                  border-radius: 30px;
-                                                  transition: all 0.3s ease;
-                                                  text-align: center;
-                                                  font-size: 1.2em;
-                                                  font-weight: 600;
-                                                  border: none;
-                                                  cursor: pointer;
-                                                  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-                                                }
-                                                .download-btn:hover {
-                                                  background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-                                                  transform: translateY(-2px) scale(1.05);
-                                                  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
-                                                }
-                                                .select-checkbox:checked {
-                                                  background-color: #3498db;
-                                                  animation: pulse 0.5s;
-                                                }
-                                                .select-checkbox:checked::before {
-                                                  content: "✔";
-                                                  position: absolute;
-                                                  top: 50%;
-                                                  left: 50%;
-                                                  transform: translate(-50%, -50%);
-                                                  color: white;
-                                                  font-size: 16px;
-                                                }
-                                                @keyframes pulse {
-                                                  0% {
-                                                    transform: scale(1);
-                                                  }
-                                                  50% {
-                                                    transform: scale(1.1);
-                                                  }
-                                                  100% {
-                                                    transform: scale(1);
-                                                  }
-                                                }
-                                                .selected-count {
-                                                  font-size: 2em;
-                                                  text-align: center;
-                                                  margin-bottom: 20px;
-                                                  color: #3498db;
-                                                  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-                                                  transition: all 0.3s ease;
-                                                  animation: pulse 1.5s infinite alternate;
-                                                }
-
-                                                @keyframes pulse {
-                                                  from {
-                                                    transform: scale(1);
-                                                  }
-                                                  to {
-                                                    transform: scale(1.1);
-                                                  }
-                                                }
-
-                                                .selected-count.party {
-                                                  animation: party 0.5s ease-in-out;
-                                                }
-
-                                                @keyframes party {
-                                                  0% {
-                                                    transform: rotate(0deg) scale(1);
-                                                  }
-                                                  25% {
-                                                    transform: rotate(-10deg) scale(1.2);
-                                                  }
-                                                  50% {
-                                                    transform: rotate(10deg) scale(1.2);
-                                                  }
-                                                  75% {
-                                                    transform: rotate(-10deg) scale(1.2);
-                                                  }
-                                                  100% {
-                                                    transform: rotate(0deg) scale(1);
-                                                  }
-                                                }
-                                                .selected-count-container {
-                                                  position: sticky;
-                                                  top: 0;
-                                                  z-index: 1000;
-                                                  background: rgba(255, 255, 255, 0.9);
-                                                  padding: 10px 0;
-                                                  backdrop-filter: blur(5px);
-                                                  border-bottom: 1px solid rgba(52, 152, 219, 0.3);
-                                                }
-
-                                                .selected-count {
-                                                  font-size: 2em;
-                                                  text-align: center;
-                                                  color: #3498db;
-                                                  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-                                                  transition: all 0.3s ease;
-                                                  animation: pulse 1.5s infinite alternate;
-                                                }
-
-                                                @keyframes pulse {
-                                                  from {
-                                                    transform: scale(1);
-                                                  }
-                                                  to {
-                                                    transform: scale(1.05);
-                                                  }
-                                                }
-
-                                                .selected-count.party {
-                                                  animation: party 0.5s ease-in-out;
-                                                }
-
-                                                @keyframes party {
-                                                  0% {
-                                                    transform: rotate(0deg) scale(1);
-                                                  }
-                                                  25% {
-                                                    transform: rotate(-5deg) scale(1.1);
-                                                  }
-                                                  50% {
-                                                    transform: rotate(5deg) scale(1.1);
-                                                  }
-                                                  75% {
-                                                    transform: rotate(-5deg) scale(1.1);
-                                                  }
-                                                  100% {
-                                                    transform: rotate(0deg) scale(1);
-                                                  }
-                                                }
-                                                .select-container {
-                                            display: flex;
-                                            align-items: center;
-                                            margin-right: 15px;
+                                                .total-count {
+                                            text-align: center;
+                                            font-size: 1.5em;
+                                            margin-bottom: 20px;
+                                            color: #2c3e50;
                                           }
+                                          @media screen and (max-width: 768px) {
+                                      .content {
+                                        padding: 20px;
+                                        margin: 10px;
+                                      }
 
-                                          .select-label {
-                                            margin-left: 5px;
-                                            cursor: pointer;
-                                            font-size: 0.9em;
-                                            color: #3498db;
-                                          }
+                                      h1 {
+                                        font-size: 2em;
+                                      }
 
-                                          .select-label:hover {
-                                            text-decoration
-                                          }
-                                          .total-count {
-                                      text-align: center;
-                                      font-size: 1.5em;
-                                      margin-bottom: 20px;
-                                      color: #2c3e50;
+                                      .person-card {
+                                        flex-direction: column;
+                                        align-items: flex-start;
+                                        padding: 20px;
+                                      }
+
+                                      .person-photo {
+                                        margin-right: 0;
+                                        margin-bottom: 15px;
+                                        width: 100px;
+                                        height: 100px;
+                                      }
+
+                                      .person-name {
+                                        font-size: 1.5em;
+                                      }
+
+                                      .person-title,
+                                      .person-organization {
+                                        font-size: 1.2em;
+                                      }
+
+                                      .person-contact {
+                                        flex-direction: column;
+                                        align-items: flex-start;
+                                      }
+
+                                      .linkedin-url,
+                                      .email {
+                                        margin-right: 0;
+                                        margin-bottom: 10px;
+                                      }
+
+                                      .employment-history li {
+                                        padding: 10px;
+                                      }
+
+                                      .select-checkbox {
+                                        margin-right: 15px;
+                                      }
+
+                                      .submit-btn,
+                                      .download-btn {
+                                        padding: 12px 25px;
+                                        font-size: 1em;
+                                      }
+
+                                      .results-header {
+                                        flex-direction: column;
+                                        align-items: flex-start;
+                                      }
+
+                                      .select-all-container {
+                                        margin-bottom: 10px;
+                                      }
+
+                                      .selected-count {
+                                        font-size: 1.5em;
+                                      }
+
+                                      .total-count {
+                                        font-size: 1.2em;
+                                      }
+
+                                      .select-container {
+                                        margin-bottom: 10px;
+                                      }
                                     }
-                                    @media screen and (max-width: 768px) {
-                                .content {
-                                  padding: 20px;
-                                  margin: 10px;
-                                }
+                                    .filter-container {
+                                margin-right: 15px;
+                              }
 
-                                h1 {
-                                  font-size: 2em;
-                                }
+                              .organization-filter {
+                                padding: 10px 15px;
+                                border: 2px solid #3498db;
+                                border-radius: 30px;
+                                background-color: white;
+                                color: #2c3e50;
+                                font-size: 1em;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                                outline: none;
+                                appearance: none;
+                                -webkit-appearance: none;
+                                -moz-appearance: none;
+                                background-image: url('data:image/svg+xml;utf8,<svg fill="%233498db" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+                                background-repeat: no-repeat;
+                                background-position: right 10px top 50%;
+                                padding-right: 30px;
+                              }
 
-                                .person-card {
-                                  flex-direction: column;
-                                  align-items: flex-start;
-                                  padding: 20px;
-                                }
+                              .organization-filter:hover, .organization-filter:focus {
+                                border-color: #2980b9;
+                                box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+                              }
 
-                                .person-photo {
-                                  margin-right: 0;
-                                  margin-bottom: 15px;
-                                  width: 100px;
-                                  height: 100px;
-                                }
+                              .results-header {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin-bottom: 20px;
+                                flex-wrap: wrap;
+                              }
 
-                                .person-name {
-                                  font-size: 1.5em;
-                                }
-
-                                .person-title,
-                                .person-organization {
-                                  font-size: 1.2em;
-                                }
-
-                                .person-contact {
-                                  flex-direction: column;
-                                  align-items: flex-start;
-                                }
-
-                                .linkedin-url,
-                                .email {
-                                  margin-right: 0;
-                                  margin-bottom: 10px;
-                                }
-
-                                .employment-history li {
-                                  padding: 10px;
-                                }
-
-                                .select-checkbox {
-                                  margin-right: 15px;
-                                }
-
-                                .submit-btn,
-                                .download-btn {
-                                  padding: 12px 25px;
-                                  font-size: 1em;
-                                }
-
+                              @media screen and (max-width: 768px) {
                                 .results-header {
                                   flex-direction: column;
-                                  align-items: flex-start;
+                                  align-items: stretch;
                                 }
 
-                                .select-all-container {
+                                .filter-container, .download-container {
+                                  width: 100%;
                                   margin-bottom: 10px;
                                 }
 
-                                .selected-count {
-                                  font-size: 1.5em;
-                                }
-
-                                .total-count {
-                                  font-size: 1.2em;
-                                }
-
-                                .select-container {
-                                  margin-bottom: 10px;
+                                .organization-filter, .download-btn {
+                                  width: 100%;
                                 }
                               }
-                              .filter-container {
-                          margin-right: 15px;
+                              .organization-filter {
+                          position: relative;
+                          width: 250px;
+                          font-family: 'Poppins', sans-serif;
                         }
 
-                        .organization-filter {
-                          padding: 10px 15px;
-                          border: 2px solid #3498db;
-                          border-radius: 30px;
-                          background-color: white;
-                          color: #2c3e50;
-                          font-size: 1em;
-                          cursor: pointer;
-                          transition: all 0.3s ease;
-                          outline: none;
-                          appearance: none;
-                          -webkit-appearance: none;
-                          -moz-appearance: none;
-                          background-image: url('data:image/svg+xml;utf8,<svg fill="%233498db" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
-                          background-repeat: no-repeat;
-                          background-position: right 10px top 50%;
-                          padding-right: 30px;
-                        }
-
-                        .organization-filter:hover, .organization-filter:focus {
-                          border-color: #2980b9;
-                          box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
-                        }
-
-                        .results-header {
+                        .filter-header {
                           display: flex;
                           justify-content: space-between;
                           align-items: center;
-                          margin-bottom: 20px;
-                          flex-wrap: wrap;
+                          padding: 12px 20px;
+                          background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+                          color: #fff;
+                          border-radius: 30px;
+                          cursor: pointer;
+                          transition: all 0.3s ease;
+                          box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
                         }
 
-                        @media screen and (max-width: 768px) {
-                          .results-header {
-                            flex-direction: column;
-                            align-items: stretch;
-                          }
-
-                          .filter-container, .download-container {
-                            width: 100%;
-                            margin-bottom: 10px;
-                          }
-
-                          .organization-filter, .download-btn {
-                            width: 100%;
-                          }
+                        .filter-header:hover {
+                          background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+                          transform: translateY(-2px);
+                          box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
                         }
-                        .organization-filter {
-                    position: relative;
-                    width: 250px;
-                    font-family: 'Poppins', sans-serif;
-                  }
 
-                  .filter-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 12px 20px;
+                        .filter-header i {
+                          transition: transform 0.3s ease;
+                        }
+
+                        .organization-filter.active .filter-header i {
+                          transform: rotate(180deg);
+                        }
+
+                        .organization-options {
+                          display: none;
+                          position: absolute;
+                          top: 100%;
+                          left: 0;
+                          right: 0;
+                          background-color: #fff;
+                          border-radius: 15px;
+                          margin-top: 10px;
+                          max-height: 300px;
+                          overflow-y: auto;
+                          z-index: 1000;
+                          box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+                          transition: all 0.3s ease;
+                          opacity: 0;
+                          transform: translateY(-10px);
+                        }
+
+                        .organization-filter.active .organization-options {
+                          display: block;
+                          opacity: 1;
+                          transform: translateY(0);
+                        }
+
+                        .option-item {
+                          display: flex;
+                          align-items: center;
+                          padding: 12px 20px;
+                          cursor: pointer;
+                          transition: background-color 0.3s ease;
+                        }
+
+                        .option-item:hover {
+                          background-color: #f8f9fa;
+                        }
+
+                        .option-item input[type="checkbox"] {
+                          margin-right: 10px;
+                          appearance: none;
+                          -webkit-appearance: none;
+                          width: 18px;
+                          height: 18px;
+                          border: 2px solid #3498db;
+                          border-radius: 4px;
+                          outline: none;
+                          transition: all 0.3s ease;
+                          position: relative;
+                          cursor: pointer;
+                        }
+
+                        .option-item input[type="checkbox"]:checked {
+                          background-color: #3498db;
+                          border-color: #3498db;
+                        }
+
+                        .option-item input[type="checkbox"]:checked::before {
+                          content: '✔';
+                          position: absolute;
+                          top: 50%;
+                          left: 50%;
+                          transform: translate(-50%, -50%);
+                          color: white;
+                          font-size: 12px;
+                        }
+
+                        /* Customizing scrollbar */
+                        .organization-options::-webkit-scrollbar {
+                          width: 8px;
+                        }
+
+                        .organization-options::-webkit-scrollbar-track {
+                          background: #f1f1f1;
+                          border-radius: 10px;
+                        }
+
+                        .organization-options::-webkit-scrollbar-thumb {
+                          background: #3498db;
+                          border-radius: 10px;
+                        }
+
+                        .organization-options::-webkit-scrollbar-thumb:hover {
+                          background: #2980b9;
+                        }
+                        .floating-btn {
+                    position: fixed;
+                    bottom: 30px;
+                    right: 30px;
+                    display: inline-block;
+                    padding: 15px 30px;
                     background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
                     color: #fff;
+                    text-decoration: none;
                     border-radius: 30px;
-                    cursor: pointer;
                     transition: all 0.3s ease;
-                    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-                  }
-
-                  .filter-header:hover {
-                    background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-                    transform: translateY(-2px);
-                    box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
-                  }
-
-                  .filter-header i {
-                    transition: transform 0.3s ease;
-                  }
-
-                  .organization-filter.active .filter-header i {
-                    transform: rotate(180deg);
-                  }
-
-                  .organization-options {
-                    display: none;
-                    position: absolute;
-                    top: 100%;
-                    left: 0;
-                    right: 0;
-                    background-color: #fff;
-                    border-radius: 15px;
-                    margin-top: 10px;
-                    max-height: 300px;
-                    overflow-y: auto;
+                    text-align: center;
+                    font-size: 1.2em;
+                    font-weight: 600;
+                    border: none;
+                    cursor: pointer;
+                    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
                     z-index: 1000;
-                    box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
-                    transition: all 0.3s ease;
-                    opacity: 0;
-                    transform: translateY(-10px);
                   }
 
-                  .organization-filter.active .organization-options {
-                    display: block;
-                    opacity: 1;
-                    transform: translateY(0);
-                  }
-
-                  .option-item {
-                    display: flex;
-                    align-items: center;
-                    padding: 12px 20px;
-                    cursor: pointer;
-                    transition: background-color 0.3s ease;
-                  }
-
-                  .option-item:hover {
-                    background-color: #f8f9fa;
-                  }
-
-                  .option-item input[type="checkbox"] {
-                    margin-right: 10px;
-                    appearance: none;
-                    -webkit-appearance: none;
-                    width: 18px;
-                    height: 18px;
-                    border: 2px solid #3498db;
-                    border-radius: 4px;
-                    outline: none;
-                    transition: all 0.3s ease;
-                    position: relative;
-                    cursor: pointer;
-                  }
-
-                  .option-item input[type="checkbox"]:checked {
-                    background-color: #3498db;
-                    border-color: #3498db;
-                  }
-
-                  .option-item input[type="checkbox"]:checked::before {
-                    content: '✔';
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    color: white;
-                    font-size: 12px;
-                  }
-
-                  /* Customizing scrollbar */
-                  .organization-options::-webkit-scrollbar {
-                    width: 8px;
-                  }
-
-                  .organization-options::-webkit-scrollbar-track {
-                    background: #f1f1f1;
-                    border-radius: 10px;
-                  }
-
-                  .organization-options::-webkit-scrollbar-thumb {
-                    background: #3498db;
-                    border-radius: 10px;
-                  }
-
-                  .organization-options::-webkit-scrollbar-thumb:hover {
-                    background: #2980b9;
+                  .floating-btn:hover {
+                    background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+                    transform: translateY(-2px) scale(1.05);
+                    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
                   }
                   .floating-btn {
               position: fixed;
@@ -675,42 +700,86 @@
               transform: translateY(-2px) scale(1.05);
               box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
             }
-            .floating-btn {
+
+            .floating-btn.at-bottom {
+              background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            }
+
+            .floating-btn.at-bottom:hover {
+              background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+            }.process-status {
         position: fixed;
-        bottom: 30px;
-        right: 30px;
-        display: inline-block;
-        padding: 15px 30px;
+        top: 0;
+        left: 0;
+        right: 0;
         background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
         color: #fff;
-        text-decoration: none;
-        border-radius: 30px;
-        transition: all 0.3s ease;
+        padding: 15px;
         text-align: center;
-        font-size: 1.2em;
-        font-weight: 600;
-        border: none;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-        z-index: 1000;
+        z-index: 1001;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        animation: slideDown 0.5s ease-out;
+        max-height: 100px;
+        overflow: hidden;
+        transition: max-height 0.5s ease-out;
       }
 
-      .floating-btn:hover {
-        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-        transform: translateY(-2px) scale(1.05);
-        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+      @keyframes slideDown {
+        from { max-height: 0; }
+        to { max-height: 100px; }
       }
 
-      .floating-btn.at-bottom {
-        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+      @keyframes slideUp {
+        from { max-height: 100px; }
+        to { max-height: 0; }
       }
 
-      .floating-btn.at-bottom:hover {
-        background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+      .process-status h2 {
+        margin: 0 0 5px;
+        font-size: 18px;
+      }
+
+      .process-status p {
+        margin: 0 0 10px;
+        font-size: 14px;
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        border: 2px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+        margin-bottom: 10px;
+      }
+
+      .progress-bar {
+        background-color: rgba(255,255,255,0.3);
+        border-radius: 10px;
+        padding: 2px;
+        margin-top: 10px;
+      }
+
+      .progress {
+        background-color: #fff;
+        height: 6px;
+        border-radius: 8px;
+        width: 0%;
+        transition: width 0.5s ease;
       }
     </style>
   </head>
   <body>
+    <div id="process-status" class="process-status">
+      <div class="spinner"></div>
+      <h2>Finding Personas</h2>
+      <p>Please wait while we gather the all personas for you.</p>
+      <div class="progress-bar">
+        <div class="progress"></div>
+      </div>
+    </div>
     <a href="#" class="floating-btn" id="scrollToBottomBtn">Scroll to Bottom</a>
     <div class="parallax-container">
       <div id="selected-count-container" class="selected-count-container">
@@ -1198,6 +1267,65 @@
 
         // Initial update
         updateScrollButton();
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+        const processStatus = document.getElementById("process-status");
+        const progressBar = processStatus.querySelector(".progress");
+        let progress = 0;
+
+        function checkStatus() {
+          // Replace this with your actual API call
+          fetch("/check-status")
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.completed) {
+                processStatus.style.animation =
+                  "slideUp 0.5s ease-out forwards";
+                setTimeout(() => {
+                  processStatus.remove();
+                }, 500);
+              } else {
+                progress += 5; // Increment progress by 5%
+                if (progress > 95) progress = 95; // Cap at 95%
+                progressBar.style.width = `${progress}%`;
+                setTimeout(checkStatus, 6000); // Check again in 1 minute
+              }
+            })
+            .catch((error) => {
+              console.error("Error checking status:", error);
+              setTimeout(checkStatus, 60000); // Retry in 1 minute if there's an error
+            });
+        }
+
+        checkStatus(); // Start checking immediately
+
+        // Adjust content padding when process-status is present
+        function adjustContentPadding() {
+          const content = document.querySelector(".content");
+          const processStatusHeight = processStatus.offsetHeight;
+          content.style.paddingTop = `${processStatusHeight}px`;
+        }
+
+        // Call adjustContentPadding initially and on window resize
+        adjustContentPadding();
+        window.addEventListener("resize", adjustContentPadding);
+
+        // Remove extra padding when process-status is removed
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (
+              mutation.type === "childList" &&
+              mutation.removedNodes.length > 0
+            ) {
+              if (Array.from(mutation.removedNodes).includes(processStatus)) {
+                document.querySelector(".content").style.paddingTop = "0";
+                observer.disconnect();
+              }
+            }
+          });
+        });
+
+        observer.observe(document.body, { childList: true });
       });
     </script>
   </body>

@@ -7,6 +7,7 @@ const RequestIdSchema = new Schema(
     jobIds: { type: [String], default: [] },
     personaIds: { type: [String], default: [] },
     convertJobObject: { type: Object },
+    personaProcessCompleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,
