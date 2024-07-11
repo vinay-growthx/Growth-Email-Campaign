@@ -1275,7 +1275,7 @@
 
         function checkStatus() {
           // Replace this with your actual API call
-          fetch("/check-status")
+          fetch("/api/check-status")
             .then((response) => response.json())
             .then((data) => {
               if (data.completed) {
@@ -1293,7 +1293,7 @@
             })
             .catch((error) => {
               console.error("Error checking status:", error);
-              setTimeout(checkStatus, 60000); // Retry in 1 minute if there's an error
+              setTimeout(checkStatus, 6000); // Retry in 1 minute if there's an error
             });
         }
 
