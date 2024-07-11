@@ -376,13 +376,10 @@ app.post("/create-persona", async (req, res) => {
         console.error(`Error processing company name ${name}:`, error);
       }
     }
-    const mailOptions = {
-      from: "noreply@hirequotient.com",
-      to: "vinay.prajapati@hirequotient.com",
-      subject: "Persona Addition",
-      text: `All personas have been added successfully. Please refresh the page, enrich the email content, and send the email`,
-    };
-    await smtpTransport.sendMail(mailOptions);
+    await requestIdRepository.updateOne(
+      { reqId: reqUUID },
+      { $set: { personaProcessCompleted: true } }
+    );
     if (!flag) res.redirect(`/persona-reachout/${reqUUID}`);
   } catch (error) {
     console.error("Error creating persona:", error);
