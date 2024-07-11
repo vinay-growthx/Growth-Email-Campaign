@@ -407,7 +407,7 @@ app.get("/api/check-status/:reqId", async (req, res) => {
 
     // Check if the process is completed
     const completed = request?.personaProcessCompleted || false;
-    if (personaCompleted?.personaCompleted) {
+    if (completed) {
       const response = {
         completed: completed,
         progress: progress,
