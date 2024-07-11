@@ -863,7 +863,7 @@
         <h2>Finding Personas</h2>
         <p>Please wait while we gather all personas for you.</p>
         <div class="status-info">
-          <span id="personaCount">217 personas found so far.</span>
+          <span id="personaCount">0 personas found so far.</span>
           <button
             onclick="location.reload();"
             class="refresh-btn"
@@ -1385,28 +1385,27 @@
         const reqId = document.body.getAttribute("data-req-id"); // Assuming you've added this attribute to the body tag
 
         function checkStatus() {
-          fetch(`/api/check-status/${reqId}`)
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.completed) {
-                processStatus.style.animation =
-                  "slideUp 0.5s ease-out forwards";
-                setTimeout(() => {
-                  processStatus.remove();
-                  document.querySelector(".content").style.paddingTop = "0";
-                }, 500);
-              } else {
-                progressBar.style.width = `${data.progress}%`;
-                const personaCountElement =
-                  document.getElementById("personaCount");
-                personaCountElement.textContent = `${data.personaCount} personas found so far.`;
-                setTimeout(checkStatus, 10000);
-              }
-            })
-            .catch((error) => {
-              console.error("Error checking status:", error);
+          fetch(`/api/check-status/${reqId}`).then((response) =>
+            response.json()
+          );
+          then((data) => {
+            if (data.completed) {
+              processStatus.style.animation = "slideUp 0.5s ease-out forwards";
+              setTimeout(() => {
+                processStatus.remove();
+                document.querySelector(".content").style.paddingTop = "0";
+              }, 500);
+            } else {
+              progressBar.style.width = `${data.progress}%`;
+              const personaCountElement =
+                document.getElementById("personaCount");
+              personaCountElement.textContent = `${data.personaCount} personas found so far.`;
               setTimeout(checkStatus, 10000);
-            });
+            }
+          }).catch((error) => {
+            console.error("Error checking status:", error);
+            setTimeout(checkStatus, 10000);
+          });
         }
         checkStatus();
 
