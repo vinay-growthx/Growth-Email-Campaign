@@ -289,10 +289,7 @@ function convertToStringArray(commaString) {
 app.post("/create-persona", async (req, res) => {
   try {
     console.log("req body ===>", req.body);
-    await requestIdRepository.updateOne(
-      { reqId: reqUUID },
-      { $set: { personaProcessCompleted: false } }
-    );
+
     let seniorityLevel = req?.body?.seniorityLevel;
     if (req?.body?.seniorityLevel?.length) {
       const allItems = seniorityLevel.flatMap((str) => str.split(","));
@@ -303,6 +300,10 @@ app.post("/create-persona", async (req, res) => {
     const employeeSize = req?.body?.employeeSize;
     const selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
     const reqUUID = req.body.reqId || uuidv4();
+    await requestIdRepository.updateOne(
+      { reqId: reqUUID },
+      { $set: { personaProcessCompleted: false } }
+    );
     let convertedObj = await requestIdRepository.findOne({
       reqId: req.body.reqId,
     });
