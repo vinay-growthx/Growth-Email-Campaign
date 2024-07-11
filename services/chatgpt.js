@@ -237,5 +237,97 @@ async function generateProfessionalSubject(originalSubject) {
     }
   }
 }
+async function generateJobSummary(jobDetails) {
+  const maxRetries = 3;
+  const retryDelay = 1000;
 
-module.exports = { generateCustomLine, generateProfessionalSubject };
+  const prompt = `
+  As a proficient summarizer, your task is to condense the following job posting details into a clear, concise, and informative summary of 2-3 lines:
+
+  Job Details:
+  "${jobDetails}"
+
+  Please follow these guidelines for the summary:
+  1. Include key details such as job title, company name, location, and type of employment.
+  2. Summarize essential responsibilities and qualifications.
+  3. Highlight any unique or notable aspects of the job or company.
+  4. Maintain a professional tone suitable for a business context.
+  5. Ensure the summary is well-organized and easy to read.
+  6. Avoid unnecessary details and focus on what's most relevant to a potential applicant.
+  7. Aim for a summary length of approximately 2-3 lines to keep it concise yet informative.
+  `;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await chatGPTPromptResult({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7,
+        max_tokens: 300,
+        top_p: 1,
+      });
+
+      console.log("GPT response:", response);
+
+      const jobSummary = response.trim();
+
+      return { summary: jobSummary };
+    } catch (error) {
+      console.error(`Attempt ${attempt + 1} failed:`, error);
+      if (attempt < maxRetries - 1) {
+        await new Promise((resolve) => setTimeout(resolve, retryDelay));
+      } else {
+        throw new Error(
+          "Failed to generate job summary after multiple attempts"
+        );
+      }
+    }
+  }
+}
+async function extractIndustryFromSummary(jobSummary) {
+  const maxRetries = 3;
+  const retryDelay = 1000;
+
+  const prompt = `
+  As a detail-oriented extractor, your task is to identify and specify the industry from the following job summary:
+
+  Job Summary:
+  "${jobSummary}"
+
+  Please extract the industry if mentioned explicitly, or infer it based on the context and content of the summary. Provide the industry as a concise, single term or a brief phrase, such as "software development", "logistics", "healthcare", "education", etc.
+  `;
+
+  console.log("Prompt sent to GPT:", prompt);
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await chatGPTPromptResult({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.5,
+        max_tokens: 50,
+        top_p: 1,
+      });
+
+      console.log("GPT response:", response);
+
+      const industry = response.trim();
+
+      return { industry: industry };
+    } catch (error) {
+      console.error(`Attempt ${attempt + 1} failed:`, error);
+      if (attempt < maxRetries - 1) {
+        await new Promise((resolve) => setTimeout(resolve, retryDelay));
+      } else {
+        throw new Error("Failed to extract industry after multiple attempts");
+      }
+    }
+  }
+}
+
+module.exports = {
+  generateCustomLine,
+  generateProfessionalSubject,
+  generateJobSummary,
+  extractIndustryFromSummary,
+};

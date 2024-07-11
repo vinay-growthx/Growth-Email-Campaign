@@ -35,6 +35,7 @@ const {
   convertToApolloPersona,
   removeEmojiFromName,
   removeDoubleQuotes,
+  formatJobDetailsForChatGPT,
 } = require("./services/util");
 const { fetchEmailViaContactOut } = require("./services/emailAPI/contactsout");
 const { fetchWorkEmailFromRb2bapi } = require("./services/emailAPI/r2b2b");
@@ -47,7 +48,10 @@ const EmailRepository = require("./repository/EmailRepository");
 const emailRepository = new EmailRepository();
 const RequestIdRepository = require("./repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
-const { generateProfessionalSubject } = require("./services/chatgpt");
+const {
+  generateProfessionalSubject,
+  generateJobSummary,
+} = require("./services/chatgpt");
 const { getLinkedInData } = require("./services/rapidAPI/linkedInData");
 const {
   generateSalesNavUrl,
@@ -223,22 +227,25 @@ app.post("/send-email", async (req, res) => {
           removeDoubleQuotes(aiGeneratedSubject) ||
           removeDoubleQuotes(replacedSubject),
         html: body
-          .replaceAll("{name}", removeEmojiFromName(personData?.name))
+          .replaceAll("{name}", personData?.name)
           .replaceAll("{companyName}", personData?.organization?.name)
           .replaceAll("{role}", personData?.title)
           .replaceAll("{hiringJobTitle}", jobPost)
           .replaceAll("{dateOfJobPost}", jobDate)
           .replaceAll("{hiringJobLocation}", jobLocation)
-          .replaceAll("{firstName}", personData?.first_name),
+          .replaceAll(
+            "{firstName}",
+            removeEmojiFromName(personData?.first_name)
+          ),
       };
       let personalizedBody = body
-        .replaceAll("{name}", removeEmojiFromName(personData?.name))
+        .replaceAll("{name}", personData?.name)
         .replaceAll("{companyName}", personData?.organization?.name)
         .replaceAll("{role}", personData?.title)
         .replaceAll("{hiringJobTitle}", jobPost)
         .replaceAll("{dateOfJobPost}", jobDate)
         .replaceAll("{hiringJobLocation}", jobLocation)
-        .replaceAll("{firstName}", personData?.first_name);
+        .replaceAll("{firstName}", removeEmojiFromName(personData?.first_name));
       if (email.email) {
         const emailData = {
           fromEmail: req?.body?.fromEmail,
