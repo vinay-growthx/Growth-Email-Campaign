@@ -289,6 +289,10 @@ function convertToStringArray(commaString) {
 app.post("/create-persona", async (req, res) => {
   try {
     console.log("req body ===>", req.body);
+    await requestIdRepository.updateOne(
+      { reqId: reqUUID },
+      { $set: { personaProcessCompleted: false } }
+    );
     let seniorityLevel = req?.body?.seniorityLevel;
     if (req?.body?.seniorityLevel?.length) {
       const allItems = seniorityLevel.flatMap((str) => str.split(","));

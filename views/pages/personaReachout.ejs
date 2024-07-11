@@ -1292,15 +1292,16 @@
                 // Update the status text
                 processStatus.querySelector(
                   "p"
-                ).textContent = `${data.personaCount} personas found so far...`;
+                ).textContent = `${data.personaCount} personas found so far...
+                Refresh to get all found personas`;
                 // Check again in every 6 sec
-                setTimeout(checkStatus, 6000);
+                setTimeout(checkStatus, 10000);
               }
             })
             .catch((error) => {
               console.error("Error checking status:", error);
               // Retry in every 6 sec if there's an error
-              setTimeout(checkStatus, 6000);
+              setTimeout(checkStatus, 10000);
             });
         }
 
