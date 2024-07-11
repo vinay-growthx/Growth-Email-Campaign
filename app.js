@@ -415,6 +415,14 @@ app.get("/api/check-status/:reqId", async (req, res) => {
       };
 
       res.json(response);
+    } else {
+      const response = {
+        completed: completed,
+        progress: progress,
+        personaCount: personaCount,
+      };
+
+      res.json(response);
     }
 
     // Prepare the response
