@@ -33,7 +33,6 @@ const {
   convertToApolloPersona,
   removeEmojiFromName,
   removeDoubleQuotes,
-  formatJobDetailsForChatGPT,
 } = require("./services/util");
 const {
   jobFunctionArr,
@@ -51,10 +50,7 @@ const EmailRepository = require("./repository/EmailRepository");
 const emailRepository = new EmailRepository();
 const RequestIdRepository = require("./repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
-const {
-  generateProfessionalSubject,
-  generateJobSummary,
-} = require("./services/chatgpt");
+const { generateProfessionalSubject } = require("./services/chatgpt");
 const { getLinkedInData } = require("./services/rapidAPI/linkedInData");
 const {
   generateSalesNavUrl,
@@ -510,7 +506,7 @@ app.post("/search-jobs", async (req, res) => {
     });
     if (results?.data?.length) {
       const jobDataSave = await saveJobData(results.data);
-      updateRequestWithJobIds(reqUUID, jobDataSave, convertedObject);
+      await updateRequestWithJobIds(reqUUID, jobDataSave, convertedObject);
     } else {
       console.log("inside else");
       const APIData = await fetchJobListings({

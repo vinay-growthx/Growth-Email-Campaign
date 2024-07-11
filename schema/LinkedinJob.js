@@ -73,6 +73,7 @@ const LinkedinJobSchema = new Schema(
     job_occupational_categories: [String],
     job_naics_code: String,
     job_naics_name: String,
+    summary: String,
   },
   { timestamps: true }
 );

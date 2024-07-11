@@ -9,63 +9,106 @@ const apolloOrganizationRepository = new ApolloOrganizationRepository();
 const RequestIdRepository = require("../repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
 const { fetchEmailViaContactOut } = require("../services/emailAPI/contactsout");
+const { generateJobSummary } = require("../services/chatgpt");
+
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require("uuid");
 
+function checkValueAndFormat(value, label) {
+  if (!value) return "";
+  return `${label}${value}. `;
+}
+
+function formatJobDetails(job) {
+  let jobDetailsString = "";
+
+  jobDetailsString += checkValueAndFormat(job.job_title, "Job Title: ");
+  jobDetailsString += checkValueAndFormat(job.employer_name, "Company: ");
+  jobDetailsString += checkValueAndFormat(job.job_country, "Location: ");
+  jobDetailsString += checkValueAndFormat(
+    job.job_employment_type,
+    "Employment Type: "
+  );
+
+  jobDetailsString += checkValueAndFormat(job.job_description, "Description: ");
+
+  if (typeof job.job_is_remote === "boolean") {
+    jobDetailsString += job.job_is_remote
+      ? "This position is remote. "
+      : "This position is not remote. ";
+  }
+
+  return jobDetailsString.trim();
+}
 async function saveJobData(jobData) {
-  const jobEntries = jobData.map((job) => ({
-    job_id: job.job_id || "",
-    employer_name: job.employer_name || "",
-    employer_logo: job.employer_logo || "",
-    employer_website: job.employer_website || "",
-    employer_company_type: job.employer_company_type || "",
-    job_publisher: job.job_publisher || "",
-    job_employment_type: job.job_employment_type || "",
-    job_title: job.job_title || "",
-    job_apply_link: job.job_apply_link || "",
-    job_apply_is_direct: job.job_apply_is_direct || false,
-    job_apply_quality_score: job.job_apply_quality_score || 0,
-    apply_options: job.apply_options
-      ? job.apply_options.map((opt) => ({
-          publisher: opt.publisher || "",
-          apply_link: opt.apply_link || "",
-          is_direct: opt.is_direct || false,
-        }))
-      : [],
-    job_description: job.job_description || "",
-    job_is_remote: job.job_is_remote || false,
-    job_posted_at_timestamp: job.job_posted_at_timestamp || 0,
-    job_posted_at_datetime_utc: new Date(
-      job.job_posted_at_datetime_utc || Date.now()
-    ),
-    job_city: job.job_city || "",
-    job_state: job.job_state || "",
-    job_country: job.job_country || "",
-    job_latitude: job.job_latitude || 0,
-    job_longitude: job.job_longitude || 0,
-    job_benefits: job.job_benefits || [],
-    job_google_link: job.job_google_link || "",
-    job_offer_expiration_datetime_utc: job.job_offer_expiration_datetime_utc
-      ? new Date(job.job_offer_expiration_datetime_utc)
-      : null,
-    job_offer_expiration_timestamp: job.job_offer_expiration_timestamp || 0,
-    job_required_experience: job.job_required_experience || {},
-    job_required_skills: job.job_required_skills || [],
-    job_required_education: job.job_required_education || {},
-    job_experience_in_place_of_education:
-      job.job_experience_in_place_of_education || false,
-    job_min_salary: job.job_min_salary || 0,
-    job_max_salary: job.job_max_salary || 0,
-    job_salary_currency: job.job_salary_currency || "",
-    job_salary_period: job.job_salary_period || "",
-    job_highlights: job.job_highlights || {},
-    job_posting_language: job.job_posting_language || "",
-    job_onet_soc: job.job_onet_soc || "",
-    job_onet_job_zone: job.job_onet_job_zone || 0,
-    job_occupational_categories: job.job_occupational_categories || [],
-    job_naics_code: job.job_naics_code || "",
-    job_naics_name: job.job_naics_name || "",
-  }));
+  console.log("job data ===>", jobData[0]);
+  const jobEntries = [];
+  for (const job of jobData) {
+    let summary = "";
+    try {
+      const generatedSummary = await generateJobSummary(formatJobDetails(job));
+      summary = generatedSummary?.summary || "";
+    } catch (error) {
+      console.error("Error generating summary for job", job.job_id, error);
+      summary = ""; // Continue with an empty string if summary generation fails
+    }
+
+    const formattedJob = {
+      job_id: job.job_id || "",
+      employer_name: job.employer_name || "",
+      employer_logo: job.employer_logo || "",
+      employer_website: job.employer_website || "",
+      employer_company_type: job.employer_company_type || "",
+      job_publisher: job.job_publisher || "",
+      job_employment_type: job.job_employment_type || "",
+      job_title: job.job_title || "",
+      job_apply_link: job.job_apply_link || "",
+      job_apply_is_direct: job.job_apply_is_direct || false,
+      job_apply_quality_score: job.job_apply_quality_score || 0,
+      apply_options: job.apply_options
+        ? job.apply_options.map((opt) => ({
+            publisher: opt.publisher || "",
+            apply_link: opt.apply_link || "",
+            is_direct: opt.is_direct || false,
+          }))
+        : [],
+      job_description: job.job_description || "",
+      job_is_remote: job.job_is_remote || false,
+      job_posted_at_timestamp: job.job_posted_at_timestamp || 0,
+      job_posted_at_datetime_utc: new Date(
+        job.job_posted_at_datetime_utc || Date.now()
+      ),
+      job_city: job.job_city || "",
+      job_state: job.job_state || "",
+      job_country: job.job_country || "",
+      job_latitude: job.job_latitude || 0,
+      job_longitude: job.job_longitude || 0,
+      job_benefits: job.job_benefits || [],
+      job_google_link: job.job_google_link || "",
+      job_offer_expiration_datetime_utc: job.job_offer_expiration_datetime_utc
+        ? new Date(job.job_offer_expiration_datetime_utc)
+        : null,
+      job_offer_expiration_timestamp: job.job_offer_expiration_timestamp || 0,
+      job_required_experience: job.job_required_experience || {},
+      job_required_skills: job.job_required_skills || [],
+      job_required_education: job.job_required_education || {},
+      job_experience_in_place_of_education:
+        job.job_experience_in_place_of_education || false,
+      job_min_salary: job.job_min_salary || 0,
+      job_max_salary: job.job_max_salary || 0,
+      job_salary_currency: job.job_salary_currency || "",
+      job_salary_period: job.job_salary_period || "",
+      job_highlights: job.job_highlights || {},
+      job_posting_language: job.job_posting_language || "",
+      job_onet_soc: job.job_onet_soc || "",
+      job_onet_job_zone: job.job_onet_job_zone || 0,
+      job_occupational_categories: job.job_occupational_categories || [],
+      job_naics_code: job.job_naics_code || "",
+      job_naics_name: job.job_naics_name || "",
+      summary: summary,
+    };
+    jobEntries.push(formattedJob);
+  }
 
   try {
     const jobIds = jobEntries.map((job) => job.job_id);
