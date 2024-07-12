@@ -1516,6 +1516,20 @@
                   Date(job.job_posted_at_datetime_utc).toLocaleDateString() :
                   'N/A' %>
                 </div>
+                <div class="job-detail">
+                  <span>Employer Website:</span>
+                  <% if (job.employer_website) { %>
+                  <a
+                    href="<%= job.employer_website %>"
+                    target="_blank"
+                    class="employer-website-link"
+                    ><%= job.employer_website %></a
+                  >
+                  <% } else { %> N/A <% } %>
+                </div>
+                <div class="job-detail">
+                  <span>Job Publisher:</span> <%= job.job_publisher || 'N/A' %>
+                </div>
                 <!-- <div class="job-detail">
                   <span>Salary Range:</span> <%= job.salaryRange || 'N/A' %>
                 </div> -->
@@ -1870,6 +1884,12 @@
               const industryTypeDetail = Array.from(jobDetails).find((detail) =>
                 detail.textContent.includes("Industry Type:")
               );
+              const employerWebsiteDetail = Array.from(jobDetails).find(
+                (detail) => detail.textContent.includes("Employer Website:")
+              );
+              const jobPublisherDetail = Array.from(jobDetails).find((detail) =>
+                detail.textContent.includes("Job Publisher:")
+              );
 
               const descriptionElement =
                 jobCard.querySelector(".job-description");
@@ -1900,6 +1920,14 @@
                 industry_type: industryTypeDetail
                   ? industryTypeDetail.textContent
                       .split("Industry Type:")[1]
+                      .trim()
+                  : "N/A",
+                employer_website: employerWebsiteDetail
+                  ? employerWebsiteDetail.querySelector("a")?.href || "N/A"
+                  : "N/A",
+                job_publisher: jobPublisherDetail
+                  ? jobPublisherDetail.textContent
+                      .split("Job Publisher:")[1]
                       .trim()
                   : "N/A",
                 apply_link: jobCard.querySelector(".job-apply-link")
