@@ -50,15 +50,15 @@ async function saveJobData(jobData) {
     let summary = "";
     let ai_industry = "";
     try {
-      const generatedSummary = await generateJobSummary(formatJobDetails(job));
-      summary = generatedSummary?.summary || "";
+      // const generatedSummary = await generateJobSummary(formatJobDetails(job));
+      // summary = generatedSummary?.summary || "";
     } catch (error) {
       console.error("Error generating summary for job", job.job_id, error);
       summary = ""; // Continue with an empty string if summary generation fails
     }
     if (summary) {
-      ai_industry = await extractIndustryFromSummary(summary);
-      console.log("ai industry ===>", ai_industry);
+      // ai_industry = await extractIndustryFromSummary(summary);
+      // console.log("ai industry ===>", ai_industry);
     }
     const formattedJob = {
       job_id: job.job_id || "",
