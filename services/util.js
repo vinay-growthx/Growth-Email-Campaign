@@ -840,12 +840,27 @@ async function convertToApolloPersona(user, reqUUID) {
       show_intent: false,
       revealed_for_current_team: false,
     };
-    const apolloCreated = await apolloPersonaRepository.create(apolloPersona);
-    const updatedRequest = await requestIdRepository.updateOne(
-      { reqId: reqUUID },
-      { $addToSet: { personaIds: user.username } },
-      { upsert: true }
-    );
+    try {
+      await apolloPersonaRepository.create(apolloPersona);
+    } catch (err) {
+      console.log("err", err);
+      if (err.name === "MongoServerError" && err.code === 11000) {
+        console.log("Handling duplicate key error for apolloPersona");
+        console.log("error: duplicate key");
+      }
+    }
+
+    try {
+      const updatedRequest = await requestIdRepository.updateOne(
+        { reqId: reqUUID },
+        { $addToSet: { personaIds: user.username } },
+        { upsert: true }
+      );
+      console.log("updated req", updatedRequest);
+    } catch (err) {
+      console.log("Error updating requestIdRepository", err);
+    }
+
     console.log("updated req", updatedRequest);
     return apolloPersona;
   } catch (err) {
