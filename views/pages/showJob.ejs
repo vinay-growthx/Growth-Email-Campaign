@@ -1274,6 +1274,49 @@
             value="<%= reqId%>"
             hidden
           />
+          <div class="form-group job-function-container">
+            <div class="select-label">Job Function for Persona</div>
+            <div class="multi-select-wrapper job-function-select">
+              <div class="multi-select-header">
+                <span>Select job functions</span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="multi-select-options">
+                <% jobFunctionArr.forEach(function(role) { %>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="jobFunction"
+                    value="<%= role.value %>"
+                  />
+                  <%= role.label %>
+                </label>
+                <% }); %>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group industry-container">
+            <div class="select-label">Industry for Persona</div>
+            <div class="multi-select-wrapper industry-select">
+              <div class="multi-select-header">
+                <span>Select industries</span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="multi-select-options">
+                <% industryArr.forEach(function(industry) { %>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="industry"
+                    value="<%= industry.value %>"
+                  />
+                  <%= industry.label %>
+                </label>
+                <% }); %>
+              </div>
+            </div>
+          </div>
           <div class="form-group employee-size-container">
             <div class="select-label">Company Size for Persona</div>
             <div class="multi-select-wrapper">
@@ -1673,9 +1716,9 @@
             const tag = document.createElement("span");
             tag.classList.add("designation-tag");
             tag.innerHTML = `
-              ${designation}
-              <span class="remove" data-designation="${designation}">&times;</span>
-            `;
+          ${designation}
+          <span class="remove" data-designation="${designation}">&times;</span>
+        `;
             tagsContainer.appendChild(tag);
           });
         }
@@ -1784,28 +1827,6 @@
           btn.addEventListener("click", function () {
             addDesignation(this.dataset.designation);
           });
-        });
-
-        form.addEventListener("submit", function (event) {
-          const selectedJobs = document.querySelectorAll(
-            'input[name="jobSelect"]:checked'
-          );
-          updateInput();
-
-          if (selectedJobs.length === 0) {
-            event.preventDefault();
-            alert("Please select at least one job before creating a persona.");
-          } else if (designations.length === 0) {
-            event.preventDefault();
-            alert("Please enter at least one Persona Designation.");
-          } else {
-            createPersonaBtn.disabled = true;
-            createPersonaBtn.textContent = "Creating Persona...";
-            setTimeout(function () {
-              createPersonaBtn.disabled = false;
-              createPersonaBtn.textContent = "Create Persona";
-            }, 85000);
-          }
         });
 
         companyFilterHeader.addEventListener("click", function () {
@@ -2046,6 +2067,71 @@
               : "Select seniority levels";
         }
 
+        // Job function multi-select
+        const jobFunctionSelect = document.querySelector(
+          ".job-function-container .multi-select-wrapper"
+        );
+        const jobFunctionHeader = jobFunctionSelect.querySelector(
+          ".multi-select-header"
+        );
+        const jobFunctionOptions = jobFunctionSelect.querySelector(
+          ".multi-select-options"
+        );
+        const jobFunctionCheckboxes = jobFunctionSelect.querySelectorAll(
+          'input[name="jobFunction"]'
+        );
+
+        jobFunctionHeader.addEventListener("click", function () {
+          jobFunctionSelect.classList.toggle("active");
+        });
+
+        jobFunctionCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", updateSelectedJobFunctions);
+        });
+        function updateSelectedJobFunctions() {
+          const selectedFunctions = Array.from(jobFunctionCheckboxes)
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.parentNode.textContent.trim());
+
+          jobFunctionHeader.querySelector("span").textContent =
+            selectedFunctions.length > 0
+              ? selectedFunctions.join(", ")
+              : "Select job functions";
+        }
+
+        // Industry multi-select
+        const industrySelect = document.querySelector(
+          ".industry-container .multi-select-wrapper"
+        );
+        const industryHeader = industrySelect.querySelector(
+          ".multi-select-header"
+        );
+        const industryOptions = industrySelect.querySelector(
+          ".multi-select-options"
+        );
+        const industryCheckboxes = industrySelect.querySelectorAll(
+          'input[name="industry"]'
+        );
+
+        industryHeader.addEventListener("click", function () {
+          industrySelect.classList.toggle("active");
+        });
+
+        industryCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", updateSelectedIndustries);
+        });
+
+        function updateSelectedIndustries() {
+          const selectedIndustries = Array.from(industryCheckboxes)
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.parentNode.textContent.trim());
+
+          industryHeader.querySelector("span").textContent =
+            selectedIndustries.length > 0
+              ? selectedIndustries.join(", ")
+              : "Select industries";
+        }
+
         // Close dropdowns when clicking outside
         document.addEventListener("click", function (event) {
           if (!employeeSizeSelect.contains(event.target)) {
@@ -2054,32 +2140,71 @@
           if (!senioritySelect.contains(event.target)) {
             senioritySelect.classList.remove("active");
           }
+          if (!jobFunctionSelect.contains(event.target)) {
+            jobFunctionSelect.classList.remove("active");
+          }
+          if (!industrySelect.contains(event.target)) {
+            industrySelect.classList.remove("active");
+          }
         });
 
-        // Update form submission to include employee sizes and seniority levels
+        // Update form submission to include all selections with label and value
         form.addEventListener("submit", function (event) {
-          const selectedSizes = Array.from(employeeSizeCheckboxes)
-            .filter((checkbox) => checkbox.checked)
-            .map((checkbox) => checkbox.value);
+          const selectedJobs = document.querySelectorAll(
+            'input[name="jobSelect"]:checked'
+          );
+          updateInput();
 
-          if (selectedSizes.length > 0) {
+          if (selectedJobs.length === 0) {
+            event.preventDefault();
+            alert("Please select at least one job before creating a persona.");
+          } else if (designations.length === 0) {
+            event.preventDefault();
+            alert("Please enter at least one Persona Designation.");
+          } else {
+            const selectedSizes = Array.from(employeeSizeCheckboxes)
+              .filter((checkbox) => checkbox.checked)
+              .map((checkbox) => checkbox.value);
+
+            const selectedSeniorityLevels = Array.from(seniorityLevelCheckboxes)
+              .filter((checkbox) => checkbox.checked)
+              .map((checkbox) => checkbox.value);
+
+            const selectedJobFunctions = Array.from(jobFunctionCheckboxes)
+              .filter((checkbox) => checkbox.checked)
+              .map((checkbox) => {
+                return {
+                  label: checkbox.parentNode.textContent.trim(),
+                  value: checkbox.value,
+                };
+              });
+
+            const selectedIndustries = Array.from(industryCheckboxes)
+              .filter((checkbox) => checkbox.checked)
+              .map((checkbox) => {
+                return {
+                  label: checkbox.parentNode.textContent.trim(),
+                  value: checkbox.value,
+                };
+              });
+
             const hiddenInput = document.createElement("input");
             hiddenInput.type = "hidden";
-            hiddenInput.name = "employeeSizes";
-            hiddenInput.value = selectedSizes.join(",");
+            hiddenInput.name = "personaAttributes";
+            hiddenInput.value = JSON.stringify({
+              employeeSizes: selectedSizes,
+              seniorityLevels: selectedSeniorityLevels,
+              jobFunctions: selectedJobFunctions,
+              industries: selectedIndustries,
+            });
             this.appendChild(hiddenInput);
-          }
 
-          const selectedSeniorityLevels = Array.from(seniorityLevelCheckboxes)
-            .filter((checkbox) => checkbox.checked)
-            .map((checkbox) => checkbox.value);
-
-          if (selectedSeniorityLevels.length > 0) {
-            const hiddenInput = document.createElement("input");
-            hiddenInput.type = "hidden";
-            hiddenInput.name = "seniorityLevels";
-            hiddenInput.value = selectedSeniorityLevels.join(",");
-            this.appendChild(hiddenInput);
+            createPersonaBtn.disabled = true;
+            createPersonaBtn.textContent = "Creating Persona...";
+            setTimeout(function () {
+              createPersonaBtn.disabled = false;
+              createPersonaBtn.textContent = "Create Persona";
+            }, 85000);
           }
         });
       });

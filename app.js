@@ -118,7 +118,13 @@ app.get("/get-jobs/:reqId", async (req, res) => {
           new Date(b.job_posted_at_datetime_utc) -
           new Date(a.job_posted_at_datetime_utc)
       );
-      res.render("showJob", { jobs: jobSorted, reqId });
+      res.render("showJob", {
+        jobs: jobSorted,
+        reqId,
+        locationArr,
+        industryArr,
+        jobFunctionArr,
+      });
     }
   } catch (error) {
     console.error("Error fetching jobs:", error);
