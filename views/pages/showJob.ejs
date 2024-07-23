@@ -506,7 +506,14 @@
         flex-wrap: wrap;
         gap: 10px;
       }
-
+      .designation-btn {
+        background-color: #ecf0f1;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
       .designation-btn {
         background-color: #ecf0f1;
         border: none;
@@ -1008,7 +1015,6 @@
         box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
         z-index: 1000;
       }
-
       .floating-btn:hover {
         background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
         transform: translateY(-2px) scale(1.05);
@@ -1196,6 +1202,137 @@
         background-color: #2980b9;
         transform: translateY(-2px);
         box-shadow: 0 4px 6px rgba(52, 152, 219, 0.3);
+      }
+
+      /* New styles for improved alignment */
+      .form-group {
+        margin-bottom: 25px;
+      }
+
+      .multi-select-wrapper {
+        width: 100%;
+        max-width: 500px;
+      }
+
+      .select-label {
+        text-align: left;
+        margin-bottom: 10px;
+        font-weight: 600;
+        font-size: 1.1em;
+      }
+
+      #personaDesignations {
+        width: 100%;
+        max-width: 500px;
+      }
+
+      .default-designations {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+      }
+
+      .multi-select-header,
+      #personaDesignations,
+      .designation-btn {
+        border-radius: 8px;
+      }
+
+      @media (max-width: 768px) {
+        .multi-select-wrapper,
+        #personaDesignations {
+          max-width: 100%;
+        }
+      }
+      .multi-select-wrapper,
+      .persona-designation input,
+      .default-designations {
+        width: 100%;
+        max-width: 100%;
+      }
+      @media screen and (min-width: 768px) {
+        .form-group {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+        }
+
+        .multi-select-wrapper,
+        .persona-designation {
+          width: 48%;
+        }
+
+        .employee-size-container {
+          width: 100%;
+        }
+      }
+      .persona-designation input {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .default-designations {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        width: 100%;
+      }
+
+      .designation-btn {
+        flex-grow: 1;
+      }
+      .content {
+        max-width: 1200px;
+        width: 95%;
+        margin: 20px auto;
+        padding: 40px;
+      }
+      .employee-size-container {
+        margin-bottom: 25px;
+        width: 100%;
+        background: none;
+        box-shadow: none;
+        padding: 0;
+      }
+
+      .employee-size-container .multi-select-wrapper {
+        width: 100%;
+      }
+      .form-group {
+        margin-bottom: 25px;
+        width: 100%;
+      }
+
+      .multi-select-wrapper {
+        width: 100%;
+      }
+
+      .select-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #3498db;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .multi-select-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        background-color: #ffffff;
+        border: 2px solid #3498db;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      @media screen and (min-width: 768px) {
+        .form-group,
+        .employee-size-container,
+        .persona-designation {
+          width: 100%;
+        }
       }
     </style>
   </head>
@@ -1826,6 +1963,7 @@
         defaultBtns.forEach((btn) => {
           btn.addEventListener("click", function () {
             addDesignation(this.dataset.designation);
+            input.value = "";
           });
         });
 
