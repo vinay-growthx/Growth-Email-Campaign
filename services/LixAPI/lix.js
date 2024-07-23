@@ -1,4 +1,5 @@
 const axios = require("axios");
+const { trackApiCall } = require("../util");
 
 async function searchPeopleLix(searchUrl) {
   const url = "https://api.lix-it.com/v1/li/sales/search/people";
@@ -17,6 +18,7 @@ async function searchPeopleLix(searchUrl) {
 
   try {
     const response = await axios.get(url, config);
+    trackApiCall(`https://api.lix-it.com/v1/li/sales/search/people`);
     return response.data;
   } catch (error) {
     console.error("Error:", error.message);

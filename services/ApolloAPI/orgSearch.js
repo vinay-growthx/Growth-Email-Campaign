@@ -1,4 +1,5 @@
 const axios = require("axios");
+const { trackApiCall } = require("../util");
 
 async function searchCompanyApollo(organizationName) {
   console.log("orgnaization name ====>", organizationName);
@@ -17,6 +18,7 @@ async function searchCompanyApollo(organizationName) {
   try {
     const response = await axios.post(url, data, { headers });
     // console.log(response.data);
+    trackApiCall("https://api.apollo.io/api/v1/mixed_companies/search");
     return response.data;
   } catch (error) {
     console.error("Error in making request:", error.message);

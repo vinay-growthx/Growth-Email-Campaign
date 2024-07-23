@@ -1,5 +1,6 @@
 const axios = require("axios");
 const { processLocation } = require("../util");
+const { trackApiCall } = require("../util");
 async function searchPeople(
   locations,
   orgId,
@@ -54,6 +55,7 @@ async function searchPeople(
       "response len",
       response.data.length
     );
+    trackApiCall("https://api.apollo.io/v1/mixed_people/search");
     return response.data;
   } catch (error) {
     console.error("Error searching people:", error);

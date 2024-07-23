@@ -1,7 +1,7 @@
 const axios = require("axios");
 const ApolloPersonaRepository = require("../../repository/ApolloPersonaRepository");
 const apolloPersonaRepository = new ApolloPersonaRepository();
-
+const { trackApiCall } = require("../util");
 async function getEmailByLinkedInUrl(linkedinUrl, personaId) {
   const apiKey = process.env.APOLLO_API_KEY;
   const url = "https://api.apollo.io/v1/people/match";
@@ -25,6 +25,7 @@ async function getEmailByLinkedInUrl(linkedinUrl, personaId) {
       { id: personaId },
       { $set: { email: response?.data?.person?.email } }
     );
+    trackApiCall("https://api.apollo.io/v1/people/matc");
     return response?.data?.person?.email || "";
   } catch (error) {
     console.error("Error during API call:", error.message);

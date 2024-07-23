@@ -1,6 +1,7 @@
 const axios = require("axios");
 const ApolloPersonaRepository = require("../../repository/ApolloPersonaRepository");
 const apolloPersonaRepository = new ApolloPersonaRepository();
+const { trackApiCall } = require("../util");
 
 async function fetchWorkEmailFromRb2bapi(linkedinUrl, personaId) {
   try {
@@ -22,6 +23,9 @@ async function fetchWorkEmailFromRb2bapi(linkedinUrl, personaId) {
     await apolloPersonaRepository.updateOne(
       { id: personaId },
       { $set: { email: response.data.work_email } }
+    );
+    trackApiCall(
+      `https://rb2bapi.com/api/v1/public/b2b-data/emails/GetAllEmail?url=${encodedLinkedinUrl}`
     );
     return workEmail;
   } catch (error) {

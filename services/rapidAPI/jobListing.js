@@ -1,4 +1,5 @@
 const axios = require("axios");
+const { trackApiCall } = require("../util");
 
 async function fetchJobListings(data) {
   console.log("date posted", data);
@@ -26,6 +27,7 @@ async function fetchJobListings(data) {
 
   try {
     const response = await axios(config);
+    trackApiCall(`https://jobs-api14.p.rapidapi.com/list`);
     return response.data;
   } catch (error) {
     console.error("Error fetching job listings:", error);

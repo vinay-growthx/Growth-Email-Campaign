@@ -1,4 +1,5 @@
 const axios = require("axios");
+const { trackApiCall } = require("../util");
 
 async function searchJobs(query, page, numPages, datePosted) {
   const options = {
@@ -18,6 +19,7 @@ async function searchJobs(query, page, numPages, datePosted) {
 
   try {
     const response = await axios.request(options);
+    trackApiCall(`https://${process.env.LI_JOB_RAPIDAPI_HOST}/search`);
     return response.data;
   } catch (error) {}
 }

@@ -7,6 +7,8 @@ const apolloPersonaRepository = new ApolloPersonaRepository();
 const ApolloOrganizationRepository = require("../repository/ApolloOrganizationRepository");
 const apolloOrganizationRepository = new ApolloOrganizationRepository();
 const RequestIdRepository = require("../repository/RequestIdRepository");
+const ApiCallRepository = require("../repository/ApiCallRepository");
+const apiCallRepository = new ApiCallRepository();
 const requestIdRepository = new RequestIdRepository();
 const { fetchEmailViaContactOut } = require("../services/emailAPI/contactsout");
 const {
@@ -973,7 +975,6 @@ function removeEmojiFromName(str) {
       : inputName;
   } catch (err) {
     console.log("error", err);
-    Sentry.captureException(err);
     return str;
   }
 }
@@ -994,10 +995,26 @@ function removeDoubleQuotes(str) {
 
   return str;
 }
+
+async function trackApiCall(apiName) {
+  const update = { $inc: { count: 1 } };
+  const options = { upsert: true, new: true };
+  try {
+    return await apiCallRepository.findOneAndUpdate(
+      { apiName },
+      update,
+      options
+    );
+  } catch (err) {
+    console.error(`Error tracking API call for ${apiName}: ${err}`);
+  }
+}
+
 module.exports = {
   convertData,
   findAllJobs,
   saveJobData,
+  trackApiCall,
   addJobLocation,
   findPersonById,
   findAllPersonas,

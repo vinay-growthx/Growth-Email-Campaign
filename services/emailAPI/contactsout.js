@@ -1,6 +1,7 @@
 const axios = require("axios");
 const ApolloPersonaRepository = require("../../repository/ApolloPersonaRepository");
 const apolloPersonaRepository = new ApolloPersonaRepository();
+const { trackApiCall } = require("../util");
 
 async function fetchEmailViaContactOut(profileUrl, personaId) {
   try {
@@ -19,6 +20,9 @@ async function fetchEmailViaContactOut(profileUrl, personaId) {
     await apolloPersonaRepository.updateOne(
       { id: personaId },
       { $set: { email: response?.data?.profile?.work_email?.[0] } }
+    );
+    trackApiCall(
+      `https://api.contactout.com/v1/people/linkedin?profile=${encodedProfileUrl}`
     );
     return workEmail;
   } catch (error) {
