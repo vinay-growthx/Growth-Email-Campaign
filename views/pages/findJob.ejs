@@ -274,7 +274,7 @@
               required
             />
           </div> -->
-          <div class="form-group" style="animation-delay: 0.2s">
+          <!-- <div class="form-group" style="animation-delay: 0.2s">
             <label for="role_function">Job Function:</label>
             <select id="role_function" name="role_function" required>
               <option value="" disabled selected>Select a job function</option>
@@ -305,7 +305,7 @@
               name="industry_hidden"
               value=""
             />
-          </div>
+          </div> -->
           <div class="form-group" style="animation-delay: 0.4s">
             <label for="location">Location:</label>
             <input
@@ -451,7 +451,7 @@
         const form = document.querySelector("form");
         const submitButton = document.getElementById("submitButton");
         const locationInput = document.getElementById("location");
-        const industryInput = document.getElementById("industry");
+        // const industryInput = document.getElementById("industry");
         const errorMessage = document.getElementById("error-message");
 
         const locationArr = [
@@ -463,55 +463,14 @@
           <% }); %>
         ];
 
-        const industryArr = [
-          <% industryArr.forEach(function(industry) { %>
-            {
-              label: "<%= industry.label %>",
-              value: "<%= industry.value %>"
-            },
-          <% }); %>
-        ];
-
-        function isValidLocation(input) {
-          return locationArr.some(location => location.label.toLowerCase() === input.toLowerCase());
-        }
-
-        function isValidIndustry(input) {
-          return industryArr.some(industry => industry.label.toLowerCase() === input.toLowerCase());
-        }
-
-        form.addEventListener("submit", function (e) {
-          let isValid = true;
-          errorMessage.textContent = "";
-
-          if (!isValidLocation(locationInput.value)) {
-            errorMessage.textContent += "Please select a valid location from the list. ";
-            isValid = false;
-          }
-
-          if (!isValidIndustry(industryInput.value)) {
-            errorMessage.textContent += "Please select a valid industry from the list.";
-            isValid = false;
-          }
-
-          if (!isValid) {
-            e.preventDefault(); // Prevent form submission
-            errorMessage.style.display = "block";
-            return;
-          }
-
-          errorMessage.style.display = "none";
-          // Disable the button
-          submitButton.disabled = true;
-          submitButton.textContent = "Searching...";
-
-          // You can add a timeout to re-enable the button after a certain period
-          // if the form submission takes too long or fails
-          setTimeout(function () {
-            submitButton.disabled = false;
-            submitButton.textContent = "Search Jobs";
-          }, 20000); // Re-enable after 20 seconds
-        });
+        // const industryArr = [
+        //   <% industryArr.forEach(function(industry) { %>
+        //     {
+        //       label: "<%= industry.label %>",
+        //       value: "<%= industry.value %>"
+        //     },
+        //   <% }); %>
+        // ];
 
         function suggestOptions(input, optionsArr) {
           const suggestions = optionsArr.filter(option =>
@@ -533,30 +492,70 @@
           });
         }
 
+        function updateHiddenField(input, optionsArr, hiddenFieldId) {
+          const matchedOption = optionsArr.find(
+            option => option.label.toLowerCase() === input.value.toLowerCase()
+          );
+          if (matchedOption) {
+            document.getElementById(hiddenFieldId).value = JSON.stringify(matchedOption);
+            errorMessage.style.display = "none";
+          } else {
+            document.getElementById(hiddenFieldId).value = "";
+            errorMessage.textContent = `Please select a valid ${input.id} from the list.`;
+            errorMessage.style.display = "block";
+          }
+        }
+
         function handleInputChange(input, optionsArr, suggestionsId, hiddenFieldId) {
           input.addEventListener("input", function () {
             const suggestions = suggestOptions(this.value, optionsArr);
             displaySuggestions(suggestions, suggestionsId);
+            updateHiddenField(this, optionsArr, hiddenFieldId);
           });
 
           input.addEventListener("change", function () {
-            const selectedOption = Array.from(input.list.options).find(
-              option => option.value === input.value
-            );
-            if (selectedOption) {
-              const selectedValue = JSON.parse(selectedOption.dataset.value);
-              document.getElementById(hiddenFieldId).value = JSON.stringify(selectedValue);
-              errorMessage.style.display = "none";
-            } else {
-              document.getElementById(hiddenFieldId).value = "";
-              errorMessage.textContent = `Please select a valid ${input.id} from the list.`;
-              errorMessage.style.display = "block";
-            }
+            updateHiddenField(this, optionsArr, hiddenFieldId);
           });
         }
 
         handleInputChange(locationInput, locationArr, "location-suggestions", "location_hidden");
-        handleInputChange(industryInput, industryArr, "industry-suggestions", "industry_hidden");
+        // handleInputChange(industryInput, industryArr, "industry-suggestions", "industry_hidden");
+
+        form.addEventListener("submit", function (e) {
+          let isValid = true;
+          errorMessage.textContent = "";
+
+          updateHiddenField(locationInput, locationArr, "location_hidden");
+          // updateHiddenField(industryInput, industryArr, "industry_hidden");
+
+          if (document.getElementById("location_hidden").value === "") {
+            errorMessage.textContent += "Please select a valid location from the list. ";
+            isValid = false;
+          }
+
+          // if (document.getElementById("industry_hidden").value === "") {
+          //   errorMessage.textContent += "Please select a valid industry from the list. ";
+          //   isValid = false;
+          // }
+
+          if (!isValid) {
+            e.preventDefault(); // Prevent form submission
+            errorMessage.style.display = "block";
+            return;
+          }
+
+          errorMessage.style.display = "none";
+          // Disable the button
+          submitButton.disabled = true;
+          submitButton.textContent = "Searching...";
+
+          // You can add a timeout to re-enable the button after a certain period
+          // if the form submission takes too long or fails
+          setTimeout(function () {
+            submitButton.disabled = false;
+            submitButton.textContent = "Search Jobs";
+          }, 20000); // Re-enable after 20 seconds
+        });
       });
     </script>
   </body>
