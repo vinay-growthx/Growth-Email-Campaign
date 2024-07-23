@@ -253,7 +253,6 @@ async function updateRequestWithJobIds(reqId, jobIdsObject, convertJobObject) {
     return updatedRequest;
   } catch (error) {
     console.error("Error creating request with job IDs:", error);
-    throw error;
   }
 }
 async function updateRequestWithPersonaIds(reqId, personaIdsObject) {
@@ -280,7 +279,7 @@ async function updateRequestWithPersonaIds(reqId, personaIdsObject) {
       !Array.isArray(idArray) ||
       idArray.some((id) => typeof id !== "string")
     ) {
-      throw new Error("Conversion to array of strings failed");
+      console.log("Conversion to array of strings failed");
     }
 
     // Update or create a document using the base repository updateOne function
@@ -294,7 +293,6 @@ async function updateRequestWithPersonaIds(reqId, personaIdsObject) {
     return updatedRequest;
   } catch (error) {
     console.error("Error creating request with job IDs:", error);
-    throw error;
   }
 }
 async function savePersonaData(personaData) {
@@ -861,7 +859,6 @@ async function convertToApolloPersona(user, reqUUID) {
       console.log("Error updating requestIdRepository", err);
     }
 
-    console.log("updated req", updatedRequest);
     return apolloPersona;
   } catch (err) {
     console.log("err", err);
