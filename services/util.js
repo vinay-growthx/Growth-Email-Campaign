@@ -216,18 +216,40 @@ async function findAllJobs(reqId) {
   }
   return jobData;
 }
-async function findAllPersonas(reqId) {
-  const personaIds = await requestIdRepository.findOne({
-    reqId: reqId,
-  });
-  // console.log("persona ids ===>", personaIds.personaIds);
-  let jobData;
-  if (personaIds?.personaIds) {
-    jobData = await apolloPersonaRepository.find({
-      id: personaIds.personaIds,
+async function findAllPersonas(reqId, page, limit) {
+  try {
+    const personaIds = await requestIdRepository.findOne({
+      reqId: reqId,
     });
+
+    if (
+      !personaIds ||
+      !personaIds.personaIds ||
+      !Array.isArray(personaIds.personaIds)
+    ) {
+      console.error("No persona IDs found for reqId:", reqId);
+      return { people: [], totalCount: 0 };
+    }
+
+    const totalCount = personaIds.personaIds.length;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedIds = personaIds.personaIds.slice(startIndex, endIndex);
+
+    const jobData = await apolloPersonaRepository.find({
+      id: { $in: paginatedIds },
+    });
+
+    if (!jobData || !Array.isArray(jobData)) {
+      console.error("No job data found for paginatedIds:", paginatedIds);
+      return { people: [], totalCount };
+    }
+
+    return { people: jobData, totalCount };
+  } catch (error) {
+    console.error("Error in findAllPersonas:", error);
+    throw error;
   }
-  return jobData;
 }
 async function updateRequestWithJobIds(reqId, jobIdsObject, convertJobObject) {
   console.log("Updating request:", reqId, "with job IDs object:", jobIdsObject);

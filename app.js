@@ -133,12 +133,22 @@ app.get("/get-jobs/:reqId", async (req, res) => {
 });
 app.get("/persona-reachout/:reqId", async (req, res) => {
   const reqId = req.params.reqId;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 1000;
+
   try {
-    const people = await findAllPersonas(reqId);
-    console.log(people?.length, "people here");
-    res.render("personaReachout", { people, reqId });
+    const { people, totalCount } = await findAllPersonas(reqId, page, limit);
+    const totalPages = Math.ceil(totalCount / limit);
+
+    res.render("personaReachout", {
+      people,
+      reqId,
+      currentPage: page,
+      totalPages,
+      totalCount,
+    });
   } catch (error) {
-    console.error("Error fetching jobs:", error);
+    console.error("Error fetching personas:", error);
     res.status(500).send("Internal Server Error");
   }
 });
