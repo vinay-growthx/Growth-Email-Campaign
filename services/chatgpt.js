@@ -57,7 +57,7 @@ async function chatGPTPromptResult(options) {
   while (retryAttempts < maxRetries) {
     try {
       if (model == "gpt-4-1106-preview" && retryAttempts == 0) {
-        console.log("Using GPT-4 model 1 Azure");
+        // console.log("Using GPT-4 model 1 Azure");
         grpResponse.data = await azureopenai.getChatCompletions(
           "GPT-4-1106",
           messages,
@@ -70,7 +70,7 @@ async function chatGPTPromptResult(options) {
           }
         );
       } else if (model == "gpt-4-1106-preview" && retryAttempts == 1) {
-        console.log("Using GPT-4 model 2 Subham");
+        // console.log("Using GPT-4 model 2 Subham");
         grpResponse.data = await openai5.chat.completions.create({
           model: model,
           messages: messages,
@@ -81,7 +81,7 @@ async function chatGPTPromptResult(options) {
           stop: stop,
         });
       } else if (model == "gpt-4-1106-preview" && retryAttempts == 2) {
-        console.log("Using GPT-4 model 3 Vishal");
+        // console.log("Using GPT-4 model 3 Vishal");
         grpResponse.data = await openai7.chat.completions.create({
           model: model,
           messages: messages,
@@ -93,7 +93,7 @@ async function chatGPTPromptResult(options) {
         });
       } else {
         if (retryAttempts % 3 == 0) {
-          console.log("Using GPT-3.5 4K Azure model 1");
+          // console.log("Using GPT-3.5 4K Azure model 1");
           grpResponse.data = await azureopenai.getChatCompletions(
             "GPT-35-4K-LATEST",
             messages,
@@ -106,7 +106,7 @@ async function chatGPTPromptResult(options) {
             }
           );
         } else if (retryAttempts % 3 == 1) {
-          console.log("Using GPT-3.5 4K Openai Subham model 2");
+          // console.log("Using GPT-3.5 4K Openai Subham model 2");
           grpResponse.data = await openai5.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: messages,
@@ -117,7 +117,7 @@ async function chatGPTPromptResult(options) {
             stop: stop,
           });
         } else {
-          console.log("Using GPT-3.5 16K Azure model 3");
+          // console.log("Using GPT-3.5 16K Azure model 3");
           grpResponse.data = await azureopenai.getChatCompletions(
             "GPT-35-16K-LATEST",
             messages,
@@ -135,7 +135,7 @@ async function chatGPTPromptResult(options) {
         // console.log(grpResponse.data.choices[0].message.content);
         return grpResponse.data.choices[0].message.content;
       } else {
-        console.log("Error in ChatGPT", grpResponse.data);
+        // console.log("Error in ChatGPT", grpResponse.data);
         // throw new Error("Please Try Again");
         return "";
       }
@@ -168,7 +168,7 @@ async function generateCustomLine(completeText, customValue) {
     Strictly follow output format given below.\n
   
     Output: modified line\n`;
-  console.log("prompt gone to gpt ==>", prompt);
+  // console.log("prompt gone to gpt ==>", prompt);
   const content = await chatGPTPromptResult({
     model: "gpt-3.5-turbo",
     messages: [{ role: "user", content: prompt }],
@@ -176,7 +176,7 @@ async function generateCustomLine(completeText, customValue) {
     max_tokens: 300,
     top_p: 1,
   });
-  console.log("gpt Custom line", content);
+  // console.log("gpt Custom line", content);
   const filtersText = content.replace("Output:", "").trim();
   const filters = filtersText.split("\n").map((filter) => filter.trim());
   return {
@@ -185,7 +185,7 @@ async function generateCustomLine(completeText, customValue) {
 }
 
 async function generateProfessionalSubject(originalSubject) {
-  console.log("original subject ====>", originalSubject);
+  // console.log("original subject ====>", originalSubject);
   const maxRetries = 3;
   const retryDelay = 1000;
 
@@ -209,7 +209,7 @@ async function generateProfessionalSubject(originalSubject) {
   Provide only the revised subject line without any additional text, explanations, or quotation marks. Ensure the response is a complete, well-formed subject line ready for use in a professional email.
 `;
 
-  console.log("Prompt sent to GPT:", prompt);
+  // console.log("Prompt sent to GPT:", prompt);
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
@@ -221,7 +221,7 @@ async function generateProfessionalSubject(originalSubject) {
         top_p: 1,
       });
 
-      console.log("GPT response:", response);
+      // console.log("GPT response:", response);
 
       const professionalSubject = response.trim();
 
@@ -268,7 +268,7 @@ async function generateJobSummary(jobDetails) {
         top_p: 1,
       });
 
-      console.log("GPT response:", response);
+      // console.log("GPT response:", response);
 
       const jobSummary = response.trim();
 
@@ -298,7 +298,7 @@ async function extractIndustryFromSummary(jobSummary) {
   Please extract the industry if mentioned explicitly, or infer it based on the context and content of the summary. Provide the industry as a concise, single term or a brief phrase, such as "software development", "logistics", "healthcare", "education", etc.
   `;
 
-  console.log("Prompt sent to GPT:", prompt);
+  // console.log("Prompt sent to GPT:", prompt);
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {

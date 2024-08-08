@@ -201,7 +201,6 @@ function findJobPostByEmployerName(arr, employerName) {
 }
 app.post("/send-email", async (req, res) => {
   const { subject, body, emails } = req.body;
-  console.log("req body ===>", req.body);
   const personaIds = emails.map((item) => item.id);
   const persona = await apolloPersonaRepository.find(
     {
@@ -228,18 +227,17 @@ app.post("/send-email", async (req, res) => {
         "job_title job_posted_at_datetime_utc job_city job_state job_country employer_name"
       );
       jobData = addJobLocation(jobData);
-      console.log("job data ====>", jobData);
     }
 
     for (const email of emails) {
       try {
         const personData = findPersonById(email.id, persona);
-        console.log("person data ==>", personData);
+        // console.log("person data ==>", personData);
         const foundJob = findJobPostByEmployerName(
           jobData,
           personData.organization.name
         );
-        console.log("job data", foundJob);
+        // console.log("job data", foundJob);
         let jobPost = foundJob.map((job) => job.job_title).join(", ");
         const jobDate = foundJob
           .map((job) => job.job_posted_at_datetime_utc)
@@ -259,6 +257,7 @@ app.post("/send-email", async (req, res) => {
           replacedSubject
         );
         aiGeneratedSubject = aiGeneratedSubject?.subject;
+        console.log("email email ====>", email.email);
         const mailOptions = {
           // to: email.email,
           to: "vinay.prajapati@hirequotient.com",
