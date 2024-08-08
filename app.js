@@ -201,6 +201,3883 @@ function findJobPostByEmployerName(arr, employerName) {
 }
 app.post("/send-email", async (req, res) => {
   const { subject, body, emails } = req.body;
+  const blockedEmails = [
+    "ed@mentalhealthsf.org",
+
+    "mdiaz@ecs-sf.org",
+
+    "abby.dimodica@univarusa.com",
+
+    "geeslin@franciscopartners.com",
+
+    "tao.lu@franciscopartners.com",
+
+    "paul.cormier@franciscopartners.com",
+
+    "barry@franciscopartners.com",
+
+    "ben.peterson@49ers.com",
+
+    "tanya.mera@sfdph.org",
+
+    "michelle.brown@univarsolutions.com",
+
+    "priyanka@braze.com",
+
+    "shalvoyj@fhlbsf.com",
+
+    "stephanie.gott@bbrown.com",
+
+    "cristina.hernandez@49ers.com",
+
+    "tmcneice@sfgoodwill.org",
+
+    "danielle.belanger@toasttab.com",
+
+    "cheri.rubocki@oldnational.com",
+
+    "ann.claspell@oldnational.com",
+
+    "gayle.maneikis@toasttab.com",
+
+    "george.lance@oldnational.com",
+
+    "email_not_unlocked@domain.com",
+
+    "karoline.schroeder@aon.com",
+
+    "jady.fitton@aon.ca",
+
+    "farhang.fattah@se.com",
+
+    "duane.swanson@schneider-electric.com",
+
+    "faren.kelly@usi.com",
+
+    "melissa.dornan@usi.com",
+
+    "svenu@cisco.com",
+
+    "email_not_unlocked@domain.com",
+
+    "aliki.taylor7@gilead.com",
+
+    "brooke.phillips@cybercoders.com",
+
+    "klueh.lion@oracle.com",
+
+    "sara.cerny@cybercoders.com",
+
+    "brooke.phillips@cybercoders.com",
+
+    "miners507@brsnan.net",
+
+    "sara.cerny@cybercoders.com",
+
+    "sarah.boutwell@cybercoders.com",
+
+    "miners507@brsnan.net",
+
+    "vu.le@cybercoders.com",
+
+    "sarah.boutwell@cybercoders.com",
+
+    "email_not_unlocked@domain.com",
+
+    "vu.le@cybercoders.com",
+
+    "jennifer.brink@cybercoders.com",
+
+    "email_not_unlocked@domain.com",
+
+    "linda.greytak@cybercoders.com",
+
+    "jennifer.brink@cybercoders.com",
+
+    "alex.acevedo@cybercoders.com",
+
+    "linda.greytak@cybercoders.com",
+
+    "jack.adventus@cybercoders.com",
+
+    "alex.acevedo@cybercoders.com",
+
+    "dustin.eden@oracle.com",
+
+    "jack.adventus@cybercoders.com",
+
+    "daisey.blower@oracle.com",
+
+    "dustin.eden@oracle.com",
+
+    "david.c.morrison@oracle.com",
+
+    "daisey.blower@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "david.c.morrison@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "james.e.young@oracle.com",
+
+    "monique.visser@oracle.com",
+
+    "james.e.young@oracle.com",
+
+    "sharonmag@jfrog.com",
+
+    "monique.visser@oracle.com",
+
+    "adityag@jfrog.com",
+
+    "sharonmag@jfrog.com",
+
+    "litals@jfrog.com",
+
+    "adityag@jfrog.com",
+
+    "mayat@juniper.net",
+
+    "litals@jfrog.com",
+
+    "rsanyal@juniper.net",
+
+    "mayat@juniper.net",
+
+    "rsanyal@juniper.net",
+
+    "klueh.lion@oracle.com",
+
+    "brooke.phillips@cybercoders.com",
+
+    "sara.cerny@cybercoders.com",
+
+    "miners507@brsnan.net",
+
+    "sarah.boutwell@cybercoders.com",
+
+    "vu.le@cybercoders.com",
+
+    "email_not_unlocked@domain.com",
+
+    "jennifer.brink@cybercoders.com",
+
+    "linda.greytak@cybercoders.com",
+
+    "alex.acevedo@cybercoders.com",
+
+    "jack.adventus@cybercoders.com",
+
+    "dustin.eden@oracle.com",
+
+    "daisey.blower@oracle.com",
+
+    "david.c.morrison@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "james.e.young@oracle.com",
+
+    "monique.visser@oracle.com",
+
+    "sharonmag@jfrog.com",
+
+    "adityag@jfrog.com",
+
+    "litals@jfrog.com",
+
+    "mayat@juniper.net",
+
+    "rsanyal@juniper.net",
+
+    "sarah.boutwell@cybercoders.com",
+
+    "miners507@brsnan.net",
+
+    "email_not_unlocked@domain.com",
+
+    "vu.le@cybercoders.com",
+
+    "sarah.boutwell@cybercoders.com",
+
+    "jennifer.brink@cybercoders.com",
+
+    "email_not_unlocked@domain.com",
+
+    "vu.le@cybercoders.com",
+
+    "linda.greytak@cybercoders.com",
+
+    "jennifer.brink@cybercoders.com",
+
+    "email_not_unlocked@domain.com",
+
+    "alex.acevedo@cybercoders.com",
+
+    "linda.greytak@cybercoders.com",
+
+    "jennifer.brink@cybercoders.com",
+
+    "jack.adventus@cybercoders.com",
+
+    "alex.acevedo@cybercoders.com",
+
+    "linda.greytak@cybercoders.com",
+
+    "dustin.eden@oracle.com",
+
+    "jack.adventus@cybercoders.com",
+
+    "alex.acevedo@cybercoders.com",
+
+    "daisey.blower@oracle.com",
+
+    "david.c.morrison@oracle.com",
+
+    "jack.adventus@cybercoders.com",
+
+    "dustin.eden@oracle.com",
+
+    "dustin.eden@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "daisey.blower@oracle.com",
+
+    "daisey.blower@oracle.com",
+
+    "david.c.morrison@oracle.com",
+
+    "james.e.young@oracle.com",
+
+    "david.c.morrison@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "monique.visser@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "james.e.young@oracle.com",
+
+    "sharonmag@jfrog.com",
+
+    "james.e.young@oracle.com",
+
+    "monique.visser@oracle.com",
+
+    "adityag@jfrog.com",
+
+    "monique.visser@oracle.com",
+
+    "sharonmag@jfrog.com",
+
+    "litals@jfrog.com",
+
+    "sharonmag@jfrog.com",
+
+    "adityag@jfrog.com",
+
+    "mayat@juniper.net",
+
+    "adityag@jfrog.com",
+
+    "rsanyal@juniper.net",
+
+    "litals@jfrog.com",
+
+    "litals@jfrog.com",
+
+    "mayat@juniper.net",
+
+    "mayat@juniper.net",
+
+    "rsanyal@juniper.net",
+
+    "rsanyal@juniper.net",
+
+    "brandi.bruce@cerner.com",
+
+    "stacey.pesce@oracle.com",
+
+    "regan.garrison@oracle.com",
+
+    "brandi.bruce@cerner.com",
+
+    "klueh.lion@oracle.com",
+
+    "regan.garrison@oracle.com",
+
+    "brooke.phillips@cybercoders.com",
+
+    "klueh.lion@oracle.com",
+
+    "sara.cerny@cybercoders.com",
+
+    "brooke.phillips@cybercoders.com",
+
+    "miners507@brsnan.net",
+
+    "sara.cerny@cybercoders.com",
+
+    "sarah.boutwell@cybercoders.com",
+
+    "miners507@brsnan.net",
+
+    "vu.le@cybercoders.com",
+
+    "sarah.boutwell@cybercoders.com",
+
+    "email_not_unlocked@domain.com",
+
+    "vu.le@cybercoders.com",
+
+    "jennifer.brink@cybercoders.com",
+
+    "email_not_unlocked@domain.com",
+
+    "linda.greytak@cybercoders.com",
+
+    "jennifer.brink@cybercoders.com",
+
+    "alex.acevedo@cybercoders.com",
+
+    "linda.greytak@cybercoders.com",
+
+    "jack.adventus@cybercoders.com",
+
+    "alex.acevedo@cybercoders.com",
+
+    "dustin.eden@oracle.com",
+
+    "jack.adventus@cybercoders.com",
+
+    "daisey.blower@oracle.com",
+
+    "dustin.eden@oracle.com",
+
+    "david.c.morrison@oracle.com",
+
+    "daisey.blower@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "david.c.morrison@oracle.com",
+
+    "james.e.young@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "james.e.young@oracle.com",
+
+    "monique.visser@oracle.com",
+
+    "monique.visser@oracle.com",
+
+    "sharonmag@jfrog.com",
+
+    "sharonmag@jfrog.com",
+
+    "adityag@jfrog.com",
+
+    "litals@jfrog.com",
+
+    "adityag@jfrog.com",
+
+    "mayat@juniper.net",
+
+    "litals@jfrog.com",
+
+    "mayat@juniper.net",
+
+    "rsanyal@juniper.net",
+
+    "rsanyal@juniper.net",
+
+    "james.giddings@oracle.com",
+
+    "stacey.pesce@oracle.com",
+
+    "brandi.bruce@cerner.com",
+
+    "regan.garrison@oracle.com",
+
+    "klueh.lion@oracle.com",
+
+    "brooke.phillips@cybercoders.com",
+
+    "sara.cerny@cybercoders.com",
+
+    "miners507@brsnan.net",
+
+    "sarah.boutwell@cybercoders.com",
+
+    "vu.le@cybercoders.com",
+
+    "email_not_unlocked@domain.com",
+
+    "jennifer.brink@cybercoders.com",
+
+    "linda.greytak@cybercoders.com",
+
+    "alex.acevedo@cybercoders.com",
+
+    "jack.adventus@cybercoders.com",
+
+    "dustin.eden@oracle.com",
+
+    "daisey.blower@oracle.com",
+
+    "david.c.morrison@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "james.e.young@oracle.com",
+
+    "monique.visser@oracle.com",
+
+    "sharonmag@jfrog.com",
+
+    "adityag@jfrog.com",
+
+    "litals@jfrog.com",
+
+    "mayat@juniper.net",
+
+    "rsanyal@juniper.net",
+
+    "alexa.martinez@oracle.com",
+
+    "jonathan.pellum@oracle.com",
+
+    "bphillips@netsuite.com",
+
+    "dulce.silva@oracle.com",
+
+    "zcole@netsuite.com",
+
+    "christina.massey@oracle.com",
+
+    "ekerker@netsuite.com",
+
+    "aneri.patel@oracle.com",
+
+    "luke.gioffre@oracle.com",
+
+    "lauren.freeman@oracle.com",
+
+    "pmichaelson@containerstore.com",
+
+    "joliver@netsuite.com",
+
+    "cmadden@netsuite.com",
+
+    "ramel.haines@oracle.com",
+
+    "jasmina.zenkic@oracle.com",
+
+    "leslie.fitzpatrick@newyorkredbulls.com",
+
+    "geri.kalinsky@wmg.com",
+
+    "eddie.morales@grafana.com",
+
+    "viridiana.martinez@oracle.com",
+
+    "nicolas.fielden@oracle.com",
+
+    "lkottke@netsuite.com",
+
+    "hal.moretto@oracle.com",
+
+    "cheryl.sanocki@ivanti.com",
+
+    "jim.ramsbottom@ttigroupna.com",
+
+    "taylor.pottmeyer@oracle.com",
+
+    "steven.melanson@oracle.com",
+
+    "kboyer@alixpartners.com",
+
+    "william.childs@oracle.com",
+
+    "aboes@netsuite.com",
+
+    "jrennis@netsuite.com",
+
+    "mark.criscito@oracle.com",
+
+    "brendan.cray@oracle.com",
+
+    "blosty@netsuite.com",
+
+    "tyler.sugg@oracle.com",
+
+    "ksnook@netsuite.com",
+
+    "austin.woffinden@meritagehomes.com",
+
+    "mthompson@netsuite.com",
+
+    "trevan.rocarek@netsuite.com",
+
+    "nicholas.sanborn@oracle.com",
+
+    "srichardson@netsuite.com",
+
+    "csiebold@netsuite.com",
+
+    "nicholas.mintz@netsuite.com",
+
+    "gabrielle.hasselt@netsuite.com",
+
+    "brody.whalen@oracle.com",
+
+    "eamaglo@netsuite.com",
+
+    "yeazmil.ishmam@ttigroup.com",
+
+    "ogarcia@netsuite.com",
+
+    "lily.trunsky@oracle.com",
+
+    "hugh.aguilar@oracle.com",
+
+    "maura.doherty@oracle.com",
+
+    "joseph.lampitt@oracle.com",
+
+    "alex@junipersquare.com",
+
+    "john.brewer@oracle.com",
+
+    "lev.tsybin@oracle.com",
+
+    "mata@logrocket.com",
+
+    "russell.clapp@oracle.com",
+
+    "macy.carreras@wmg.com",
+
+    "shlomib@jfrog.com",
+
+    "emma.jobson@redbull.com",
+
+    "lwilson@netsuite.com",
+
+    "ehines@netsuite.com",
+
+    "ivana.veljovic@assurant.com",
+
+    "bkelly@netsuite.com",
+
+    "cmcevilly@netsuite.com",
+
+    "megna.bhakta@oracle.com",
+
+    "lauren.barrera@oracle.com",
+
+    "ebianca@netsuite.com",
+
+    "jacob.brewer@oracle.com",
+
+    "joey.yamane@oracle.com",
+
+    "paris.boswell@oracle.com",
+
+    "mpimentel@netsuite.com",
+
+    "danielle@webull-us.com",
+
+    "larissa@coinbase.com",
+
+    "natalie.cavanna@oracle.com",
+
+    "subodh.somani@oracle.com",
+
+    "carlos.v@oracle.com",
+
+    "charnae.caldwell@oracle.com",
+
+    "riley.yang@oracle.com",
+
+    "mcleary@netsuite.com",
+
+    "paul.distefano@oracle.com",
+
+    "peter.ressler@bridgebio.com",
+
+    "alexandra_howerter@bose.com",
+
+    "djenkins@netsuite.com",
+
+    "jim.hickey@oracle.com",
+
+    "hector.tena@oracle.com",
+
+    "christine.chasse@oracle.com",
+
+    "mariana.leal@netsuite.com",
+
+    "ryan.kelly@netsuite.com",
+
+    "colivier@netsuite.com",
+
+    "kolton.griffin@oracle.com",
+
+    "jdellamedaglia@netsuite.com",
+
+    "katie.pilgrim@digicert.com",
+
+    "ashley.thomsen@meritagehomes.com",
+
+    "charlie.minor@oracle.com",
+
+    "jrivero@netsuite.com",
+
+    "jrobles@netsuite.com",
+
+    "tslann@netsuite.com",
+
+    "linda_velasquez@bose.com",
+
+    "zoe.gilbert@oracle.com",
+
+    "rbrenenstuhl@netsuite.com",
+
+    "jperry@netsuite.com",
+
+    "russell.dryden@oracle.com",
+
+    "isabelpulidoortega@hotmail.com",
+
+    "sarahlivnat@jfrog.com",
+
+    "evi.cenolli@oracle.com",
+
+    "maryam.ghassemkhani@oracle.com",
+
+    "ray.kandi@oracle.com",
+
+    "stephanie.nguyen@oracle.com",
+
+    "bridget.mcmahon@oracle.com",
+
+    "laura.letts@oracle.com",
+
+    "allyson.dubois@oracle.com",
+
+    "ester.frey@oracle.com",
+
+    "eric.sloan@oracle.com",
+
+    "james.giddings@oracle.com",
+
+    "stacey.pesce@oracle.com",
+
+    "regan.garrison@oracle.com",
+
+    "dustin.eden@oracle.com",
+
+    "daisey.blower@oracle.com",
+
+    "david.c.morrison@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "monique.visser@oracle.com",
+
+    "email_not_unlocked@domain.com",
+
+    "kolton.griffin@oracle.com",
+
+    "ryan.kelly@netsuite.com",
+
+    "jdellamedaglia@netsuite.com",
+
+    "colivier@netsuite.com",
+
+    "katie.pilgrim@digicert.com",
+
+    "kolton.griffin@oracle.com",
+
+    "ashley.thomsen@meritagehomes.com",
+
+    "jdellamedaglia@netsuite.com",
+
+    "charlie.minor@oracle.com",
+
+    "katie.pilgrim@digicert.com",
+
+    "jrivero@netsuite.com",
+
+    "ashley.thomsen@meritagehomes.com",
+
+    "jrobles@netsuite.com",
+
+    "charlie.minor@oracle.com",
+
+    "tslann@netsuite.com",
+
+    "jrivero@netsuite.com",
+
+    "linda_velasquez@bose.com",
+
+    "jrobles@netsuite.com",
+
+    "zoe.gilbert@oracle.com",
+
+    "rbrenenstuhl@netsuite.com",
+
+    "tslann@netsuite.com",
+
+    "jperry@netsuite.com",
+
+    "linda_velasquez@bose.com",
+
+    "russell.dryden@oracle.com",
+
+    "zoe.gilbert@oracle.com",
+
+    "isabelpulidoortega@hotmail.com",
+
+    "rbrenenstuhl@netsuite.com",
+
+    "sarahlivnat@jfrog.com",
+
+    "jperry@netsuite.com",
+
+    "evi.cenolli@oracle.com",
+
+    "russell.dryden@oracle.com",
+
+    "maryam.ghassemkhani@oracle.com",
+
+    "isabelpulidoortega@hotmail.com",
+
+    "sarahlivnat@jfrog.com",
+
+    "ray.kandi@oracle.com",
+
+    "evi.cenolli@oracle.com",
+
+    "stephanie.nguyen@oracle.com",
+
+    "bridget.mcmahon@oracle.com",
+
+    "maryam.ghassemkhani@oracle.com",
+
+    "laura.letts@oracle.com",
+
+    "ray.kandi@oracle.com",
+
+    "allyson.dubois@oracle.com",
+
+    "stephanie.nguyen@oracle.com",
+
+    "ester.frey@oracle.com",
+
+    "bridget.mcmahon@oracle.com",
+
+    "eric.sloan@oracle.com",
+
+    "laura.letts@oracle.com",
+
+    "james.giddings@oracle.com",
+
+    "allyson.dubois@oracle.com",
+
+    "stacey.pesce@oracle.com",
+
+    "ester.frey@oracle.com",
+
+    "regan.garrison@oracle.com",
+
+    "eric.sloan@oracle.com",
+
+    "dustin.eden@oracle.com",
+
+    "james.giddings@oracle.com",
+
+    "daisey.blower@oracle.com",
+
+    "stacey.pesce@oracle.com",
+
+    "david.c.morrison@oracle.com",
+
+    "regan.garrison@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "dustin.eden@oracle.com",
+
+    "daisey.blower@oracle.com",
+
+    "monique.visser@oracle.com",
+
+    "email_not_unlocked@domain.com",
+
+    "david.c.morrison@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "monique.visser@oracle.com",
+
+    "email_not_unlocked@domain.com",
+
+    "mpimentel@netsuite.com",
+
+    "danielle@webull-us.com",
+
+    "larissa@coinbase.com",
+
+    "natalie.cavanna@oracle.com",
+
+    "subodh.somani@oracle.com",
+
+    "carlos.v@oracle.com",
+
+    "charnae.caldwell@oracle.com",
+
+    "riley.yang@oracle.com",
+
+    "mcleary@netsuite.com",
+
+    "paul.distefano@oracle.com",
+
+    "peter.ressler@bridgebio.com",
+
+    "alexandra_howerter@bose.com",
+
+    "djenkins@netsuite.com",
+
+    "jim.hickey@oracle.com",
+
+    "hector.tena@oracle.com",
+
+    "christine.chasse@oracle.com",
+
+    "mariana.leal@netsuite.com",
+
+    "ryan.kelly@netsuite.com",
+
+    "colivier@netsuite.com",
+
+    "kolton.griffin@oracle.com",
+
+    "jdellamedaglia@netsuite.com",
+
+    "katie.pilgrim@digicert.com",
+
+    "ashley.thomsen@meritagehomes.com",
+
+    "charlie.minor@oracle.com",
+
+    "jrivero@netsuite.com",
+
+    "jrobles@netsuite.com",
+
+    "tslann@netsuite.com",
+
+    "linda_velasquez@bose.com",
+
+    "zoe.gilbert@oracle.com",
+
+    "rbrenenstuhl@netsuite.com",
+
+    "jperry@netsuite.com",
+
+    "russell.dryden@oracle.com",
+
+    "isabelpulidoortega@hotmail.com",
+
+    "sarahlivnat@jfrog.com",
+
+    "evi.cenolli@oracle.com",
+
+    "maryam.ghassemkhani@oracle.com",
+
+    "ray.kandi@oracle.com",
+
+    "stephanie.nguyen@oracle.com",
+
+    "bridget.mcmahon@oracle.com",
+
+    "laura.letts@oracle.com",
+
+    "allyson.dubois@oracle.com",
+
+    "ester.frey@oracle.com",
+
+    "eric.sloan@oracle.com",
+
+    "james.giddings@oracle.com",
+
+    "stacey.pesce@oracle.com",
+
+    "regan.garrison@oracle.com",
+
+    "dustin.eden@oracle.com",
+
+    "daisey.blower@oracle.com",
+
+    "david.c.morrison@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "monique.visser@oracle.com",
+
+    "email_not_unlocked@domain.com",
+
+    "bridget.mcmahon@oracle.com",
+
+    "laura.letts@oracle.com",
+
+    "allyson.dubois@oracle.com",
+
+    "ester.frey@oracle.com",
+
+    "eric.sloan@oracle.com",
+
+    "james.giddings@oracle.com",
+
+    "stacey.pesce@oracle.com",
+
+    "regan.garrison@oracle.com",
+
+    "dustin.eden@oracle.com",
+
+    "daisey.blower@oracle.com",
+
+    "david.c.morrison@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "monique.visser@oracle.com",
+
+    "email_not_unlocked@domain.com",
+
+    "bkelly@netsuite.com",
+
+    "cmcevilly@netsuite.com",
+
+    "megna.bhakta@oracle.com",
+
+    "lauren.barrera@oracle.com",
+
+    "ebianca@netsuite.com",
+
+    "jacob.brewer@oracle.com",
+
+    "joey.yamane@oracle.com",
+
+    "paris.boswell@oracle.com",
+
+    "mpimentel@netsuite.com",
+
+    "danielle@webull-us.com",
+
+    "larissa@coinbase.com",
+
+    "natalie.cavanna@oracle.com",
+
+    "subodh.somani@oracle.com",
+
+    "carlos.v@oracle.com",
+
+    "charnae.caldwell@oracle.com",
+
+    "riley.yang@oracle.com",
+
+    "mcleary@netsuite.com",
+
+    "paul.distefano@oracle.com",
+
+    "peter.ressler@bridgebio.com",
+
+    "alexandra_howerter@bose.com",
+
+    "djenkins@netsuite.com",
+
+    "jim.hickey@oracle.com",
+
+    "hector.tena@oracle.com",
+
+    "christine.chasse@oracle.com",
+
+    "mariana.leal@netsuite.com",
+
+    "ryan.kelly@netsuite.com",
+
+    "colivier@netsuite.com",
+
+    "kolton.griffin@oracle.com",
+
+    "jdellamedaglia@netsuite.com",
+
+    "katie.pilgrim@digicert.com",
+
+    "ashley.thomsen@meritagehomes.com",
+
+    "charlie.minor@oracle.com",
+
+    "jrivero@netsuite.com",
+
+    "jrobles@netsuite.com",
+
+    "tslann@netsuite.com",
+
+    "linda_velasquez@bose.com",
+
+    "zoe.gilbert@oracle.com",
+
+    "rbrenenstuhl@netsuite.com",
+
+    "jperry@netsuite.com",
+
+    "russell.dryden@oracle.com",
+
+    "isabelpulidoortega@hotmail.com",
+
+    "sarahlivnat@jfrog.com",
+
+    "evi.cenolli@oracle.com",
+
+    "maryam.ghassemkhani@oracle.com",
+
+    "ray.kandi@oracle.com",
+
+    "stephanie.nguyen@oracle.com",
+
+    "bridget.mcmahon@oracle.com",
+
+    "laura.letts@oracle.com",
+
+    "allyson.dubois@oracle.com",
+
+    "ester.frey@oracle.com",
+
+    "eric.sloan@oracle.com",
+
+    "james.giddings@oracle.com",
+
+    "stacey.pesce@oracle.com",
+
+    "regan.garrison@oracle.com",
+
+    "dustin.eden@oracle.com",
+
+    "daisey.blower@oracle.com",
+
+    "david.c.morrison@oracle.com",
+
+    "marianna.gurovich@oracle.com",
+
+    "monique.visser@oracle.com",
+
+    "email_not_unlocked@domain.com",
+
+    "pusuvarna@paypal.com",
+
+    "mindy.wong@manpower.com.sg",
+
+    "lflores@raland.com",
+
+    "john.podlasek@level-ex.com",
+
+    "nsavoia@bankunited.com",
+
+    "donnie.watson@openly.com",
+
+    "alok.4.kumar@atos.net",
+
+    "suresh.jayanthi_venkata@genesys.com",
+
+    "dave.martin@marriott.com",
+
+    "mindy.wong@manpower.com.sg",
+
+    "normanseth@corporater.com",
+
+    "x-theodora.georgiou@upvest.co",
+
+    "steve.waquad@catonetworks.com",
+
+    "arnaud.gienpawlicki@decathlon.com",
+
+    "kwilson@talentlinkresources.com",
+
+    "lflores@raland.com",
+
+    "john.podlasek@level-ex.com",
+
+    "nsavoia@bankunited.com",
+
+    "donnie.watson@openly.com",
+
+    "alok.4.kumar@atos.net",
+
+    "suresh.jayanthi_venkata@genesys.com",
+
+    "dave.martin@marriott.com",
+
+    "mindy.wong@manpower.com.sg",
+
+    "allison.obrien@huntresslabs.com",
+
+    "bmiller@visa.com",
+
+    "kristin.willi@gd-ms.com",
+
+    "geri.kalinsky@wmg.com",
+
+    "salexander@pswholesale.com",
+
+    "ronald.fish@ivanti.com",
+
+    "wesley.mersinger@diageo.com",
+
+    "dpollek@anomali.com",
+
+    "stephanie.pagan@iliabeauty.com",
+
+    "normanseth@corporater.com",
+
+    "x-theodora.georgiou@upvest.co",
+
+    "steve.waquad@catonetworks.com",
+
+    "arnaud.gienpawlicki@decathlon.com",
+
+    "kwilson@talentlinkresources.com",
+
+    "lflores@raland.com",
+
+    "john.podlasek@level-ex.com",
+
+    "nsavoia@bankunited.com",
+
+    "donnie.watson@openly.com",
+
+    "alok.4.kumar@atos.net",
+
+    "suresh.jayanthi_venkata@genesys.com",
+
+    "dave.martin@marriott.com",
+
+    "mindy.wong@manpower.com.sg",
+
+    "perry@connexissearch.com",
+
+    "nmekler@cinemo.com",
+
+    "marco.antonio@paysafe.com",
+
+    "soeren.frickenschmidt@biontech.de",
+
+    "kate.bryl@homagames.com",
+
+    "angelique.berndt@sensient.com",
+
+    "sarah.lomas@evotec.com",
+
+    "sara.stetic@memgraph.com",
+
+    "sgraf@sphera.com",
+
+    "jasonb@strata.io",
+
+    "jennifer_candee@cargill.com",
+
+    "john_massura@ryder.com",
+
+    "julia.moody@publicissapient.com",
+
+    "zinab@popuptalent.com",
+
+    "shayema.rahim@t-mobile.com",
+
+    "cstokes@rubenstein.com",
+
+    "jackie.leung@wpromote.com",
+
+    "kira.kennedy@landsend.com",
+
+    "sgold@ftei.com",
+
+    "mperry@genevatrading.com",
+
+    "hugo.gerard@ledger.fr",
+
+    "emma.surich@flywheeldigital.com",
+
+    "bnewman@flosum.com",
+
+    "vaibhav.r@isprava.com",
+
+    "alyssa.rhoda@zefr.com",
+
+    "markus.klaiber@karlstorz.com",
+
+    "jonathan.briggs@aviva.com",
+
+    "nick.geifman@crowdstrike.com",
+
+    "sheila.meyer@flintco.com",
+
+    "allison.obrien@huntresslabs.com",
+
+    "bmiller@visa.com",
+
+    "kristin.willi@gd-ms.com",
+
+    "geri.kalinsky@wmg.com",
+
+    "salexander@pswholesale.com",
+
+    "ronald.fish@ivanti.com",
+
+    "wesley.mersinger@diageo.com",
+
+    "dpollek@anomali.com",
+
+    "stephanie.pagan@iliabeauty.com",
+
+    "normanseth@corporater.com",
+
+    "x-theodora.georgiou@upvest.co",
+
+    "steve.waquad@catonetworks.com",
+
+    "arnaud.gienpawlicki@decathlon.com",
+
+    "kwilson@talentlinkresources.com",
+
+    "lflores@raland.com",
+
+    "john.podlasek@level-ex.com",
+
+    "nsavoia@bankunited.com",
+
+    "donnie.watson@openly.com",
+
+    "alok.4.kumar@atos.net",
+
+    "suresh.jayanthi_venkata@genesys.com",
+
+    "dave.martin@marriott.com",
+
+    "mindy.wong@manpower.com.sg",
+
+    "allison.obrien@huntresslabs.com",
+
+    "bmiller@visa.com",
+
+    "kristin.willi@gd-ms.com",
+
+    "geri.kalinsky@wmg.com",
+
+    "salexander@pswholesale.com",
+
+    "ronald.fish@ivanti.com",
+
+    "wesley.mersinger@diageo.com",
+
+    "dpollek@anomali.com",
+
+    "stephanie.pagan@iliabeauty.com",
+
+    "normanseth@corporater.com",
+
+    "x-theodora.georgiou@upvest.co",
+
+    "steve.waquad@catonetworks.com",
+
+    "arnaud.gienpawlicki@decathlon.com",
+
+    "kwilson@talentlinkresources.com",
+
+    "lflores@raland.com",
+
+    "john.podlasek@level-ex.com",
+
+    "nsavoia@bankunited.com",
+
+    "donnie.watson@openly.com",
+
+    "alok.4.kumar@atos.net",
+
+    "mindy.wong@manpower.com.sg",
+
+    "suresh.jayanthi_venkata@genesys.com",
+
+    "dave.martin@marriott.com",
+
+    "mindy.wong@manpower.com.sg",
+
+    "nikhilar@fb.com",
+
+    "sshin@fb.com",
+
+    "nikhilar@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "cyan@fb.com",
+
+    "chawadee@fb.com",
+
+    "suestephens@fb.com",
+
+    "weiyiing@fb.com",
+
+    "kishorep@fb.com",
+
+    "sshin@fb.com",
+
+    "sshrivastava@fb.com",
+
+    "sshin@fb.com",
+
+    "tnguyen@fb.com",
+
+    "rchoudhuri@fb.com",
+
+    "tomokon@fb.com",
+
+    "bradsacks@meta.com",
+
+    "kanona@fb.com",
+
+    "p12praveenk@fb.com",
+
+    "kanand@fb.com",
+
+    "leep@fb.com",
+
+    "ebyjose@fb.com",
+
+    "avik@fb.com",
+
+    "vvu@fb.com",
+
+    "lzhang@fb.com",
+
+    "henrykelly@fb.com",
+
+    "jon@jonkopp.com",
+
+    "nlam@fb.com",
+
+    "ayou@fb.com",
+
+    "kaushikm@fb.com",
+
+    "dki@fb.com",
+
+    "ehsu@fb.com",
+
+    "gang@fb.com",
+
+    "mschwab@fb.com",
+
+    "speters@fb.com",
+
+    "hjenny@fb.com",
+
+    "jasonfuchs@fb.com",
+
+    "beepadalkar@fb.com",
+
+    "liz@fb.com",
+
+    "manishk@fb.com",
+
+    "rishabmangla@fb.com",
+
+    "amishra@fb.com",
+
+    "ptrivedi@fb.com",
+
+    "panagiotis.papadimitriou@fb.com",
+
+    "nshapiro@fb.com",
+
+    "elma@fb.com",
+
+    "mspalekgarcia@fb.com",
+
+    "dianemorovati@gmail.com",
+
+    "mcardoso@fb.com",
+
+    "shobhitv@fb.com",
+
+    "aimeer@fb.com",
+
+    "sattizahn@fb.com",
+
+    "nathanhawks@fb.com",
+
+    "mcarter@fb.com",
+
+    "jeffm@fb.com",
+
+    "fdgarcia@fb.com",
+
+    "katrinahsu@fb.com",
+
+    "xiaohan@fb.com",
+
+    "sharanyaramesh@fb.com",
+
+    "emilyf@fb.com",
+
+    "cpalacio@fb.com",
+
+    "jonathan@meta.com",
+
+    "xlin@fb.com",
+
+    "oyahalom@fb.com",
+
+    "pjeon@fb.com",
+
+    "rsachdev@fb.com",
+
+    "mmo@fb.com",
+
+    "dli@fb.com",
+
+    "rgalusca@fb.com",
+
+    "ninghe@fb.com",
+
+    "alihall@fb.com",
+
+    "wesleychan@fb.com",
+
+    "jcannon@fb.com",
+
+    "sadrnoori@fb.com",
+
+    "mvincent@fb.com",
+
+    "bjacula@meta.com",
+
+    "rayw@fb.com",
+
+    "nissenbaum@fb.com",
+
+    "elisefu@fb.com",
+
+    "phegde@meta.com",
+
+    "jliang@fb.com",
+
+    "ahadbasravi@fb.com",
+
+    "ishadko@meta.com",
+
+    "gmarra@fb.com",
+
+    "sideswipe777@fb.com",
+
+    "meihong@fb.com",
+
+    "upadhyaya@meta.com",
+
+    "akumar@fb.com",
+
+    "bscott@fb.com",
+
+    "vkulshrestha@fb.com",
+
+    "mprasad@fb.com",
+
+    "tom.feng@fb.com",
+
+    "khwang@fb.com",
+
+    "davidl@fb.com",
+
+    "cvtherinek@fb.com",
+
+    "caleydrooff@fb.com",
+
+    "sureshkumar@fb.com",
+
+    "cchandra@fb.com",
+
+    "mhaq@fb.com",
+
+    "than@fb.com",
+
+    "javiervega@fb.com",
+
+    "wesley@fb.com",
+
+    "fliu@fb.com",
+
+    "k.a@fb.com",
+
+    "shannonh@fb.com",
+
+    "szuccarino@fb.com",
+
+    "kwong@fb.com",
+
+    "keving@fb.com",
+
+    "hanuv@fb.com",
+
+    "sagrawal@fb.com",
+
+    "hzhou@fb.com",
+
+    "eddieolivares@fb.com",
+
+    "ssingh@fb.com",
+
+    "mnagwekar@fb.com",
+
+    "anandv98@gmail.com",
+
+    "park.s@fb.com",
+
+    "mpakes@fb.com",
+
+    "pradyumnadhakal@fb.com",
+
+    "dvanwinkle@ascend-innovations.com",
+
+    "ez@fb.com",
+
+    "karangoel@fb.com",
+
+    "lijenny@fb.com",
+
+    "leit@fb.com",
+
+    "kapilg@fb.com",
+
+    "m.a@fb.com",
+
+    "timrich@fb.com",
+
+    "aryapadi@fb.com",
+
+    "csanciaume@fb.com",
+
+    "rhiremath@fb.com",
+
+    "rachelp@fb.com",
+
+    "justinwong1@fb.com",
+
+    "michaela@meta.com",
+
+    "mrafat@fb.com",
+
+    "eluo@fb.com",
+
+    "eringrandstaff@fb.com",
+
+    "mrutman@fb.com",
+
+    "tinakong@fb.com",
+
+    "balazs@meta.com",
+
+    "jasong@fb.com",
+
+    "akamath@fb.com",
+
+    "rahulanand@fb.com",
+
+    "bjohn@fb.com",
+
+    "sxie@fb.com",
+
+    "wenbinw@fb.com",
+
+    "jsantos@fb.com",
+
+    "sajan.sangraula@fb.com",
+
+    "dbriggs@fb.com",
+
+    "hli@fb.com",
+
+    "pmehra@fb.com",
+
+    "gmd@fb.com",
+
+    "pkanuparthy@fb.com",
+
+    "rxn@fb.com",
+
+    "frankzheng@fb.com",
+
+    "elsac@fb.com",
+
+    "clefevre@fb.com",
+
+    "anthonyb@fb.com",
+
+    "jacklynl@fb.com",
+
+    "kwang@fb.com",
+
+    "haihongwang@fb.com",
+
+    "brandiarnold@fb.com",
+
+    "panwang@fb.com",
+
+    "felseradlai@fb.com",
+
+    "mikegreenberg@fb.com",
+
+    "rvalentepais@gmail.com",
+
+    "nicks@fb.com",
+
+    "jeffsoo@fb.com",
+
+    "jenniferlau@fb.com",
+
+    "njain@fb.com",
+
+    "brianl@fb.com",
+
+    "priyankd@fb.com",
+
+    "bryan@fb.com",
+
+    "patrickl@fb.com",
+
+    "zchen@fb.com",
+
+    "loren@fb.com",
+
+    "xub@fb.com",
+
+    "jzhang@fb.com",
+
+    "li@fb.com",
+
+    "nataliabutenko@fb.com",
+
+    "donfwu@gmail.com",
+
+    "pwilliam@fb.com",
+
+    "szhao@fb.com",
+
+    "annapebbles@fb.com",
+
+    "justinc@fb.com",
+
+    "meng.li@fb.com",
+
+    "narmour@fb.com",
+
+    "aiyer@fb.com",
+
+    "nitinsingh@fb.com",
+
+    "chrismarra@fb.com",
+
+    "grayj@fb.com",
+
+    "paulciasullo@fb.com",
+
+    "dsesh@fb.com",
+
+    "tpankaj@meta.com",
+
+    "abharadwaj@fb.com",
+
+    "jwoodbridge@fb.com",
+
+    "tsanders@fb.com",
+
+    "nmittal@fb.com",
+
+    "sjain@fb.com",
+
+    "vsunny@fb.com",
+
+    "badr@fb.com",
+
+    "thahn@fb.com",
+
+    "rkaur@fb.com",
+
+    "wlo@meta.com",
+
+    "davem@fb.com",
+
+    "mrunal@fb.com",
+
+    "shyam@fb.com",
+
+    "sorayakasnavi@fb.com",
+
+    "gedaliahf@fb.com",
+
+    "daniellelepe@fb.com",
+
+    "mattgabor@fb.com",
+
+    "eram@fb.com",
+
+    "rpaul@fb.com",
+
+    "cnez@fb.com",
+
+    "kaceto-netemeyer@fb.com",
+
+    "tkelly@fb.com",
+
+    "veniceg@fb.com",
+
+    "jputnam@fb.com",
+
+    "shuang@fb.com",
+
+    "cherylkessler@fb.com",
+
+    "cookhl13@gmail.com",
+
+    "hpatel@fb.com",
+
+    "sharma.a@fb.com",
+
+    "steven@fb.com",
+
+    "jeffy@fb.com",
+
+    "shickman@fb.com",
+
+    "kravi@fb.com",
+
+    "abhinavj@fb.com",
+
+    "mengx@fb.com",
+
+    "namit@fb.com",
+
+    "smandal@fb.com",
+
+    "ivyliu@fb.com",
+
+    "anya@meta.us",
+
+    "bwen@fb.com",
+
+    "cmccarrick@fb.com",
+
+    "tfeng@fb.com",
+
+    "alivneh@fb.com",
+
+    "vrao@fb.com",
+
+    "luc@fb.com",
+
+    "jade.clarke@fb.com",
+
+    "ammro@meta.com",
+
+    "jamilahw@fb.com",
+
+    "vikasb@fb.com",
+
+    "brunoramos@fb.com",
+
+    "nir@fb.com",
+
+    "anita.anderson@fb.com",
+
+    "amys@fb.com",
+
+    "asanadhya@fb.com",
+
+    "tagarwal@fb.com",
+
+    "nathancombes@fb.com",
+
+    "qzeng@fb.com",
+
+    "yanyuemichelle@fb.com",
+
+    "james.b@fb.com",
+
+    "kaningo@fb.com",
+
+    "ebo@fb.com",
+
+    "stuarts@fb.com",
+
+    "dixiao@fb.com",
+
+    "rene@meta.com",
+
+    "qdong@fb.com",
+
+    "johnr@fb.com",
+
+    "dcarbajal@fb.com",
+
+    "asaurabh@fb.com",
+
+    "lucy@fb.com",
+
+    "yant@fb.com",
+
+    "jeetshah@fb.com",
+
+    "sonalk@fb.com",
+
+    "justincardones@fb.com",
+
+    "ramez@fb.com",
+
+    "xiaonan.duan@lnkd.in",
+
+    "nuttakorn@fb.com",
+
+    "davidi@fb.com",
+
+    "weienlee@fb.com",
+
+    "cmoghbel@fb.com",
+
+    "tenki@meta.org",
+
+    "sbhattacharya@fb.com",
+
+    "dgautam@fb.com",
+
+    "ltoosevich@fb.com",
+
+    "raj.nandy@fb.com",
+
+    "ecaron@fb.com",
+
+    "matthewferrari@fb.com",
+
+    "twu@fb.com",
+
+    "rvasudevan@fb.com",
+
+    "caitlinwalzem@fb.com",
+
+    "akakkar@stanford.edu",
+
+    "jakeyara@meta.com",
+
+    "junbiaot@fb.com",
+
+    "honzhou@fb.com",
+
+    "nbelmonte@fb.com",
+
+    "kgill@fb.com",
+
+    "clarice.chan@fb.com",
+
+    "asifd@fb.com",
+
+    "jjoijoide@fb.com",
+
+    "schefflerjens@meta.com",
+
+    "mandarde@fb.com",
+
+    "sarahespinosa@fb.com",
+
+    "ngao@fb.com",
+
+    "aalarcon@fb.com",
+
+    "angellang@fb.com",
+
+    "camerononeill@fb.com",
+
+    "dorrie.paynter@fb.com",
+
+    "cwei@fb.com",
+
+    "aly@fb.com",
+
+    "cyrusa@fb.com",
+
+    "joshuaf@fb.com",
+
+    "mroch@fb.com",
+
+    "mreed@fb.com",
+
+    "lavina@fb.com",
+
+    "ethelhe@fb.com",
+
+    "csu@fb.com",
+
+    "jgrinage@fb.com",
+
+    "jessiez@fb.com",
+
+    "nkg@fb.com",
+
+    "yhuang@fb.com",
+
+    "aberlin@fb.com",
+
+    "aahmed@fb.com",
+
+    "kartheekp@fb.com",
+
+    "adavid@fb.com",
+
+    "kk1@fb.com",
+
+    "williamking@fb.com",
+
+    "emorgan@fb.com",
+
+    "michaely@fb.com",
+
+    "ernestof@fb.com",
+
+    "jackal2507@gmail.com",
+
+    "kevinj@fb.com",
+
+    "zhijian@fb.com",
+
+    "kuldeepd@fb.com",
+
+    "avitaware@meta.com",
+
+    "ssong@fb.com",
+
+    "rrajendran@fb.com",
+
+    "lruiz@fb.com",
+
+    "amir.frenkel@fb.com",
+
+    "rune@fb.com",
+
+    "lee@fb.com",
+
+    "sudipshah@fb.com",
+
+    "lxiong@fb.com",
+
+    "liangz@fb.com",
+
+    "gmseis@fb.com",
+
+    "bosun@fb.com",
+
+    "pete.campbell@fb.com",
+
+    "kolinjones@fb.com",
+
+    "mami@fb.com",
+
+    "ayadav@fb.com",
+
+    "lvdmaaten@fb.com",
+
+    "kmary@fb.com",
+
+    "gt@fb.com",
+
+    "kennychui@fb.com",
+
+    "amajumdar@fb.com",
+
+    "leoamos@fb.com",
+
+    "jmorrow@fb.com",
+
+    "minaderian@fb.com",
+
+    "mansik@fb.com",
+
+    "andrin.foster@gmail.com",
+
+    "saustin@fb.com",
+
+    "jvishal@fb.com",
+
+    "ramkumarh@fb.com",
+
+    "ddutta@fb.com",
+
+    "wangw@fb.com",
+
+    "avaughan@fb.com",
+
+    "jjia@fb.com",
+
+    "ptolouei@fb.com",
+
+    "henryb@fb.com",
+
+    "yzhu@meta.com",
+
+    "joes@fb.com",
+
+    "gauravchitroda@fb.com",
+
+    "rogerg@fb.com",
+
+    "yupadhyay@fb.com",
+
+    "andreyshtylenko@fb.com",
+
+    "shubhojeet.sarkar@fb.com",
+
+    "pchang@fb.com",
+
+    "benw@fb.com",
+
+    "billap@fb.com",
+
+    "adellecharles@meta.com",
+
+    "dinoyoon@fb.com",
+
+    "janelee@fb.com",
+
+    "awlee@fb.com",
+
+    "johnnance@fb.com",
+
+    "emilyb@fb.com",
+
+    "eric.s@fb.com",
+
+    "sabrinaodah@fb.com",
+
+    "cpio@fb.com",
+
+    "tranle@fb.com",
+
+    "singha@fb.com",
+
+    "walkerc@fb.com",
+
+    "ygao12@fb.com",
+
+    "ligangfb@fb.com",
+
+    "eelshaw@fb.com",
+
+    "atan@fb.com",
+
+    "jgourley@fb.com",
+
+    "ceciliawen@fb.com",
+
+    "michaelz@fb.com",
+
+    "devoncrawford@fb.com",
+
+    "sarahb@fb.com",
+
+    "xuweipeng@fb.com",
+
+    "anair@fb.com",
+
+    "anaid@mac.com",
+
+    "mkarlsson@fb.com",
+
+    "dliu@fb.com",
+
+    "omkar@fb.com",
+
+    "zrehmani@fb.com",
+
+    "mdhillon@fb.com",
+
+    "kaarthic@fb.com",
+
+    "sommer@fb.com",
+
+    "mariahollweck@fb.com",
+
+    "amandam@fb.com",
+
+    "lis@fb.com",
+
+    "rshwetha@fb.com",
+
+    "leeh@fb.com",
+
+    "jacksoncole@fb.com",
+
+    "dmurray@fb.com",
+
+    "theresac@fb.com",
+
+    "bradleyspare@meta.com",
+
+    "zhouc@fb.com",
+
+    "brianab@fb.com",
+
+    "robinc@fb.com",
+
+    "cchamberlin@fb.com",
+
+    "zbodnar@fb.com",
+
+    "aaronfaucher@fb.com",
+
+    "ywu@fb.com",
+
+    "sharmam@fb.com",
+
+    "huanfeng@fb.com",
+
+    "danmo@meta.com",
+
+    "sandippalit@meta.com",
+
+    "xiangli1993@fb.com",
+
+    "ayushis@fb.com",
+
+    "haiderrazvi@fb.com",
+
+    "ango@fb.com",
+
+    "hao@meta.us",
+
+    "johncrenshaw@mageguys.com",
+
+    "parthadroja@meta.com",
+
+    "yaniv@fb.com",
+
+    "spanou@fb.com",
+
+    "knguyen@fb.com",
+
+    "lflosi@fb.com",
+
+    "hma@fb.com",
+
+    "xfei@fb.com",
+
+    "danf@fb.com",
+
+    "jeffrey.warren@fb.com",
+
+    "hcheng@fb.com",
+
+    "wenlei@fb.com",
+
+    "harishbeemaraj@fb.com",
+
+    "cslowik@fb.com",
+
+    "phinguyen712@fb.com",
+
+    "gsong@fb.com",
+
+    "ananda@fb.com",
+
+    "ruchirs@fb.com",
+
+    "sshekhar@fb.com",
+
+    "nak@fb.com",
+
+    "tsamuel@fb.com",
+
+    "fangli@fb.com",
+
+    "mburak@fb.com",
+
+    "vparekh@fb.com",
+
+    "nramachandran@fb.com",
+
+    "chandragarre@fb.com",
+
+    "skunapuli@fb.com",
+
+    "johnsond@fb.com",
+
+    "syang@fb.com",
+
+    "vibhavirmani@fb.com",
+
+    "adit@fb.com",
+
+    "mohana@fb.com",
+
+    "gpaul@fb.com",
+
+    "nikila.srinivasan@fb.com",
+
+    "schmidtk@fb.com",
+
+    "mmetwali@fb.com",
+
+    "amyb@fb.com",
+
+    "danielarubio@meta.com",
+
+    "ejqi-scott@fb.com",
+
+    "huy@fb.com",
+
+    "dannytrinh@meta.com",
+
+    "nclinton@fb.com",
+
+    "vizshine@fb.com",
+
+    "supasate@fb.com",
+
+    "bbharier@fb.com",
+
+    "ncharlton24@gmail.com",
+
+    "ntan@fb.com",
+
+    "vikjankov@fb.com",
+
+    "eonofrey@fb.com",
+
+    "yaoy@fb.com",
+
+    "sudhirrao@fb.com",
+
+    "jr@fb.com",
+
+    "chenj@fb.com",
+
+    "roberty@fb.com",
+
+    "drewshannon@fb.com",
+
+    "al@fb.com",
+
+    "adamc@fb.com",
+
+    "hchristopher@fb.com",
+
+    "qliu@fb.com",
+
+    "jemmynieh@fb.com",
+
+    "rbaker@fb.com",
+
+    "ehuang@fb.com",
+
+    "jaiswalr@fb.com",
+
+    "ashtonudall@meta.com",
+
+    "tarinziyaee@fb.com",
+
+    "singhr@fb.com",
+
+    "karansingh@meta.us",
+
+    "jhan@fb.com",
+
+    "pyuvraj@fb.com",
+
+    "mayoor@fb.com",
+
+    "mbanefo@fb.com",
+
+    "ntran@fb.com",
+
+    "joslynfu@fb.com",
+
+    "fpeng@fb.com",
+
+    "alley@fb.com",
+
+    "baichuan@fb.com",
+
+    "chend@fb.com",
+
+    "jessicaprague@fb.com",
+
+    "sabrinae@fb.com",
+
+    "ljulia@fb.com",
+
+    "pburjanec@fb.com",
+
+    "eduardoreyes@fb.com",
+
+    "jpk2003@fb.com",
+
+    "kathleen.yang@meta.com",
+
+    "jesgoldman@fb.com",
+
+    "skohl@fb.com",
+
+    "wangy@fb.com",
+
+    "kwu@fb.com",
+
+    "shie@fb.com",
+
+    "chenk@fb.com",
+
+    "lizaries@fb.com",
+
+    "zsun@fb.com",
+
+    "zach@fb.com",
+
+    "zhe.wang@fb.com",
+
+    "kejinghuang@fb.com",
+
+    "gduan@fb.com",
+
+    "dasnurkar@fb.com",
+
+    "svemuri@fb.com",
+
+    "lvega@fb.com",
+
+    "spuri@fb.com",
+
+    "szhu@fb.com",
+
+    "hjun@fb.com",
+
+    "lee.j@fb.com",
+
+    "bstrumpf@meta.com",
+
+    "amandakimberlywoo@gmail.com",
+
+    "galejandro@fb.com",
+
+    "nehag@fb.com",
+
+    "ybh@meta.com",
+
+    "jwong@fb.com",
+
+    "rghody@fb.com",
+
+    "adamp@fb.com",
+
+    "omidi@fb.com",
+
+    "nwang@fb.com",
+
+    "tyang@fb.com",
+
+    "joshb@fb.com",
+
+    "lakshmypriyasankaran@fb.com",
+
+    "zjin@fb.com",
+
+    "sagarmiglani@fb.com",
+
+    "rosshochwert@fb.com",
+
+    "gabrieldes@fb.com",
+
+    "elhajoui@fb.com",
+
+    "mattschurman@fb.com",
+
+    "adamcreeger@fb.com",
+
+    "robveres@fb.com",
+
+    "subbu@fb.com",
+
+    "mroenigk@fb.com",
+
+    "psingh@fb.com",
+
+    "davidw@fb.com",
+
+    "cjohn@fb.com",
+
+    "sangeetab@fb.com",
+
+    "meredithwang@fb.com",
+
+    "ehubbard@fb.com",
+
+    "ghashemian@fb.com",
+
+    "fayeh@fb.com",
+
+    "aaronj@fb.com",
+
+    "amukherjee@fb.com",
+
+    "ericavirtue@fb.com",
+
+    "mt02931@fb.com",
+
+    "mpeng@fb.com",
+
+    "priyankaak@fb.com",
+
+    "alexkoz@fb.com",
+
+    "mariamaione@meta.com",
+
+    "jredick@fb.com",
+
+    "mccabe@fb.com",
+
+    "aniketdas@fb.com",
+
+    "eleanorl@fb.com",
+
+    "sseshadri@meta.com",
+
+    "prabhsingh@fb.com",
+
+    "devsengupta@fb.com",
+
+    "selbaghdady@fb.com",
+
+    "sagarwal@fb.com",
+
+    "hzhu@fb.com",
+
+    "srinip@fb.com",
+
+    "bmojica@fb.com",
+
+    "alkanozturk@fb.com",
+
+    "sr@fb.com",
+
+    "qhu@fb.com",
+
+    "matthew.d@fb.com",
+
+    "rpratt@fb.com",
+
+    "zhangtony@fb.com",
+
+    "anthonym@fb.com",
+
+    "jfabian@fb.com",
+
+    "nwertzberger@fb.com",
+
+    "akanksha@meta.com",
+
+    "msandhu@fb.com",
+
+    "michael.clark@fb.com",
+
+    "rgoyal@fb.com",
+
+    "varun.puri@fb.com",
+
+    "kelly@fb.com",
+
+    "micah.collins@fb.com",
+
+    "hsrivastava@fb.com",
+
+    "mpena@fb.com",
+
+    "wuc@fb.com",
+
+    "rsood@fb.com",
+
+    "jlu@fb.com",
+
+    "enho@fb.com",
+
+    "arjunmoudgil@fb.com",
+
+    "vmanickavasagam@fb.com",
+
+    "zhuj@fb.com",
+
+    "ryuan@fb.com",
+
+    "zxie@fb.com",
+
+    "theodorafang@meta.com",
+
+    "meganm@fb.com",
+
+    "samyuktasherugar@fb.com",
+
+    "ejcampbell@fb.com",
+
+    "rlo@fb.com",
+
+    "jandalman@fb.com",
+
+    "jscarangella@fb.com",
+
+    "danielullman@fb.com",
+
+    "lanya@thebaalm.com",
+
+    "bradgash@fb.com",
+
+    "sundaisun@meta.com",
+
+    "cdawson@fb.com",
+
+    "jbyon@fb.com",
+
+    "roger.ibars@oculus.com",
+
+    "fyang@fb.com",
+
+    "miker@fb.com",
+
+    "lmachluf@fb.com",
+
+    "lyang@fb.com",
+
+    "kvu@fb.com",
+
+    "dana@fb.com",
+
+    "fuchen@fb.com",
+
+    "srinivasprasad@fb.com",
+
+    "ebugayong@fb.com",
+
+    "gauravjain@fb.com",
+
+    "guptaprince@fb.com",
+
+    "abond@fb.com",
+
+    "joshuak@fb.com",
+
+    "jnuger@fb.com",
+
+    "david.g@fb.com",
+
+    "ayuship2@fb.com",
+
+    "gvenkatesh@fb.com",
+
+    "chenl@fb.com",
+
+    "hlee@fb.com",
+
+    "skandhp@fb.com",
+
+    "markusl@fb.com",
+
+    "puneetgirdhar@fb.com",
+
+    "kalich@fb.com",
+
+    "iddy@fb.com",
+
+    "shashidhar.gandham@fb.com",
+
+    "andrew.bosworth@fb.com",
+
+    "shrina@fb.com",
+
+    "jeremy.w@fb.com",
+
+    "drewlepp@fb.com",
+
+    "ctang@fb.com",
+
+    "maeboettcher@meta.com",
+
+    "cjin@fb.com",
+
+    "rossbohner@gmail.com",
+
+    "paigenotfound@fb.com",
+
+    "dpurkiss@fb.com",
+
+    "sramesh@fb.com",
+
+    "msaeed@fb.com",
+
+    "gus@fb.com",
+
+    "wangl@fb.com",
+
+    "jchiu@fb.com",
+
+    "qij@fb.com",
+
+    "bryanty@fb.com",
+
+    "cgroom@fb.com",
+
+    "dkumar@fb.com",
+
+    "vshetty@fb.com",
+
+    "rachelbatish@fb.com",
+
+    "danish@fb.com",
+
+    "loiswang@fb.com",
+
+    "elee@fb.com",
+
+    "mparikh@fb.com",
+
+    "cwann@fb.com",
+
+    "monicalee@fb.com",
+
+    "ofer@meta.com",
+
+    "cbustamante@meta.com",
+
+    "fmp@fb.com",
+
+    "ssrivastava@fb.com",
+
+    "anthonyhinds@instagram.com",
+
+    "slin@fb.com",
+
+    "mfaiz@alumni.cmu.edu",
+
+    "ale@fb.com",
+
+    "hjayaraman@zynga.com",
+
+    "nhuang@fb.com",
+
+    "aghuloum@fb.com",
+
+    "tuomas.vallius@fb.com",
+
+    "azhu@fb.com",
+
+    "ergin@fb.com",
+
+    "aschleusener@fb.com",
+
+    "walia@fb.com",
+
+    "jkusuma@fb.com",
+
+    "alvin@fb.com",
+
+    "justinh@fb.com",
+
+    "vincentkswang@fb.com",
+
+    "xuke@fb.com",
+
+    "pane@fb.com",
+
+    "manfeng@fb.com",
+
+    "tranleminhbao@fb.com",
+
+    "vinods@fb.com",
+
+    "yuhuishi@fb.com",
+
+    "jeff.lai@fb.com",
+
+    "evans@fb.com",
+
+    "shizhe@fb.com",
+
+    "david.r@fb.com",
+
+    "loiwalr@fb.com",
+
+    "stephena@fb.com",
+
+    "kapilk@fb.com",
+
+    "samuels@fb.com",
+
+    "hguo@fb.com",
+
+    "astrong@fb.com",
+
+    "yazziz@fb.com",
+
+    "jiesi@fb.com",
+
+    "mzoorob@fb.com",
+
+    "mingrui.wu@plus.ai",
+
+    "athenahuang@fb.com",
+
+    "sena@fb.com",
+
+    "nirdhar.khazanie@fb.com",
+
+    "ro@fb.com",
+
+    "shiy@fb.com",
+
+    "abhishekg@fb.com",
+
+    "vkamma@fb.com",
+
+    "sbhatia@fb.com",
+
+    "tjoseph@fb.com",
+
+    "johnpeng@fb.com",
+
+    "yaos@fb.com",
+
+    "ssait@fb.com",
+
+    "akadimisetty@fb.com",
+
+    "tswarts@fb.com",
+
+    "ruiabreu@meta.com",
+
+    "jonm@fb.com",
+
+    "anthonyc@fb.com",
+
+    "nicostuart@meta.com",
+
+    "laurenb@fb.com",
+
+    "samanthac@fb.com",
+
+    "averychang@fb.com",
+
+    "jjiang@fb.com",
+
+    "sarangb@meta.com",
+
+    "amyh@fb.com",
+
+    "xuhanfacebook@fb.com",
+
+    "jsung@fb.com",
+
+    "mehdia@fb.com",
+
+    "cdaniel@fb.com",
+
+    "luw@fb.com",
+
+    "saatvik@meta.org",
+
+    "ziv@fb.com",
+
+    "jvaidyanathan@fb.com",
+
+    "bliu@fb.com",
+
+    "alexp@fb.com",
+
+    "bcaiado@fb.com",
+
+    "siddharthr@fb.com",
+
+    "twong@fb.com",
+
+    "deepanjan@fb.com",
+
+    "yucheng.liu@fb.com",
+
+    "matthewm@fb.com",
+
+    "peterliu@fb.com",
+
+    "ezhang@fb.com",
+
+    "jyang@fb.com",
+
+    "harshpatel@fb.com",
+
+    "nikhilm@fb.com",
+
+    "cdt303@nyu.edu",
+
+    "ssemov@fb.com",
+
+    "ariannaorland@fb.com",
+
+    "michelle.k@fb.com",
+
+    "cnb@fb.com",
+
+    "debanjalee@fb.com",
+
+    "ptomar@meta.com",
+
+    "timoahonen@fb.com",
+
+    "tfiala@fb.com",
+
+    "ray.he@fb.com",
+
+    "roshann@fb.com",
+
+    "gyu@fb.com",
+
+    "varun@fb.com",
+
+    "shonore@meta.com",
+
+    "alexpanduro@fb.com",
+
+    "panneb@fb.com",
+
+    "ekim@fb.com",
+
+    "faaizakhan@fb.com",
+
+    "sjgray@fb.com",
+
+    "suhd@fb.com",
+
+    "jasono@fb.com",
+
+    "davegrant@fb.com",
+
+    "alanmc@alum.mit.edu",
+
+    "nyao@fb.com",
+
+    "katherinemorris@fb.com",
+
+    "mmalik@fb.com",
+
+    "leoo@fb.com",
+
+    "tdu@fb.com",
+
+    "adityak@fb.com",
+
+    "sli@fb.com",
+
+    "byu@fb.com",
+
+    "h3parikh@edu.uwaterloo.ca",
+
+    "arowley@fb.com",
+
+    "shahk@fb.com",
+
+    "mrogers@fb.com",
+
+    "sliew@fb.com",
+
+    "xguo@fb.com",
+
+    "lesterhung@fb.com",
+
+    "sunnyv@fb.com",
+
+    "yangh@fb.com",
+
+    "matthewh@fb.com",
+
+    "prasadmarla@fb.com",
+
+    "anik@fb.com",
+
+    "xuj@fb.com",
+
+    "yohanyi@fb.com",
+
+    "saranyanvigraham@fb.com",
+
+    "jisaacson@fb.com",
+
+    "hsilverman@fb.com",
+
+    "daniela@fb.com",
+
+    "arvindg@fb.com",
+
+    "qrazaaq@fb.com",
+
+    "neerajb@fb.com",
+
+    "rgarg@fb.com",
+
+    "paulf@fb.com",
+
+    "hdoshi@fb.com",
+
+    "selenasalazar@fb.com",
+
+    "jacob.rossi@fb.com",
+
+    "anikamitchell@fb.com",
+
+    "eyal.ohana@oculus.com",
+
+    "lamy@fb.com",
+
+    "vkelly@fb.com",
+
+    "mengl@fb.com",
+
+    "jessicadurkin@fb.com",
+
+    "pandrade@fb.com",
+
+    "cleo@fb.com",
+
+    "miket@fb.com",
+
+    "elisatingy@gmail.com",
+
+    "hhuang@fb.com",
+
+    "minhh@fb.com",
+
+    "ashah@fb.com",
+
+    "sjohnson@fb.com",
+
+    "kalexander@fb.com",
+
+    "pkumar@fb.com",
+
+    "chrisan@fb.com",
+
+    "gabriel.aul@fb.com",
+
+    "tarun.karuturi@fb.com",
+
+    "hoa@fb.com",
+
+    "zacdrake@fb.com",
+
+    "jyuan@fb.com",
+
+    "shafiulazam@fb.com",
+
+    "jimc@fb.com",
+
+    "dhuang@fb.com",
+
+    "fyu@fb.com",
+
+    "chrisschrader@fb.com",
+
+    "francescac@fb.com",
+
+    "gmalik@fb.com",
+
+    "neunzo@fb.com",
+
+    "dtiwari@fb.com",
+
+    "naomi@fb.com",
+
+    "mhasan@fb.com",
+
+    "sparth@fb.com",
+
+    "jbari@fb.com",
+
+    "aayushp@fb.com",
+
+    "sunilk@fb.com",
+
+    "almango@fb.com",
+
+    "shivashankarhalan@gmail.com",
+
+    "mlevy@fb.com",
+
+    "kkoehler@fb.com",
+
+    "ecoons@fb.com",
+
+    "yanr@fb.com",
+
+    "arondahlgren@meta.com",
+
+    "faresende@fb.com",
+
+    "daphra@fb.com",
+
+    "kjain@fb.com",
+
+    "pbhardwaj@fb.com",
+
+    "jian@fb.com",
+
+    "tsung-ching@meta.org",
+
+    "melissa.saboowala@fb.com",
+
+    "jingf@fb.com",
+
+    "kdesai@fb.com",
+
+    "michelle.yuen@fb.com",
+
+    "sriraml@fb.com",
+
+    "cshields@fb.com",
+
+    "sgong@fb.com",
+
+    "andrewc@fb.com",
+
+    "asadhoo@fb.com",
+
+    "sryan@fb.com",
+
+    "janeg@fb.com",
+
+    "mchen@fb.com",
+
+    "mher@fb.com",
+
+    "yongbo@fb.com",
+
+    "zzhao@fb.com",
+
+    "hyalamanchili@fb.com",
+
+    "arjunsehgal@fb.com",
+
+    "feng.lu@utexas.edu",
+
+    "heidiyang@meta.com",
+
+    "dtucito@fb.com",
+
+    "aarima@fb.com",
+
+    "ehaun@fb.com",
+
+    "xliu@fb.com",
+
+    "mgd67@cornell.edu",
+
+    "neilc@fb.com",
+
+    "ericw@fb.com",
+
+    "mitaligurnani@fb.com",
+
+    "liai@fb.com",
+
+    "rajeshd@fb.com",
+
+    "jennysundel@fb.com",
+
+    "poorvi@meta.com",
+
+    "gjohn@fb.com",
+
+    "jonfelske@fb.com",
+
+    "bb@fb.com",
+
+    "greenleilac@gmail.com",
+
+    "rsongco@fb.com",
+
+    "colemurphy@fb.com",
+
+    "sshah@fb.com",
+
+    "catalinat@fb.com",
+
+    "ckairalla@meta.com",
+
+    "kalis@fb.com",
+
+    "jchen@fb.com",
+
+    "justin.glaeser@fb.com",
+
+    "nicole.g@fb.com",
+
+    "mrohani@fb.com",
+
+    "mlee@fb.com",
+
+    "jcross@fb.com",
+
+    "lmarken@fb.com",
+
+    "vidazhang@fb.com",
+
+    "groblesp@fb.com",
+
+    "tgiang@fb.com",
+
+    "jenlebeau@fb.com",
+
+    "krisrose@meta.com",
+
+    "ashleyeadon@fb.com",
+
+    "lij@fb.com",
+
+    "abhargava@fb.com",
+
+    "yuchenbj@gmail.com",
+
+    "hiten@fb.com",
+
+    "carriej@fb.com",
+
+    "nic@fb.com",
+
+    "susanc@fb.com",
+
+    "akshayb@fb.com",
+
+    "waqarnayyar@fb.com",
+
+    "pbansal@fb.com",
+
+    "jwalters@fb.com",
+
+    "jkrikheli@fb.com",
+
+    "patrickg@fb.com",
+
+    "jeremiahr@fb.com",
+
+    "vsinha@fb.com",
+
+    "khushbu.katariya@wellsfargo.com",
+
+    "yyavuz@fb.com",
+
+    "ck@fb.com",
+
+    "elomarsouza@fb.com",
+
+    "benjaminau@fb.com",
+
+    "denisg@fb.com",
+
+    "jqian@fb.com",
+
+    "joshluo@fb.com",
+
+    "manavs@fb.com",
+
+    "idvorkin@fb.com",
+
+    "mbirkner@fb.com",
+
+    "weir@fb.com",
+
+    "bzhang@fb.com",
+
+    "danchern@fb.com",
+
+    "mafaneh@fb.com",
+
+    "hannahcassius@fb.com",
+
+    "tripathym@fb.com",
+
+    "pbadgujar@fb.com",
+
+    "cedb@fb.com",
+
+    "wangs@fb.com",
+
+    "pdo@fb.com",
+
+    "lcbrown@meta.com",
+
+    "zhangy@fb.com",
+
+    "arodriguez@fb.com",
+
+    "crosby.steiner@fb.com",
+
+    "jwilliams@fb.com",
+
+    "brianessex@meta.com",
+
+    "clairewolf@fb.com",
+
+    "davidhong@fb.com",
+
+    "katiehu@fb.com",
+
+    "nityaverma@fb.com",
+
+    "joshuam@fb.com",
+
+    "bethanyd@fb.com",
+
+    "kharris@fb.com",
+
+    "kimt@fb.com",
+
+    "marcusw@fb.com",
+
+    "perryg@fb.com",
+
+    "kaarin@fb.com",
+
+    "bgoyal@fb.com",
+
+    "dsouza@fb.com",
+
+    "nvartanian@fb.com",
+
+    "nikhilar@fb.com",
+
+    "sshin@fb.com",
+
+    "michelle.yuen@fb.com",
+
+    "jingf@fb.com",
+
+    "sriraml@fb.com",
+
+    "kdesai@fb.com",
+
+    "cshields@fb.com",
+
+    "michelle.yuen@fb.com",
+
+    "sgong@fb.com",
+
+    "sriraml@fb.com",
+
+    "andrewc@fb.com",
+
+    "cshields@fb.com",
+
+    "asadhoo@fb.com",
+
+    "sgong@fb.com",
+
+    "sryan@fb.com",
+
+    "andrewc@fb.com",
+
+    "janeg@fb.com",
+
+    "asadhoo@fb.com",
+
+    "mchen@fb.com",
+
+    "sryan@fb.com",
+
+    "mher@fb.com",
+
+    "janeg@fb.com",
+
+    "yongbo@fb.com",
+
+    "mchen@fb.com",
+
+    "zzhao@fb.com",
+
+    "mher@fb.com",
+
+    "hyalamanchili@fb.com",
+
+    "yongbo@fb.com",
+
+    "arjunsehgal@fb.com",
+
+    "zzhao@fb.com",
+
+    "feng.lu@utexas.edu",
+
+    "hyalamanchili@fb.com",
+
+    "heidiyang@meta.com",
+
+    "arjunsehgal@fb.com",
+
+    "dtucito@fb.com",
+
+    "feng.lu@utexas.edu",
+
+    "aarima@fb.com",
+
+    "heidiyang@meta.com",
+
+    "ehaun@fb.com",
+
+    "dtucito@fb.com",
+
+    "xliu@fb.com",
+
+    "aarima@fb.com",
+
+    "mgd67@cornell.edu",
+
+    "ehaun@fb.com",
+
+    "neilc@fb.com",
+
+    "xliu@fb.com",
+
+    "ericw@fb.com",
+
+    "mgd67@cornell.edu",
+
+    "mitaligurnani@fb.com",
+
+    "neilc@fb.com",
+
+    "liai@fb.com",
+
+    "ericw@fb.com",
+
+    "rajeshd@fb.com",
+
+    "mitaligurnani@fb.com",
+
+    "jennysundel@fb.com",
+
+    "poorvi@meta.com",
+
+    "liai@fb.com",
+
+    "gjohn@fb.com",
+
+    "rajeshd@fb.com",
+
+    "jennysundel@fb.com",
+
+    "jonfelske@fb.com",
+
+    "poorvi@meta.com",
+
+    "bb@fb.com",
+
+    "greenleilac@gmail.com",
+
+    "gjohn@fb.com",
+
+    "rsongco@fb.com",
+
+    "jonfelske@fb.com",
+
+    "bb@fb.com",
+
+    "colemurphy@fb.com",
+
+    "greenleilac@gmail.com",
+
+    "sshah@fb.com",
+
+    "rsongco@fb.com",
+
+    "catalinat@fb.com",
+
+    "ckairalla@meta.com",
+
+    "colemurphy@fb.com",
+
+    "sshah@fb.com",
+
+    "kalis@fb.com",
+
+    "catalinat@fb.com",
+
+    "jchen@fb.com",
+
+    "ckairalla@meta.com",
+
+    "justin.glaeser@fb.com",
+
+    "kalis@fb.com",
+
+    "nicole.g@fb.com",
+
+    "jchen@fb.com",
+
+    "mrohani@fb.com",
+
+    "justin.glaeser@fb.com",
+
+    "mlee@fb.com",
+
+    "nicole.g@fb.com",
+
+    "jcross@fb.com",
+
+    "mrohani@fb.com",
+
+    "lmarken@fb.com",
+
+    "mlee@fb.com",
+
+    "vidazhang@fb.com",
+
+    "groblesp@fb.com",
+
+    "tgiang@fb.com",
+
+    "jcross@fb.com",
+
+    "lmarken@fb.com",
+
+    "jenlebeau@fb.com",
+
+    "vidazhang@fb.com",
+
+    "krisrose@meta.com",
+
+    "groblesp@fb.com",
+
+    "ashleyeadon@fb.com",
+
+    "tgiang@fb.com",
+
+    "jenlebeau@fb.com",
+
+    "lij@fb.com",
+
+    "krisrose@meta.com",
+
+    "ashleyeadon@fb.com",
+
+    "abhargava@fb.com",
+
+    "lij@fb.com",
+
+    "yuchenbj@gmail.com",
+
+    "abhargava@fb.com",
+
+    "hiten@fb.com",
+
+    "yuchenbj@gmail.com",
+
+    "carriej@fb.com",
+
+    "hiten@fb.com",
+
+    "nic@fb.com",
+
+    "carriej@fb.com",
+
+    "susanc@fb.com",
+
+    "nic@fb.com",
+
+    "susanc@fb.com",
+
+    "akshayb@fb.com",
+
+    "akshayb@fb.com",
+
+    "waqarnayyar@fb.com",
+
+    "waqarnayyar@fb.com",
+
+    "pbansal@fb.com",
+
+    "pbansal@fb.com",
+
+    "jwalters@fb.com",
+
+    "jwalters@fb.com",
+
+    "jkrikheli@fb.com",
+
+    "jkrikheli@fb.com",
+
+    "patrickg@fb.com",
+
+    "patrickg@fb.com",
+
+    "jeremiahr@fb.com",
+
+    "jeremiahr@fb.com",
+
+    "vsinha@fb.com",
+
+    "vsinha@fb.com",
+
+    "khushbu.katariya@wellsfargo.com",
+
+    "khushbu.katariya@wellsfargo.com",
+
+    "yyavuz@fb.com",
+
+    "yyavuz@fb.com",
+
+    "ck@fb.com",
+
+    "ck@fb.com",
+
+    "elomarsouza@fb.com",
+
+    "elomarsouza@fb.com",
+
+    "benjaminau@fb.com",
+
+    "benjaminau@fb.com",
+
+    "denisg@fb.com",
+
+    "denisg@fb.com",
+
+    "jqian@fb.com",
+
+    "jqian@fb.com",
+
+    "joshluo@fb.com",
+
+    "joshluo@fb.com",
+
+    "manavs@fb.com",
+
+    "manavs@fb.com",
+
+    "idvorkin@fb.com",
+
+    "idvorkin@fb.com",
+
+    "mbirkner@fb.com",
+
+    "mbirkner@fb.com",
+
+    "weir@fb.com",
+
+    "weir@fb.com",
+
+    "bzhang@fb.com",
+
+    "bzhang@fb.com",
+
+    "danchern@fb.com",
+
+    "mafaneh@fb.com",
+
+    "danchern@fb.com",
+
+    "mafaneh@fb.com",
+
+    "hannahcassius@fb.com",
+
+    "tripathym@fb.com",
+
+    "hannahcassius@fb.com",
+
+    "pbadgujar@fb.com",
+
+    "tripathym@fb.com",
+
+    "cedb@fb.com",
+
+    "pbadgujar@fb.com",
+
+    "cedb@fb.com",
+
+    "wangs@fb.com",
+
+    "wangs@fb.com",
+
+    "pdo@fb.com",
+
+    "pdo@fb.com",
+
+    "lcbrown@meta.com",
+
+    "lcbrown@meta.com",
+
+    "zhangy@fb.com",
+
+    "zhangy@fb.com",
+
+    "arodriguez@fb.com",
+
+    "arodriguez@fb.com",
+
+    "crosby.steiner@fb.com",
+
+    "crosby.steiner@fb.com",
+
+    "jwilliams@fb.com",
+
+    "jwilliams@fb.com",
+
+    "brianessex@meta.com",
+
+    "brianessex@meta.com",
+
+    "clairewolf@fb.com",
+
+    "clairewolf@fb.com",
+
+    "davidhong@fb.com",
+
+    "davidhong@fb.com",
+
+    "katiehu@fb.com",
+
+    "katiehu@fb.com",
+
+    "nityaverma@fb.com",
+
+    "nityaverma@fb.com",
+
+    "joshuam@fb.com",
+
+    "joshuam@fb.com",
+
+    "bethanyd@fb.com",
+
+    "bethanyd@fb.com",
+
+    "kharris@fb.com",
+
+    "kharris@fb.com",
+
+    "kimt@fb.com",
+
+    "kimt@fb.com",
+
+    "marcusw@fb.com",
+
+    "marcusw@fb.com",
+
+    "perryg@fb.com",
+
+    "perryg@fb.com",
+
+    "kaarin@fb.com",
+
+    "kaarin@fb.com",
+
+    "bgoyal@fb.com",
+
+    "bgoyal@fb.com",
+
+    "dsouza@fb.com",
+
+    "dsouza@fb.com",
+
+    "nvartanian@fb.com",
+
+    "nvartanian@fb.com",
+
+    "nikhilar@fb.com",
+
+    "nikhilar@fb.com",
+
+    "sshin@fb.com",
+
+    "sshin@fb.com",
+
+    "lmarken@fb.com",
+
+    "vidazhang@fb.com",
+
+    "groblesp@fb.com",
+
+    "tgiang@fb.com",
+
+    "jenlebeau@fb.com",
+
+    "krisrose@meta.com",
+
+    "ashleyeadon@fb.com",
+
+    "lij@fb.com",
+
+    "abhargava@fb.com",
+
+    "yuchenbj@gmail.com",
+
+    "hiten@fb.com",
+
+    "carriej@fb.com",
+
+    "nic@fb.com",
+
+    "susanc@fb.com",
+
+    "akshayb@fb.com",
+
+    "waqarnayyar@fb.com",
+
+    "pbansal@fb.com",
+
+    "jwalters@fb.com",
+
+    "jkrikheli@fb.com",
+
+    "patrickg@fb.com",
+
+    "jeremiahr@fb.com",
+
+    "vsinha@fb.com",
+
+    "khushbu.katariya@wellsfargo.com",
+
+    "yyavuz@fb.com",
+
+    "ck@fb.com",
+
+    "elomarsouza@fb.com",
+
+    "benjaminau@fb.com",
+
+    "denisg@fb.com",
+
+    "jqian@fb.com",
+
+    "joshluo@fb.com",
+
+    "manavs@fb.com",
+
+    "idvorkin@fb.com",
+
+    "mbirkner@fb.com",
+
+    "weir@fb.com",
+
+    "bzhang@fb.com",
+
+    "danchern@fb.com",
+
+    "mafaneh@fb.com",
+
+    "hannahcassius@fb.com",
+
+    "tripathym@fb.com",
+
+    "pbadgujar@fb.com",
+
+    "cedb@fb.com",
+
+    "wangs@fb.com",
+
+    "pdo@fb.com",
+
+    "lcbrown@meta.com",
+
+    "zhangy@fb.com",
+
+    "arodriguez@fb.com",
+
+    "crosby.steiner@fb.com",
+
+    "jwilliams@fb.com",
+
+    "brianessex@meta.com",
+
+    "clairewolf@fb.com",
+
+    "davidhong@fb.com",
+
+    "katiehu@fb.com",
+
+    "nityaverma@fb.com",
+
+    "joshuam@fb.com",
+
+    "bethanyd@fb.com",
+
+    "kharris@fb.com",
+
+    "kimt@fb.com",
+
+    "marcusw@fb.com",
+
+    "perryg@fb.com",
+
+    "kaarin@fb.com",
+
+    "bgoyal@fb.com",
+
+    "dsouza@fb.com",
+
+    "nvartanian@fb.com",
+
+    "nikhilar@fb.com",
+
+    "sshin@fb.com",
+
+    "chris.g@betterrehab.com.au",
+
+    "dpollek@anomali.com",
+
+    "stephanie.pagan@iliabeauty.com",
+
+    "wesley.mersinger@diageo.com",
+  ];
   const personaIds = emails.map((item) => item.id);
   const persona = await apolloPersonaRepository.find(
     {
@@ -209,6 +4086,7 @@ app.post("/send-email", async (req, res) => {
     "id name title organization.name first_name"
   );
 
+  const uniqueEmails = new Set(); // Set to track unique email addresses
   try {
     let reqId = req.body.reqId;
 
@@ -221,7 +4099,7 @@ app.post("/send-email", async (req, res) => {
     console.log("req id --->", reqId);
     const jobIds = jobIdReq?.jobIds;
     let jobData = [];
-    if (jobIds.length) {
+    if (jobIds && jobIds.length) {
       jobData = await linkedinJobRepository.find(
         { job_id: { $in: jobIds } },
         "job_title job_posted_at_datetime_utc job_city job_state job_country employer_name"
@@ -230,98 +4108,82 @@ app.post("/send-email", async (req, res) => {
     }
 
     for (const email of emails) {
-      try {
-        const personData = findPersonById(email.id, persona);
-        // console.log("person data ==>", personData);
-        const foundJob = findJobPostByEmployerName(
-          jobData,
-          personData.organization.name
-        );
-        // console.log("job data", foundJob);
-        let jobPost = foundJob.map((job) => job.job_title).join(", ");
-        const jobDate = foundJob
-          .map((job) => job.job_posted_at_datetime_utc)
-          .join(", ");
-        const jobLocation = foundJob.map((job) => job.job_location).join(", ");
-        jobPost = removeAfterFirstComma(jobPost);
+      if (!uniqueEmails.has(email.email)) {
+        uniqueEmails.add(email.email); // Add the email to the Set to track it as processed
+        if (blockedEmails.includes(email.email)) {
+          console.log(`Skipping blocked email: ${email.email}`);
+          continue; // Skip the current iteration if the email is in the blocked list
+        }
+        try {
+          const personData = findPersonById(email.id, persona);
+          const foundJob = findJobPostByEmployerName(
+            jobData,
+            personData.organization.name
+          );
+          let jobPost = foundJob.map((job) => job.job_title).join(", ");
+          const jobDate = foundJob
+            .map((job) => job.job_posted_at_datetime_utc)
+            .join(", ");
+          const jobLocation = foundJob
+            .map((job) => job.job_location)
+            .join(", ");
+          jobPost = removeAfterFirstComma(jobPost);
 
-        let replacedSubject = subject
-          .replaceAll("{name}", personData?.name)
-          .replaceAll("{companyName}", personData?.organization?.name)
-          .replaceAll("{role}", personData?.title)
-          .replaceAll("{hiringJobTitle}", jobPost)
-          .replaceAll("{dateOfJobPost}", jobDate)
-          .replaceAll("{hiringJobLocation}", jobLocation)
-          .replaceAll("{firstName}", personData?.first_name);
-        let aiGeneratedSubject = await generateProfessionalSubject(
-          replacedSubject
-        );
-        aiGeneratedSubject = aiGeneratedSubject?.subject;
-        console.log("email email ====>", email.email);
-        const mailOptions = {
-          // to: email.email,
-          to: "vinay.prajapati@hirequotient.com",
-          // bcc: "vinay91098@gmail.com,sidhartha@hirequotient.com,vinay.prajapati@hirequotient.com,amartya@hirequotient.com",
-          from: req.body.fromEmail,
-          subject:
-            // removeDoubleQuotes(aiGeneratedSubject) ||
-            removeDoubleQuotes(replacedSubject),
-          html: body
+          let replacedSubject = subject
             .replaceAll("{name}", personData?.name)
             .replaceAll("{companyName}", personData?.organization?.name)
             .replaceAll("{role}", personData?.title)
             .replaceAll("{hiringJobTitle}", jobPost)
             .replaceAll("{dateOfJobPost}", jobDate)
             .replaceAll("{hiringJobLocation}", jobLocation)
-            .replaceAll(
-              "{firstName}",
-              removeEmojiFromName(personData?.first_name)
-            ),
-        };
-        let personalizedBody = body
-          .replaceAll("{name}", personData?.name)
-          .replaceAll("{companyName}", personData?.organization?.name)
-          .replaceAll("{role}", personData?.title)
-          .replaceAll("{hiringJobTitle}", jobPost)
-          .replaceAll("{dateOfJobPost}", jobDate)
-          .replaceAll("{hiringJobLocation}", jobLocation)
-          .replaceAll(
-            "{firstName}",
-            removeEmojiFromName(personData?.first_name)
+            .replaceAll("{firstName}", personData?.first_name);
+          let aiGeneratedSubject = await generateProfessionalSubject(
+            replacedSubject
           );
-        if (email.email) {
-          const emailData = {
-            fromEmail: req?.body?.fromEmail,
-            toEmails: [email.email],
-            subject: replacedSubject,
-            aiGeneratedSubject: replacedSubject,
-            originalBody: body,
-            personalizedBody: personalizedBody,
-            reqId,
-            status: "pending",
-          };
+          aiGeneratedSubject = aiGeneratedSubject?.subject;
 
+          const mailOptions = {
+            to: email.email,
+            cc: "vinay.prajapati@hirequotient.com",
+            from: req.body.fromEmail,
+            subject: removeDoubleQuotes(replacedSubject),
+            html: body
+              .replaceAll("{name}", personData?.name)
+              .replaceAll("{companyName}", personData?.organization?.name)
+              .replaceAll("{role}", personData?.title)
+              .replaceAll("{hiringJobTitle}", jobPost)
+              .replaceAll("{dateOfJobPost}", jobDate)
+              .replaceAll("{hiringJobLocation}", jobLocation)
+              .replaceAll(
+                "{firstName}",
+                removeEmojiFromName(personData?.first_name)
+              ),
+          };
           let sesResponse = {};
           try {
             sesResponse = await smtpTransport.sendMail(mailOptions);
-            // console.log("ses email response ====>", sesResponse);
-            // console.log(`Email sent successfully to ${mailOptions.to}`);
             await new Promise((resolve) => setTimeout(resolve, 100));
           } catch (error) {
-            // Handle or log any errors
             console.error(`Failed to send email to ${mailOptions.to}:`, error);
           }
           if (sesResponse.response) {
-            emailData.sesMessageId = sesResponse.response;
+            await emailRepository.create({
+              fromEmail: req?.body?.fromEmail,
+              toEmails: [email.email],
+              subject: replacedSubject,
+              aiGeneratedSubject: replacedSubject,
+              originalBody: body,
+              personalizedBody: mailOptions.html,
+              reqId,
+              status: "pending",
+              sesMessageId: sesResponse.response,
+            });
           }
-          await emailRepository.create(emailData);
-        } else {
-          console.log(
-            `Skipping email: ${email.id} due to missing email address.`
-          );
+        } catch (error) {
+          console.error(`Error processing email for ${email.id}:`, error);
         }
-      } catch (error) {
-        console.error(`Error processing email for ${email.id}:`, error);
+      } else {
+        console.log(`Skipping duplicate email: ${email.email}`);
       }
     }
 
