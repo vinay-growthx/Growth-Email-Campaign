@@ -1,6 +1,6 @@
 const OpenAI = require("openai");
 const { Sentry } = require("../services/sentry");
-
+const { removeAfterFirstComma } = require("./util");
 const openai = new OpenAI({
   apiKey: process.env.OPEN_AI_KEY_1,
 });

@@ -34,6 +34,7 @@ const {
   convertToApolloPersona,
   removeEmojiFromName,
   removeDoubleQuotes,
+  removeAfterFirstComma,
 } = require("./services/util");
 const {
   jobFunctionArr,
@@ -239,12 +240,13 @@ app.post("/send-email", async (req, res) => {
           personData.organization.name
         );
         console.log("job data", foundJob);
-        const jobPost = foundJob.map((job) => job.job_title).join(", ");
+        let jobPost = foundJob.map((job) => job.job_title).join(", ");
         const jobDate = foundJob
           .map((job) => job.job_posted_at_datetime_utc)
           .join(", ");
         const jobLocation = foundJob.map((job) => job.job_location).join(", ");
-        console.log("job post", jobPost);
+        jobPost = removeAfterFirstComma(jobPost);
+
         let replacedSubject = subject
           .replaceAll("{name}", personData?.name)
           .replaceAll("{companyName}", personData?.organization?.name)

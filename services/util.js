@@ -1032,6 +1032,19 @@ async function trackApiCall(apiName) {
   }
 }
 
+function removeAfterFirstComma(inputString) {
+  // Find the index of the first comma
+  const commaIndex = inputString.indexOf(",");
+
+  // If a comma is found, return the substring up to the comma
+  if (commaIndex !== -1) {
+    return inputString.substring(0, commaIndex);
+  }
+
+  // If no comma is found, return the original string
+  return inputString;
+}
+
 module.exports = {
   convertData,
   findAllJobs,
@@ -1055,4 +1068,5 @@ module.exports = {
   convertToApolloPersona,
   updateRequestWithJobIds,
   updateRequestWithPersonaIds,
+  removeAfterFirstComma,
 };
