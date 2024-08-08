@@ -1334,6 +1334,33 @@
           width: 100%;
         }
       }
+      .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+
+      .pagination-btn {
+        padding: 8px 16px;
+        margin: 0 4px;
+        border: 1px solid #3498db;
+        color: #3498db;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      .pagination-btn:hover:not(.active) {
+        background-color: #3498db;
+        color: white;
+      }
+
+      .pagination-btn.active {
+        background-color: #3498db;
+        color: white;
+        cursor: default;
+      }
     </style>
   </head>
   <body>
@@ -1775,6 +1802,28 @@
             Create Persona
           </button>
         </form>
+        <div class="pagination">
+          <% if (currentPage > 1) { %>
+          <a
+            href="/get-jobs/<%= reqId %>?page=<%= currentPage - 1 %>"
+            class="pagination-btn"
+            >&laquo; Previous</a
+          >
+          <% } %> <% for(let i = 1; i <= totalPages; i++) { %> <% if (i ===
+          currentPage) { %>
+          <span class="pagination-btn active"><%= i %></span>
+          <% } else { %>
+          <a href="/get-jobs/<%= reqId %>?page=<%= i %>" class="pagination-btn"
+            ><%= i %></a
+          >
+          <% } %> <% } %> <% if (currentPage < totalPages) { %>
+          <a
+            href="/get-jobs/<%= reqId %>?page=<%= currentPage + 1 %>"
+            class="pagination-btn"
+            >Next &raquo;</a
+          >
+          <% } %>
+        </div>
       </div>
     </div>
     <script>
@@ -1853,9 +1902,9 @@
             const tag = document.createElement("span");
             tag.classList.add("designation-tag");
             tag.innerHTML = `
-          ${designation}
-          <span class="remove" data-designation="${designation}">&times;</span>
-        `;
+              ${designation}
+              <span class="remove" data-designation="${designation}">&times;</span>
+            `;
             tagsContainer.appendChild(tag);
           });
         }
@@ -1867,6 +1916,7 @@
           if (applyLink.includes("glassdoor.com")) return "glassdoor";
           return "other";
         }
+
         function updateJobVisibility() {
           const selectedCompanies = Array.from(companyCheckboxes)
             .filter((checkbox) => checkbox.checked && checkbox.value !== "")
@@ -1878,6 +1928,8 @@
 
           const allCompaniesSelected =
             allCompaniesCheckbox.checked || selectedCompanies.length === 0;
+
+          let visibleJobCount = 0;
 
           jobCards.forEach((card) => {
             const companyName = card
@@ -1894,37 +1946,51 @@
 
             if (companyMatch && sourceMatch) {
               card.style.display = "flex";
+              visibleJobCount++;
             } else {
               card.style.display = "none";
             }
           });
 
-          updateCounts();
+          updateCounts(visibleJobCount);
+          updatePagination(visibleJobCount);
         }
 
-        allCompaniesCheckbox.addEventListener("change", function () {
-          companyCheckboxes.forEach((checkbox) => {
-            if (checkbox !== allCompaniesCheckbox) {
-              checkbox.checked = false;
-            }
-          });
-          updateJobVisibility();
-        });
-
-        companyCheckboxes.forEach((checkbox) => {
-          checkbox.addEventListener("change", function () {
-            if (this !== allCompaniesCheckbox) {
-              allCompaniesCheckbox.checked = false;
-            }
-            updateJobVisibility();
-          });
-        });
-        function updateCounts() {
-          const visibleJobs = document.querySelectorAll(
-            ".job-card:not([style*='display: none'])"
-          ).length;
-          totalCountElement.textContent = `Total Jobs: ${visibleJobs}`;
+        function updateCounts(visibleJobCount) {
+          totalCountElement.textContent = `Total Jobs: ${visibleJobCount}`;
           updateSelectedCount();
+        }
+
+        function updatePagination(visibleJobCount) {
+          const limit = 500; // jobs per page
+          const totalPages = Math.ceil(visibleJobCount / limit);
+          const currentPage =
+            parseInt(new URLSearchParams(window.location.search).get("page")) ||
+            1;
+          const paginationContainer = document.querySelector(".pagination");
+          let paginationHTML = "";
+
+          if (currentPage > 1) {
+            paginationHTML += `<a href="?page=${
+              currentPage - 1
+            }" class="pagination-btn">&laquo; Previous</a>`;
+          }
+
+          for (let i = 1; i <= totalPages; i++) {
+            if (i === currentPage) {
+              paginationHTML += `<span class="pagination-btn active">${i}</span>`;
+            } else {
+              paginationHTML += `<a href="?page=${i}" class="pagination-btn">${i}</a>`;
+            }
+          }
+
+          if (currentPage < totalPages) {
+            paginationHTML += `<a href="?page=${
+              currentPage + 1
+            }" class="pagination-btn">Next &raquo;</a>`;
+          }
+
+          paginationContainer.innerHTML = paginationHTML;
         }
 
         selectAllCheckbox.addEventListener("change", function () {
@@ -2345,44 +2411,49 @@
             }, 85000);
           }
         });
-      });
-      scrollButton = document.getElementById("scrollToBottomBtn");
-      const parallaxContainer = document.querySelector(".parallax-container");
 
-      function updateScrollButton() {
-        const scrollPosition = parallaxContainer.scrollTop;
-        const maxScroll =
-          parallaxContainer.scrollHeight - parallaxContainer.clientHeight;
+        // Initialize visibility and pagination
+        updateJobVisibility();
 
-        if (scrollPosition >= maxScroll - 20) {
-          // Within 20px of the bottom
-          scrollButton.textContent = "Scroll to Top";
-          scrollButton.classList.add("at-bottom");
-        } else {
-          scrollButton.textContent = "Scroll to Bottom";
-          scrollButton.classList.remove("at-bottom");
+        // Floating scroll button functionality
+        const scrollButton = document.getElementById("scrollToBottomBtn");
+        const parallaxContainer = document.querySelector(".parallax-container");
+
+        function updateScrollButton() {
+          const scrollPosition = parallaxContainer.scrollTop;
+          const maxScroll =
+            parallaxContainer.scrollHeight - parallaxContainer.clientHeight;
+
+          if (scrollPosition >= maxScroll - 20) {
+            // Within 20px of the bottom
+            scrollButton.textContent = "Scroll to Top";
+            scrollButton.classList.add("at-bottom");
+          } else {
+            scrollButton.textContent = "Scroll to Bottom";
+            scrollButton.classList.remove("at-bottom");
+          }
         }
-      }
 
-      scrollButton.addEventListener("click", function (e) {
-        e.preventDefault();
-        if (this.classList.contains("at-bottom")) {
-          parallaxContainer.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
-        } else {
-          parallaxContainer.scrollTo({
-            top: parallaxContainer.scrollHeight,
-            behavior: "smooth",
-          });
-        }
+        scrollButton.addEventListener("click", function (e) {
+          e.preventDefault();
+          if (this.classList.contains("at-bottom")) {
+            parallaxContainer.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          } else {
+            parallaxContainer.scrollTo({
+              top: parallaxContainer.scrollHeight,
+              behavior: "smooth",
+            });
+          }
+        });
+
+        parallaxContainer.addEventListener("scroll", updateScrollButton);
+
+        // Initial update
+        updateScrollButton();
       });
-
-      parallaxContainer.addEventListener("scroll", updateScrollButton);
-
-      // Initial update
-      updateScrollButton();
     </script>
   </body>
 </html>

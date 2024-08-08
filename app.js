@@ -119,6 +119,9 @@ app.get("/find-jobs", (req, res) => {
 });
 app.get("/get-jobs/:reqId", async (req, res) => {
   const reqId = req.params.reqId;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 50000; // Number of jobs per page
+
   try {
     const jobs = await findAllJobs(reqId);
     if (Array.isArray(jobs)) {
@@ -127,8 +130,16 @@ app.get("/get-jobs/:reqId", async (req, res) => {
           new Date(b.job_posted_at_datetime_utc) -
           new Date(a.job_posted_at_datetime_utc)
       );
+
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
+      const paginatedJobs = jobSorted.slice(startIndex, endIndex);
+      const totalPages = Math.ceil(jobSorted.length / limit);
+
       res.render("showJob", {
-        jobs: jobSorted,
+        jobs: paginatedJobs,
+        currentPage: page,
+        totalPages: totalPages,
         reqId,
         locationArr,
         industryArr,
