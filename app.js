@@ -1,6 +1,7 @@
 "use strict";
 require("dotenv").config();
 const express = require("express");
+const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const admin = require("firebase-admin");
@@ -64,8 +65,16 @@ app.set("views", "./views/pages");
 mongoose.set("strictQuery", false);
 const database = process.env.DATABASE;
 
-app.use(express.urlencoded({ extended: true, limit: "500mb" }));
-app.use(express.json({ limit: "500mb" }));
+app.use(
+  bodyParser.json({ limit: "50mb", extended: true, parameterLimit: 1000000 })
+);
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+    limit: "50mb",
+    parameterLimit: 1000000,
+  })
+);
 /**
  * Middleware to set headers for incoming requests
  */
@@ -172,12 +181,13 @@ app.get("/send-email", (req, res) => {
   res.render("sendEmail", { enrichedData });
 });
 function findJobPostByEmployerName(arr, employerName) {
-  return arr.filter(
-    (job) => job.employer_name.toLowerCase() === employerName.toLowerCase()
+  console.log("arr --->", arr);
+  console.log("employer name", employerName);
+  return arr.filter((job) =>
+    job.employer_name.toLowerCase().includes(employerName.toLowerCase())
   );
 }
 app.post("/send-email", async (req, res) => {
-  console.log("req body ===>", req.body);
   const { subject, body, emails } = req.body;
   console.log("req body ===>", req.body);
   const personaIds = emails.map((item) => item.id);
@@ -187,6 +197,7 @@ app.post("/send-email", async (req, res) => {
     },
     "id name title organization.name first_name"
   );
+
   try {
     let reqId = req.body.reqId;
 
@@ -197,7 +208,7 @@ app.post("/send-email", async (req, res) => {
       reqId: reqId,
     });
     console.log("req id --->", reqId);
-    const jobIds = jobIdReq.jobIds;
+    const jobIds = jobIdReq?.jobIds;
     let jobData = [];
     if (jobIds.length) {
       jobData = await linkedinJobRepository.find(
@@ -207,41 +218,55 @@ app.post("/send-email", async (req, res) => {
       jobData = addJobLocation(jobData);
       console.log("job data ====>", jobData);
     }
+
     for (const email of emails) {
-      const personData = findPersonById(email.id, persona);
-      console.log("person data ==>", personData);
-      const foundJob = findJobPostByEmployerName(
-        jobData,
-        personData.organization.name
-      );
-      console.log("job data", foundJob);
-      const jobPost = foundJob.map((job) => job.job_title).join(", ");
-      const jobDate = foundJob
-        .map((job) => job.job_posted_at_datetime_utc)
-        .join(", ");
-      const jobLocation = foundJob.map((job) => job.job_location).join(", ");
-      console.log("job post", jobPost);
-      let replacedSubject = subject
-        .replaceAll("{name}", personData?.name)
-        .replaceAll("{companyName}", personData?.organization?.name)
-        .replaceAll("{role}", personData?.title)
-        .replaceAll("{hiringJobTitle}", jobPost)
-        .replaceAll("{dateOfJobPost}", jobDate)
-        .replaceAll("{hiringJobLocation}", jobLocation)
-        .replaceAll("{firstName}", personData?.first_name);
-      let aiGeneratedSubject = await generateProfessionalSubject(
-        replacedSubject
-      );
-      aiGeneratedSubject = aiGeneratedSubject?.subject;
-      const mailOptions = {
-        // to: email.email,
-        to: "vinay.prajapati@hirequotient.com",
-        // bcc: "vinay91098@gmail.com,sidhartha@hirequotient.com,vinay.prajapati@hirequotient.com,amartya@hirequotient.com",
-        from: req.body.fromEmail,
-        subject:
-          removeDoubleQuotes(aiGeneratedSubject) ||
-          removeDoubleQuotes(replacedSubject),
-        html: body
+      try {
+        const personData = findPersonById(email.id, persona);
+        console.log("person data ==>", personData);
+        const foundJob = findJobPostByEmployerName(
+          jobData,
+          personData.organization.name
+        );
+        console.log("job data", foundJob);
+        const jobPost = foundJob.map((job) => job.job_title).join(", ");
+        const jobDate = foundJob
+          .map((job) => job.job_posted_at_datetime_utc)
+          .join(", ");
+        const jobLocation = foundJob.map((job) => job.job_location).join(", ");
+        console.log("job post", jobPost);
+        let replacedSubject = subject
+          .replaceAll("{name}", personData?.name)
+          .replaceAll("{companyName}", personData?.organization?.name)
+          .replaceAll("{role}", personData?.title)
+          .replaceAll("{hiringJobTitle}", jobPost)
+          .replaceAll("{dateOfJobPost}", jobDate)
+          .replaceAll("{hiringJobLocation}", jobLocation)
+          .replaceAll("{firstName}", personData?.first_name);
+        let aiGeneratedSubject = await generateProfessionalSubject(
+          replacedSubject
+        );
+        aiGeneratedSubject = aiGeneratedSubject?.subject;
+        const mailOptions = {
+          // to: email.email,
+          to: "vinay.prajapati@hirequotient.com",
+          // bcc: "vinay91098@gmail.com,sidhartha@hirequotient.com,vinay.prajapati@hirequotient.com,amartya@hirequotient.com",
+          from: req.body.fromEmail,
+          subject:
+            // removeDoubleQuotes(aiGeneratedSubject) ||
+            removeDoubleQuotes(replacedSubject),
+          html: body
+            .replaceAll("{name}", personData?.name)
+            .replaceAll("{companyName}", personData?.organization?.name)
+            .replaceAll("{role}", personData?.title)
+            .replaceAll("{hiringJobTitle}", jobPost)
+            .replaceAll("{dateOfJobPost}", jobDate)
+            .replaceAll("{hiringJobLocation}", jobLocation)
+            .replaceAll(
+              "{firstName}",
+              removeEmojiFromName(personData?.first_name)
+            ),
+        };
+        let personalizedBody = body
           .replaceAll("{name}", personData?.name)
           .replaceAll("{companyName}", personData?.organization?.name)
           .replaceAll("{role}", personData?.title)
@@ -251,52 +276,46 @@ app.post("/send-email", async (req, res) => {
           .replaceAll(
             "{firstName}",
             removeEmojiFromName(personData?.first_name)
-          ),
-      };
-      let personalizedBody = body
-        .replaceAll("{name}", personData?.name)
-        .replaceAll("{companyName}", personData?.organization?.name)
-        .replaceAll("{role}", personData?.title)
-        .replaceAll("{hiringJobTitle}", jobPost)
-        .replaceAll("{dateOfJobPost}", jobDate)
-        .replaceAll("{hiringJobLocation}", jobLocation)
-        .replaceAll("{firstName}", removeEmojiFromName(personData?.first_name));
-      if (email.email) {
-        const emailData = {
-          fromEmail: req?.body?.fromEmail,
-          toEmails: [email.email],
-          subject: subject,
-          aiGeneratedSubject: aiGeneratedSubject || replacedSubject,
-          originalBody: body,
-          personalizedBody: personalizedBody,
-          reqId,
-          status: "pending",
-        };
+          );
+        if (email.email) {
+          const emailData = {
+            fromEmail: req?.body?.fromEmail,
+            toEmails: [email.email],
+            subject: replacedSubject,
+            aiGeneratedSubject: replacedSubject,
+            originalBody: body,
+            personalizedBody: personalizedBody,
+            reqId,
+            status: "pending",
+          };
 
-        let sesResponse = {};
-        try {
-          sesResponse = await smtpTransport.sendMail(mailOptions);
-          console.log("ses email response ====>", sesResponse);
-          console.log(`Email sent successfully to ${mailOptions.to}`);
-          await new Promise((resolve) => setTimeout(resolve, 100));
-        } catch (error) {
-          // Handle or log any errors
-          console.error(`Failed to send email to ${mailOptions.to}:`, error);
+          let sesResponse = {};
+          try {
+            sesResponse = await smtpTransport.sendMail(mailOptions);
+            // console.log("ses email response ====>", sesResponse);
+            // console.log(`Email sent successfully to ${mailOptions.to}`);
+            await new Promise((resolve) => setTimeout(resolve, 100));
+          } catch (error) {
+            // Handle or log any errors
+            console.error(`Failed to send email to ${mailOptions.to}:`, error);
+          }
+          if (sesResponse.response) {
+            emailData.sesMessageId = sesResponse.response;
+          }
+          await emailRepository.create(emailData);
+        } else {
+          console.log(
+            `Skipping email: ${email.id} due to missing email address.`
+          );
         }
-        if (sesResponse.response) {
-          emailData.sesMessageId = sesResponse.response;
-        }
-        await emailRepository.create(emailData);
-      } else {
-        console.log(
-          `Skipping email: ${email.id} due to missing email address.`
-        );
+      } catch (error) {
+        console.error(`Error processing email for ${email.id}:`, error);
       }
     }
 
     res.status(200).json({ message: "Emails sent successfully" });
   } catch (error) {
-    console.error("Error sending emails:", error);
+    console.error("Error in email sending process:", error);
     res
       .status(500)
       .json({ error: "Failed to send emails", details: error.message });
@@ -554,20 +573,17 @@ app.get("/enriched-data", (req, res) => {
   const people = JSON.parse(req.query.data);
   res.render("enrichedData", { people });
 });
-
 app.post("/email-enrich-process", async (req, res) => {
   try {
     console.log(req.body);
-    let selectedPeople = req.body.selectedPeople;
-    const reqId = Array.isArray(req.body.reqId)
-      ? req.body.reqId[req.body.reqId.length - 1]
-      : req.body.reqId;
-    console.log("req id ===>", reqId);
-    if (typeof selectedPeople === "string") {
-      selectedPeople = selectedPeople.split(",").map((id) => id.trim());
-    } else if (!Array.isArray(selectedPeople)) {
-      selectedPeople = [selectedPeople];
+    let selectedPeople = req.body.enrichedIds;
+    const reqId = req.body.reqId;
+
+    // Ensure selectedPeople is always an array
+    if (!Array.isArray(selectedPeople)) {
+      selectedPeople = [selectedPeople].filter(Boolean);
     }
+
     const personas = await apolloPersonaRepository.find(
       {
         _id: { $in: selectedPeople },
@@ -578,34 +594,29 @@ app.post("/email-enrich-process", async (req, res) => {
     const updatedData = [];
 
     for (const item of personas) {
-      // if (item.email === "email_not_unlocked@domain.com") {
-      //   console.log(item.email);
       let newEmail;
-      if (
-        !item.email ||
-        (item.email && item.email == "email_not_unlocked@domain.com")
-      ) {
+      if (!item.email || item.email === "email_not_unlocked@domain.com") {
         newEmail = await getEmailByLinkedInUrl(item?.linkedin_url, item.id);
-        if (!newEmail && !item.email) {
+        if (!newEmail) {
           newEmail = await fetchEmailViaContactOut(item?.linkedin_url, item.id);
         }
-        if (!newEmail && !item.email) {
+        if (!newEmail) {
           newEmail = await fetchWorkEmailFromRb2bapi(
             item?.linkedin_url,
             item.id
           );
         }
-        if (
-          newEmail ||
-          (item.email && item.email != "email_not_unlocked@domain.com")
-        ) {
+        if (newEmail || item.email !== "email_not_unlocked@domain.com") {
           console.log("new email ====>", newEmail);
           updatedData.push({ ...item, email: newEmail || item.email });
-        } else {
-          if (item.email) updatedData.push(item);
+        } else if (item.email) {
+          updatedData.push(item);
         }
+      } else {
+        updatedData.push(item);
       }
     }
+
     const personaValidData = updatedData.reduce((acc, item) => {
       const newItem = { ...item };
       if (!newItem.email) {
@@ -619,10 +630,11 @@ app.post("/email-enrich-process", async (req, res) => {
 
       return acc;
     }, []);
+
     res.render("sendEmail", { reqId, enrichedData: personaValidData });
   } catch (error) {
-    console.error("Error creating persona:", error);
-    res.status(500).json({ error: "Failed to create persona" });
+    console.error("Error processing enriched data:", error);
+    res.status(500).json({ error: "Failed to process enriched data" });
   }
 });
 
@@ -890,7 +902,7 @@ async function searchJobs(
       console.log("Response status:", error.response.status);
       console.log("Response headers:", error.response.headers);
     }
-    throw error;
+    console.log("error:", error);
   }
 }
 /**

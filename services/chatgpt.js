@@ -185,6 +185,7 @@ async function generateCustomLine(completeText, customValue) {
 }
 
 async function generateProfessionalSubject(originalSubject) {
+  console.log("original subject ====>", originalSubject);
   const maxRetries = 3;
   const retryDelay = 1000;
 

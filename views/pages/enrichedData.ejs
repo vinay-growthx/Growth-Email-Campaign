@@ -629,10 +629,8 @@
       function submitEmail(event) {
         event.preventDefault();
 
-        const submitButton = document.getElementById("submitBtn");
-
-        // Disable the button immediately
-        disableButton(submitButton);
+        const submitBtn = document.getElementById("submitBtn");
+        disableButton(submitBtn);
 
         const selectedEmails = Array.from(
           document.querySelectorAll('input[name="selectedPeople"]:checked')
@@ -640,51 +638,61 @@
 
         if (selectedEmails.length === 0) {
           alert("Please select at least one person.");
-          enableButton(submitButton); // Re-enable the button if no emails are selected
+          enableButton(submitBtn);
           return;
         }
 
-        // Create a hidden input to store the selected emails
-        const hiddenInput = document.createElement("input");
-        hiddenInput.type = "hidden";
-        hiddenInput.name = "enrichedIds";
-        hiddenInput.value = JSON.stringify(selectedEmails);
-
-        // Append the hidden input to the form
-        const form = document.getElementById("enrichedForm");
-        form.appendChild(hiddenInput);
-
-        // Get the reqId value
         const reqId = document.querySelector('input[name="reqId"]').value;
 
-        // Create a hidden input for reqId if it doesn't exist
-        if (!form.querySelector('input[name="reqId"]')) {
-          const reqIdInput = document.createElement("input");
-          reqIdInput.type = "hidden";
-          reqIdInput.name = "reqId";
-          reqIdInput.value = reqId;
-          form.appendChild(reqIdInput);
-        }
+        const data = {
+          reqId: reqId,
+          enrichedIds: selectedEmails,
+        };
 
-        // Submit the form
-        form.submit();
+        fetch("/email-enrich-process", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.text();
+            }
+            throw new Error("Network response was not ok.");
+          })
+          .then((html) => {
+            document.open();
+            document.write(html);
+            document.close();
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred. Please try again.");
+            enableButton(submitBtn);
+          });
+
+        // Enable the button after 2 minutes (120000 milliseconds)
+        setTimeout(() => {
+          enableButton(submitBtn);
+        }, 120000);
       }
 
       function disableButton(button) {
+        console.log("Disabling button...");
         button.disabled = true;
         button.style.opacity = "0.5";
         button.textContent = "Processing...";
-
-        setTimeout(() => {
-          enableButton(button);
-        }, 80000); // 20 seconds
       }
 
       function enableButton(button) {
+        console.log("Enabling button...");
         button.disabled = false;
         button.style.opacity = "1";
         button.textContent = "Initiate Email";
       }
+
       document.addEventListener("DOMContentLoaded", (event) => {
         const selectAllCheckbox = document.getElementById("selectAll");
         const personCheckboxes = document.querySelectorAll(".select-checkbox");
@@ -721,6 +729,7 @@
 
         updateSelectedCount(); // Initial count update
       });
+
       function downloadCSV() {
         const selectedPeople = Array.from(
           document.querySelectorAll('input[name="selectedPeople"]:checked')
@@ -760,6 +769,7 @@
         link.click();
         document.body.removeChild(link);
       }
+
       document.addEventListener("DOMContentLoaded", function () {
         const scrollToBottomBtn = document.getElementById("scrollToBottomBtn");
         const parallaxContainer = document.querySelector(".parallax-container");
@@ -772,6 +782,7 @@
           });
         });
       });
+
       document.addEventListener("DOMContentLoaded", function () {
         const scrollButton = document.getElementById("scrollToBottomBtn");
         const parallaxContainer = document.querySelector(".parallax-container");
