@@ -239,7 +239,9 @@ app.post("/send-email", async (req, res) => {
           blockedEmails.includes(email.email) ||
           excludeEmail.includes(email.email)
         ) {
+          console.log("****************************************");
           console.log(`Skipping blocked email: ${email.email}`);
+          console.log("****************************************");
           continue; // Skip the current iteration if the email is in the blocked list
         }
         try {
@@ -331,8 +333,6 @@ function convertToStringArray(commaString) {
 }
 app.post("/create-persona", async (req, res) => {
   try {
-    console.log("req body ===>", req.body);
-
     let seniorityLevel = req?.body?.seniorityLevel;
     if (req?.body?.seniorityLevel?.length) {
       const allItems = seniorityLevel.flatMap((str) => str.split(","));
@@ -364,18 +364,18 @@ app.post("/create-persona", async (req, res) => {
     );
     const employerNames = linkedinJobs.map((job) => job.employer_name);
     let personaDesignation = req?.body?.personaDesignations;
-    console.log("persona designation", personaDesignation);
+    // console.log("persona designation", personaDesignation);
     personaDesignation = convertToStringArray(personaDesignation);
-    console.log("persona designation", personaDesignation);
+    // console.log("persona designation", personaDesignation);
     const allPeople = [];
     convertedObj.title = personaDesignation;
     let flag = false;
     for (const name of employerNames) {
       try {
         convertedObj.currentCompany = name;
-        console.log("converted obj ===>", convertedObj);
+        // console.log("converted obj ===>", convertedObj);
         const salesNavUrl = await generateSalesNavUrl(convertedObj);
-        console.log("sales nav url", salesNavUrl);
+        // console.log("sales nav url", salesNavUrl);
         const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
         for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
           let personaLen = await requestIdRepository.findOne({
@@ -478,7 +478,7 @@ app.get("/api/check-status/:reqId", async (req, res) => {
 });
 app.post("/search-jobs", async (req, res) => {
   try {
-    console.log("req.body ===>", req.body);
+    // console.log("req.body ===>", req.body);
     let query = req.body.job_title.trim() + " in " + req.body.location.trim();
 
     query = query.toLowerCase();
@@ -545,7 +545,6 @@ app.post("/search-jobs", async (req, res) => {
       const jobDataSave = await saveJobData(results.data);
       await updateRequestWithJobIds(reqUUID, jobDataSave, convertedObject);
     } else {
-      console.log("inside else");
       const APIData = await fetchJobListings({
         query,
         page,
@@ -577,7 +576,7 @@ app.get("/enriched-data", (req, res) => {
 });
 app.post("/email-enrich-process", async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     let selectedPeople = req.body.enrichedIds;
     const reqId = req.body.reqId;
 
@@ -642,7 +641,7 @@ app.post("/email-enrich-process", async (req, res) => {
 
 app.post("/enriched-data-process", async (req, res) => {
   try {
-    console.log("req body", req.body);
+    // console.log("req body", req.body);
     let selectedPeople = req.body.selectedPeople;
     const reqId = req.body.reqId;
     // If you need to ensure it's an array (for older Express versions)
@@ -803,7 +802,7 @@ app.get("/", (req, res) => {
 //   }
 // });
 app.post("/send-email", async (req, res) => {
-  console.log("req.body.reqId", req.body);
+  // console.log("req.body.reqId", req.body);
   const { enrichedData, emailTemplate, emailSubject } = req.body;
 
   if (!enrichedData || !emailTemplate) {
