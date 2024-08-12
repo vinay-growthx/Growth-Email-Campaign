@@ -1737,25 +1737,8 @@
                 <div class="job-detail">
                   <span>Job Publisher:</span> <%= job.job_publisher || 'N/A' %>
                 </div>
-                <!-- <div class="job-detail">
-                  <span>Salary Range:</span> <%= job.salaryRange || 'N/A' %>
-                </div> -->
               </div>
-              <!-- <div class="job-detail">
-                <span>Industry Type:</span> <%= job.employer_company_type ||
-                'N/A' %>
-              </div> -->
-              <div class="job-detail">
-                <span>Job Post Link:</span>
-                <% if (job.job_apply_link) { %>
-                <a
-                  href="<%= job.job_apply_link %>"
-                  target="_blank"
-                  class="job-apply-link"
-                  ><%= job.job_apply_link %></a
-                >
-                <% } else { %> N/A <% } %>
-              </div>
+              <% if (job.job_description) { %>
               <div class="job-description">
                 <% if (job.job_description.includes('Qualifications:')) { %>
                 <h2>Responsibilities/Job Duties:</h2>
@@ -1789,8 +1772,10 @@
                 </ul>
                 <% } %>
               </div>
+              <% } %>
             </div>
           </div>
+
           <% }); %> <% } else { %>
           <p>No jobs available.</p>
           <% } %>

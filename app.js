@@ -274,7 +274,7 @@ app.post("/send-email", async (req, res) => {
 
           const mailOptions = {
             to: email.email,
-            cc: "vinay.prajapati@hirequotient.com",
+            bcc: "vinay.prajapati@hirequotient.com",
             from: req.body.fromEmail,
             subject: removeDoubleQuotes(replacedSubject),
             html: body
