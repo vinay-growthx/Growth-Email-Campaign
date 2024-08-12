@@ -257,7 +257,7 @@ app.post("/send-email", async (req, res) => {
           const jobLocation = foundJob
             .map((job) => job.job_location)
             .join(", ");
-          jobPost = removeAfterFirstComma(jobPost) || "Open roles";
+          jobPost = removeAfterFirstComma(jobPost) || "Open Roles";
 
           let replacedSubject = subject
             .replaceAll("{name}", personData?.name)
