@@ -196,10 +196,17 @@ app.get("/send-email", (req, res) => {
 function findJobPostByEmployerName(arr, employerName) {
   console.log("arr --->", arr);
   console.log("employer name", employerName);
-  return arr.filter((job) =>
-    job.employer_name.toLowerCase().includes(employerName.toLowerCase())
-  );
+
+  return arr.filter((job) => {
+    const name = job.employer_name;
+    return (
+      name &&
+      typeof name === "string" &&
+      name.toLowerCase().includes(employerName.toLowerCase())
+    );
+  });
 }
+
 app.post("/send-email", async (req, res) => {
   const { subject, body, emails } = req.body;
   const blockedEmails = [];
