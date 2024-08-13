@@ -257,7 +257,7 @@ app.post("/send-email", async (req, res) => {
           const jobLocation = foundJob
             .map((job) => job.job_location)
             .join(", ");
-          jobPost = removeAfterFirstComma(jobPost) || "Open Roles";
+          jobPost = removeAfterFirstComma(jobPost) || "your open roles";
 
           let replacedSubject = subject
             .replaceAll("{name}", personData?.name)
@@ -661,7 +661,59 @@ app.post("/enriched-data-process", async (req, res) => {
     res.status(500).json({ error: "Failed to create persona" });
   }
 });
+// app.get("/email-stats/:reqId", async (req, res) => {
+//   try {
+//     const reqId = req.params.reqId;
 
+//     // Fetch email stats from the database based on reqId
+//     const emailStats = await emailRepository.aggregate([
+//       { $match: { reqId: reqId } },
+//       {
+//         $group: {
+//           _id: null,
+//           totalEmails: { $sum: 1 },
+//           successfulEmails: {
+//             $sum: { $cond: [{ $eq: ["$status", "delivered"] }, 1, 0] },
+//           },
+//           failedEmails: {
+//             $sum: { $cond: [{ $eq: ["$status", "failed"] }, 1, 0] },
+//           },
+//           blockedEmails: {
+//             $sum: { $cond: [{ $eq: ["$status", "blocked"] }, 1, 0] },
+//           },
+//           skippedEmails: {
+//             $sum: { $cond: [{ $eq: ["$status", "skipped"] }, 1, 0] },
+//           },
+//         },
+//       },
+//     ]);
+
+//     const stats = emailStats[0] || {};
+//     const totalEmails = stats.totalEmails || 0;
+//     const successfulEmails = stats.successfulEmails || 0;
+//     const failedEmails = stats.failedEmails || 0;
+//     const blockedEmails = stats.blockedEmails || 0;
+//     const skippedEmails = stats.skippedEmails || 0;
+
+//     // Calculate open rate and click rate (assuming you have the necessary data)
+//     const openRate = (stats.openedEmails / totalEmails) * 100 || 0;
+//     const clickRate = (stats.clickedEmails / totalEmails) * 100 || 0;
+
+//     res.render("emailStats", {
+//       stats: {
+//         openRate: openRate.toFixed(2),
+//         clickRate: clickRate.toFixed(2),
+//         successfulEmails,
+//         failedEmails,
+//         blockedEmails,
+//         skippedEmails,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error fetching email stats:", error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
 app.post("/email-enrich", async (req, res) => {
   try {
     const { linkedinUrls } = req.body;
