@@ -22,6 +22,7 @@ const app = express();
 const { smtpTransport } = require("./services/ses");
 const { searchCompanyApollo } = require("./services/ApolloAPI/orgSearch");
 const { excludeEmail } = require("./excludeEmail");
+const { jobRoles } = require("./roles");
 const {
   saveJobData,
   findAllJobs,
@@ -516,6 +517,9 @@ app.post("/search-jobs", async (req, res) => {
       roleFunction: role_function,
       industryFunction: industry_hidden,
     };
+    if (role_function) {
+      job_title = jobRoles[role_function];
+    }
     let location = location_hidden?.label || "USA";
     const reqUUID = uuidv4();
     const results = await searchLinkedInJobsMultipleTitles(
