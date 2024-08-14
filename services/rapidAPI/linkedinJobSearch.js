@@ -89,7 +89,13 @@ async function searchLinkedInJobsMultipleTitles(
   location,
   maxPages
 ) {
-  let jobTitles = convertCommaSeparatedStringToArray(searchTerms);
+  let jobTitles;
+
+  if (Array.isArray(searchTerms)) {
+    jobTitles = searchTerms;
+  } else {
+    jobTitles = convertCommaSeparatedStringToArray(searchTerms);
+  }
   const url = "https://linkedin-jobs-search.p.rapidapi.com/";
   const headers = {
     "Content-Type": "application/json",
