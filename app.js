@@ -362,17 +362,24 @@ app.post("/create-persona", async (req, res) => {
       reqId: req.body.reqId,
     });
     convertedObj = convertedObj.convertJobObject;
-    const linkedinJobs = await linkedinJobRepository.find(
+    let linkedinJobs = await linkedinJobRepository.find(
       {
         _id: selectedIds,
       },
-      "employer_name job_title employer_company_type job_description job_city job_state job_country"
+      "employer_name job_title employer_company_type job_description job_city job_state job_country employer_website"
     );
-    const jobLocations = linkedinJobs.map((job) =>
-      `${job.job_city || ""}, ${job.job_state || ""}, ${job.job_country || ""}`
-        .trim()
-        .replace(/^,\s*|,\s*$/g, "")
-    );
+    linkedinJobs.forEach((job) => {
+      if (job.employer_website) {
+        job.employer_website = job.employer_website.split("?")[0];
+      }
+    });
+    console.log("linkedin jobs ===>", linkedinJobs);
+    const jobLocations = linkedinJobs.map((job) => {
+      const parts = [job.job_city, job.job_state, job.job_country].filter(
+        Boolean
+      );
+      return parts.join(", ");
+    });
     const employerNames = linkedinJobs.map((job) => job.employer_name);
     let personaDesignation = req?.body?.personaDesignations;
     // console.log("persona designation", personaDesignation);
