@@ -13,6 +13,9 @@ const logtail = require("./services/logtail");
 const { Sentry } = require("./services/sentry");
 // const redisClient = require("./services/redis/index");
 const { searchPeople } = require("./services/ApolloAPI/searchPeople");
+const {
+  searchLinkedInJobsMultipleTitles,
+} = require("./services/rapidAPI/linkedinJobSearch");
 const { getEmailByLinkedInUrl } = require("./services/ApolloAPI/emailEnrich");
 const axios = require("axios");
 const app = express();
@@ -496,7 +499,7 @@ app.post("/search-jobs", async (req, res) => {
       remote_jobs_only,
       employment_types,
       job_requirements,
-      job_titles,
+      job_title,
       company_types,
       employer,
       actively_hiring,
@@ -506,50 +509,55 @@ app.post("/search-jobs", async (req, res) => {
       industry_hidden,
       role_function,
     } = req.body;
+    console.log("req body", req.body);
     const convertedObject = {
-      title: job_titles,
+      title: job_title,
       location: location_hidden,
       roleFunction: role_function,
       industryFunction: industry_hidden,
     };
-
+    let location = location_hidden?.label || "USA";
     const reqUUID = uuidv4();
-
-    const results = await searchJobs(
-      query,
-      page,
-      num_pages,
-      date_posted,
-      remote_jobs_only,
-      employment_types,
-      job_requirements,
-      job_titles,
-      company_types,
-      employer,
-      actively_hiring,
-      radius,
-      exclude_job_publishers
+    const results = await searchLinkedInJobsMultipleTitles(
+      job_title,
+      location,
+      num_pages
     );
-    results.data.forEach((job) => {
-      let salaryRange = "N/A";
-      if (job.job_min_salary && job.job_max_salary) {
-        salaryRange = `$${job.job_min_salary} - $${job.job_max_salary}`;
-      } else if (job.job_min_salary) {
-        salaryRange = `$${job.job_min_salary}`;
-      } else if (job.job_max_salary) {
-        salaryRange = `$${job.job_max_salary}`;
-      } else if (job.job_description.includes("Annual Salary Range:")) {
-        const salaryMatch = job.job_description.match(
-          /Annual Salary Range:\$\s*([\d,]+)\s*-\s*\$\s*([\d,]+)/
-        );
-        if (salaryMatch) {
-          salaryRange = `${salaryMatch[1]} - ${salaryMatch[2]}`;
-        }
-      }
-      job.salaryRange = salaryRange;
-    });
-    if (results?.data?.length) {
-      const jobDataSave = await saveJobData(results.data);
+    // const results = await searchJobs(
+    //   query,
+    //   page,
+    //   num_pages,
+    //   date_posted,
+    //   remote_jobs_only,
+    //   employment_types,
+    //   job_requirements,
+    //   job_titles,
+    //   company_types,
+    //   employer,
+    //   actively_hiring,
+    //   radius,
+    //   exclude_job_publishers
+    // );
+    // results.data.forEach((job) => {
+    //   let salaryRange = "N/A";
+    //   if (job.job_min_salary && job.job_max_salary) {
+    //     salaryRange = `$${job.job_min_salary} - $${job.job_max_salary}`;
+    //   } else if (job.job_min_salary) {
+    //     salaryRange = `$${job.job_min_salary}`;
+    //   } else if (job.job_max_salary) {
+    //     salaryRange = `$${job.job_max_salary}`;
+    //   } else if (job.job_description.includes("Annual Salary Range:")) {
+    //     const salaryMatch = job.job_description.match(
+    //       /Annual Salary Range:\$\s*([\d,]+)\s*-\s*\$\s*([\d,]+)/
+    //     );
+    //     if (salaryMatch) {
+    //       salaryRange = `${salaryMatch[1]} - ${salaryMatch[2]}`;
+    //     }
+    //   }
+    //   job.salaryRange = salaryRange;
+    // });
+    if (results?.length) {
+      const jobDataSave = await saveJobData(results);
       await updateRequestWithJobIds(reqUUID, jobDataSave, convertedObject);
     } else {
       const APIData = await fetchJobListings({

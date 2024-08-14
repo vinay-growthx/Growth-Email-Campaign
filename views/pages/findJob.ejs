@@ -255,57 +255,14 @@
         <div id="error-message" style="color: red; display: none"></div>
         <form action="/search-jobs" method="POST">
           <div class="form-group" style="animation-delay: 0.5s">
-            <label for="job_title">Job Title:</label>
+            <label for="job_title">Job Titles:</label>
             <input
               type="text"
               id="job_title"
               name="job_title"
-              placeholder="e.g., Backend developer"
-              required
+              placeholder="e.g., Backend developer, Frontend developer, Data analyst"
             />
           </div>
-          <!-- <div class="form-group" style="animation-delay: 0.1s">
-            <label for="query">Job Title and Location:</label>
-            <input
-              type="text"
-              id="query"
-              name="query"
-              placeholder="e.g., Python developer in Texas, USA"
-              required
-            />
-          </div> -->
-          <!-- <div class="form-group" style="animation-delay: 0.2s">
-            <label for="role_function">Job Function:</label>
-            <select id="role_function" name="role_function" required>
-              <option value="" disabled selected>Select a job function</option>
-              <% jobFunctionArr.forEach(function(role) { %>
-              <option
-                value="<%= JSON.stringify({ label: role.label, value: role.value }) %>"
-              >
-                <%= role.label %>
-              </option>
-              <% }); %>
-            </select>
-          </div>
-          <div class="form-group" style="animation-delay: 0.3s">
-            <label for="industry">Industry:</label>
-            <input
-              type="text"
-              id="industry"
-              name="industry"
-              placeholder="Type an industry"
-              list="industry-suggestions"
-              data-value=""
-              required
-            />
-            <datalist id="industry-suggestions"></datalist>
-            <input
-              type="hidden"
-              id="industry_hidden"
-              name="industry_hidden"
-              value=""
-            />
-          </div> -->
           <div class="form-group" style="animation-delay: 0.4s">
             <label for="location">Location:</label>
             <input
@@ -325,18 +282,6 @@
               value=""
             />
           </div>
-          <div class="form-group" style="animation-delay: 0.2s">
-            <label for="page">Page Number:</label>
-            <input
-              type="number"
-              id="page"
-              name="page"
-              min="1"
-              max="100"
-              value="1"
-            />
-          </div>
-
           <div class="form-group" style="animation-delay: 0.3s">
             <label for="num_pages">Number of Pages:</label>
             <input
@@ -348,100 +293,23 @@
               value="1"
             />
           </div>
-
-          <div class="form-group" style="animation-delay: 0.4s">
-            <label for="date_posted">Date Posted:</label>
-            <select id="date_posted" name="date_posted">
-              <option value="all">All</option>
-              <option value="today">Today</option>
-              <option value="3days">Past 3 Days</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-            </select>
-          </div>
-
-          <div class="form-group" style="animation-delay: 0.5s">
-            <label class="checkbox-container">
-              <input
-                type="checkbox"
-                id="remote_jobs_only"
-                name="remote_jobs_only"
-              />
-              <span class="checkmark"></span>
-              <span class="checkbox-label">Remote Jobs Only</span>
-            </label>
-          </div>
           <div class="form-group" style="animation-delay: 0.2s">
-            <label for="employment_types">Employment Types:</label>
-            <select id="employment_types" name="employment_types">
-              <option value="FULLTIME">FULLTIME</option>
-              <option value="CONTRACTOR">CONTRACTOR</option>
-              <option value="PARTTIME">PARTTIME</option>
-              <option value="INTERN">INTERN</option>
+            <label for="role_function">Job Function:</label>
+            <select id="role_function" name="role_function">
+              <option value="" selected>Select a job function</option>
+              <option value="sales">Sales</option>
+              <option value="marketing">Marketing</option>
+              <option value="customer_service">Customer Service</option>
+              <option value="human_resources">Human Resources</option>
+              <option value="business_development">Business Development</option>
+              <option value="engineer">Engineer</option>
+              <option value="developer">Developer</option>
+              <option value="growth">Growth</option>
+              <option value="revenue">Revenue</option>
+              <option value="accounting">Accounting</option>
+              <option value="finance">Finance</option>
             </select>
           </div>
-
-          <div class="form-group" style="animation-delay: 0.2s">
-            <label for="job_requirements">Job Requirements:</label>
-            <select id="job_requirements" name="job_requirements">
-              <option value="">Any</option>
-              <option value="under_3_years_experience">
-                Less than 3 years experience
-              </option>
-              <option value="more_than_3_years_experience">
-                More than 3 years experience
-              </option>
-              <option value="no_experience">No experience required</option>
-              <option value="no_degree">No degree required</option>
-            </select>
-          </div>
-
-          <!-- <div class="form-group" style="animation-delay: 0.8s">
-            <label for="job_titles">Job Titles:</label>
-            <input
-              type="text"
-              id="job_titles"
-              name="job_titles"
-              placeholder="e.g., Backend developer"
-            />
-          </div> -->
-          <!-- 
-          <div class="form-group" style="animation-delay: 0.9s">
-            <label for="company_types">Company Types:</label>
-            <input
-              type="text"
-              id="company_types"
-              name="company_types"
-              placeholder="e.g., startup"
-            />
-          </div> -->
-          <div class="form-group" style="animation-delay: 0.1s">
-            <label class="checkbox-container">
-              <input
-                type="checkbox"
-                id="actively_hiring"
-                name="actively_hiring"
-              />
-              <span class="checkmark"></span>
-              <span class="checkbox-label">Actively Hiring</span>
-            </label>
-          </div>
-
-          <div class="form-group" style="animation-delay: 0.1s">
-            <label for="radius">Radius (km):</label>
-            <input type="number" id="radius" name="radius" min="0" value="27" />
-          </div>
-
-          <!-- <div class="form-group" style="animation-delay: 1.2s">
-            <label for="exclude_job_publishers">Exclude Job Publishers:</label>
-            <input
-              type="text"
-              id="exclude_job_publishers"
-              name="exclude_job_publishers"
-              placeholder="e.g., BeeBe,Dice"
-            />
-          </div> -->
-
           <button type="submit" id="submitButton">Search Jobs</button>
         </form>
       </div>
@@ -451,8 +319,9 @@
         const form = document.querySelector("form");
         const submitButton = document.getElementById("submitButton");
         const locationInput = document.getElementById("location");
-        // const industryInput = document.getElementById("industry");
         const errorMessage = document.getElementById("error-message");
+        const jobTitleInput = document.getElementById("job_title");
+        const jobFunctionSelect = document.getElementById("role_function");
 
         const locationArr = [
           <% locationArr.forEach(function(location) { %>
@@ -462,15 +331,6 @@
             },
           <% }); %>
         ];
-
-        // const industryArr = [
-        //   <% industryArr.forEach(function(industry) { %>
-        //     {
-        //       label: "<%= industry.label %>",
-        //       value: "<%= industry.value %>"
-        //     },
-        //   <% }); %>
-        // ];
 
         function suggestOptions(input, optionsArr) {
           const suggestions = optionsArr.filter(option =>
@@ -519,24 +379,34 @@
         }
 
         handleInputChange(locationInput, locationArr, "location-suggestions", "location_hidden");
-        // handleInputChange(industryInput, industryArr, "industry-suggestions", "industry_hidden");
+
+        jobTitleInput.addEventListener("input", function () {
+          if (this.value.trim() !== "") {
+            jobFunctionSelect.value = "";
+          }
+        });
+
+        jobFunctionSelect.addEventListener("change", function () {
+          if (this.value !== "") {
+            jobTitleInput.value = "";
+          }
+        });
 
         form.addEventListener("submit", function (e) {
           let isValid = true;
           errorMessage.textContent = "";
 
           updateHiddenField(locationInput, locationArr, "location_hidden");
-          // updateHiddenField(industryInput, industryArr, "industry_hidden");
 
           if (document.getElementById("location_hidden").value === "") {
             errorMessage.textContent += "Please select a valid location from the list. ";
             isValid = false;
           }
 
-          // if (document.getElementById("industry_hidden").value === "") {
-          //   errorMessage.textContent += "Please select a valid industry from the list. ";
-          //   isValid = false;
-          // }
+          if (jobTitleInput.value.trim() === "" && jobFunctionSelect.value === "") {
+            errorMessage.textContent += "Please provide either job titles or select a job function. ";
+            isValid = false;
+          }
 
           if (!isValid) {
             e.preventDefault(); // Prevent form submission

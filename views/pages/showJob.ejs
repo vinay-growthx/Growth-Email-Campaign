@@ -1716,9 +1716,6 @@
                   job.job_country || '' %> <% } else { %> N/A <% } %>
                 </div>
                 <div class="job-detail">
-                  <span>Type:</span> <%= job.job_employment_type || 'N/A' %>
-                </div>
-                <div class="job-detail">
                   <span>Posted:</span> <%= job.job_posted_at_datetime_utc ? new
                   Date(job.job_posted_at_datetime_utc).toLocaleDateString() :
                   'N/A' %>
@@ -1733,9 +1730,6 @@
                     ><%= job.employer_website %></a
                   >
                   <% } else { %> N/A <% } %>
-                </div>
-                <div class="job-detail">
-                  <span>Job Publisher:</span> <%= job.job_publisher || 'N/A' %>
                 </div>
               </div>
               <% if (job.job_description) { %>
@@ -2121,9 +2115,9 @@
                 location: locationDetail
                   ? locationDetail.textContent.split("Location:")[1].trim()
                   : "N/A",
-                type: typeDetail
-                  ? typeDetail.textContent.split("Type:")[1].trim()
-                  : "N/A",
+                // type: typeDetail
+                //   ? typeDetail.textContent.split("Type:")[1].trim()
+                //   : "N/A",
                 posted_date: postedDateDetail
                   ? postedDateDetail.textContent.split("Posted:")[1].trim()
                   : "N/A",
@@ -2135,11 +2129,11 @@
                 employer_website: employerWebsiteDetail
                   ? employerWebsiteDetail.querySelector("a")?.href || "N/A"
                   : "N/A",
-                job_publisher: jobPublisherDetail
-                  ? jobPublisherDetail.textContent
-                      .split("Job Publisher:")[1]
-                      .trim()
-                  : "N/A",
+                // job_publisher: jobPublisherDetail
+                //   ? jobPublisherDetail.textContent
+                //       .split("Job Publisher:")[1]
+                //       .trim()
+                //   : "N/A",
                 apply_link: jobCard.querySelector(".job-apply-link")
                   ? jobCard.querySelector(".job-apply-link").href
                   : "N/A",
