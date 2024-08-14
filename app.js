@@ -493,7 +493,7 @@ app.post("/search-jobs", async (req, res) => {
     let query = req.body.job_title.trim() + " in " + req.body.location.trim();
 
     query = query.toLowerCase();
-    const {
+    let {
       page,
       num_pages,
       date_posted,
