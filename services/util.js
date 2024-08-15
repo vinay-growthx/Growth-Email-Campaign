@@ -248,7 +248,7 @@ async function findAllPersonas(reqId, page, limit) {
     return { people: jobData, totalCount };
   } catch (error) {
     console.error("Error in findAllPersonas:", error);
-    throw error;
+    // throw error;
   }
 }
 async function updateRequestWithJobIds(reqId, jobIdsObject, convertJobObject) {
