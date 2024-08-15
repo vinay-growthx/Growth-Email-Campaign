@@ -582,7 +582,7 @@ app.post("/search-jobs", async (req, res) => {
         remote_jobs_only,
         employment_types,
         job_requirements,
-        job_titles,
+        job_title,
         company_types,
         employer,
         actively_hiring,
