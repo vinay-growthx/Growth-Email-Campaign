@@ -803,26 +803,33 @@ async function convertToApolloPersona(user, reqUUID) {
     };
 
     // Create employment history entries
-    const employmentHistory = user.position.map((pos) => ({
-      _id: new mongoose.Types.ObjectId(),
-      created_at: new Date(),
-      current: !pos.end.year,
-      degree: pos.degree || "",
-      description: pos.description,
-      emails: [], // Assuming no emails provided in position
-      end_date: formatDate(pos.end.year, pos.end.month, pos.end.day),
-      grade_level: "", // Not provided
-      kind: "employment", // Assuming all are employment
-      major: "", // Not provided
-      organization_id: pos.companyUsername || "", // Assuming organization ID is the username
-      organization_name: pos.companyName,
-      raw_address: pos.location,
-      start_date: formatDate(pos.start.year, pos.start.month, pos.start.day),
-      title: pos.title,
-      updated_at: new Date(),
-      id: pos.companyUsername, // Assuming unique identifier is the companyUsername
-      key: pos.title + "_" + pos.location, // Custom key made of title and location
-    }));
+    const employmentHistory =
+      user.position && Array.isArray(user.position)
+        ? user.position.map((pos) => ({
+            _id: new mongoose.Types.ObjectId(),
+            created_at: new Date(),
+            current: !pos.end.year,
+            degree: pos.degree || "",
+            description: pos.description,
+            emails: [], // Assuming no emails provided in position
+            end_date: formatDate(pos.end.year, pos.end.month, pos.end.day),
+            grade_level: "", // Not provided
+            kind: "employment", // Assuming all are employment
+            major: "", // Not provided
+            organization_id: pos.companyUsername || "", // Assuming organization ID is the username
+            organization_name: pos.companyName,
+            raw_address: pos.location,
+            start_date: formatDate(
+              pos.start.year,
+              pos.start.month,
+              pos.start.day
+            ),
+            title: pos.title,
+            updated_at: new Date(),
+            id: pos.companyUsername,
+            key: pos.title + "_" + pos.location,
+          }))
+        : [];
 
     // Create the ApolloPersona object
 
