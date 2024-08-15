@@ -138,7 +138,7 @@ async function saveJobData(jobData) {
       const savedJobs = await linkedinJobRepository.insertMany(newJobEntries);
       console.log(`Saved ${savedJobs.length} new jobs successfully.`);
       const savedJobIds = savedJobs.map((job) => job.job_id);
-      console.log("all perocessed job ids ===>", allProcessedJobIds);
+      // console.log("all perocessed job ids ===>", allProcessedJobIds);
       allProcessedJobIds = [...allProcessedJobIds, ...savedJobIds]; // Combine arrays
     } else {
       console.log("No new jobs to save.");
@@ -206,8 +206,8 @@ async function findAllJobs(reqId) {
   const jobIds = await requestIdRepository.findOne({
     reqId: reqId,
   });
-  console.log("jobIds ===>", jobIds);
-  console.log("job ids ===>", jobIds.jobIds);
+  // console.log("jobIds ===>", jobIds);
+  // console.log("job ids ===>", jobIds.jobIds);
   const cleanedJobIdsArray = jobIds.jobIds;
 
   let jobData;
