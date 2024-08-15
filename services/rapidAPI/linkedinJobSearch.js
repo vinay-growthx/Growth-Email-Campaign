@@ -107,6 +107,7 @@ async function searchLinkedInJobsMultipleTitles(
 
   for (let title of jobTitles) {
     console.log("title ===>", title);
+    console.log("location ====>", location);
     for (let page = 1; page <= maxPages; page++) {
       console.log("page ===>", page);
       const data = {

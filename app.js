@@ -528,7 +528,8 @@ app.post("/search-jobs", async (req, res) => {
       job_title = jobRoles[role_function];
     }
     console.log("job title ===>", job_title);
-    let location = location_hidden?.label || "USA";
+    let locationObj = JSON.parse(location_hidden);
+    let location = locationObj?.label || "USA";
     const reqUUID = uuidv4();
     const results = await searchLinkedInJobsMultipleTitles(
       job_title,
