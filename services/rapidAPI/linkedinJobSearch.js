@@ -87,7 +87,8 @@ function convertCommaSeparatedStringToArray(inputString) {
 async function searchLinkedInJobsMultipleTitles(
   searchTerms,
   location,
-  maxPages
+  startPage,
+  endPage
 ) {
   let jobTitles;
 
@@ -108,7 +109,7 @@ async function searchLinkedInJobsMultipleTitles(
   for (let title of jobTitles) {
     console.log("title ===>", title);
     console.log("location ====>", location);
-    for (let page = 1; page <= maxPages; page++) {
+    for (let page = startPage; page <= endPage; page++) {
       console.log("page ===>", page);
       const data = {
         search_terms: title,
@@ -134,11 +135,6 @@ async function searchLinkedInJobsMultipleTitles(
             console.error(
               `Max retries reached for ${title}, Page ${page}. Giving up on this page.`
             );
-            // results.push({
-            //   title: title,
-            //   page: page,
-            //   error: "Max retries reached, failed to retrieve data.",
-            // });
             break; // Stop retrying for this page
           }
           await delay(10000); // 10 seconds delay between retries
@@ -151,7 +147,6 @@ async function searchLinkedInJobsMultipleTitles(
     job_title: job.job_title,
     employer_name: job.normalized_company_name,
     employer_website: job.company_url,
-    job_posted_at_datetime_utc: job.posted_date,
     job_posted_at_datetime_utc: job.posted_date,
     job_country: job.job_location,
     job_id: uuidv4(),

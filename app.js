@@ -534,6 +534,7 @@ app.post("/search-jobs", async (req, res) => {
     const results = await searchLinkedInJobsMultipleTitles(
       job_title,
       location,
+      1,
       num_pages
     );
     // const results = await searchJobs(
