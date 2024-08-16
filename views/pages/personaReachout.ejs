@@ -834,17 +834,15 @@
                 <i class="fas fa-chevron-down"></i>
               </div>
               <div class="organization-options">
-                <label class="option-item"
-                  ><input type="checkbox" value="" checked /> All
-                  Organizations</label
-                >
+                <label class="option-item">
+                  <input type="checkbox" value="" checked /> All Organizations
+                </label>
                 <% const organizations = [...new Set(people.map(person =>
-                person.organization.name))]; %> <% organizations.forEach(org =>
-                { %>
-                <label class="option-item"
-                  ><input type="checkbox" value="<%= org %>" /> <%= org
-                  %></label
-                >
+                person.organization?.name || 'Unknown'))]; %> <%
+                organizations.forEach(org => { %>
+                <label class="option-item">
+                  <input type="checkbox" value="<%= org %>" /> <%= org %>
+                </label>
                 <% }); %>
               </div>
             </div>
@@ -880,7 +878,7 @@
               <div class="person-name"><%= person.name %></div>
               <div class="person-title"><%= person.title %></div>
               <div class="person-organization">
-                <%= person.organization.name %>
+                <%= person?.organization?.name || "" %>
               </div>
               <div class="person-contact">
                 <span class="contact-icon">📧</span>
@@ -901,7 +899,9 @@
               <div class="employment-history">
                 <h3>Employment History</h3>
                 <ul>
-                  <% person.employment_history.forEach(function(job) { %>
+                  <% if (person.employment_history &&
+                  Array.isArray(person.employment_history)) { %> <%
+                  person.employment_history.forEach(function(job) { %>
                   <li>
                     <strong>Title:</strong> <%= job.title %><br />
                     <strong>Organization:</strong> <%= job.organization_name
@@ -910,7 +910,9 @@
                     <strong>End Date:</strong> <%= job.end_date ? job.end_date :
                     'Present' %>
                   </li>
-                  <% }); %>
+                  <% }); %> <% } else { %>
+                  <li>No employment history available.</li>
+                  <% } %>
                 </ul>
               </div>
             </div>
