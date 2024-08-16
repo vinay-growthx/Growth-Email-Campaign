@@ -596,7 +596,14 @@
               <div class="person-name"><%= enrichData.name %></div>
               <div class="person-title"><%= enrichData.title %></div>
               <div class="person-organization">
-                <%= enrichData.organization.name %>
+                <% if (enrichData.organization && enrichData.organization.name)
+                { %>
+                <div class="person-organization">
+                  <%= enrichData.organization.name %>
+                </div>
+                <% } else { %>
+                <div class="person-organization">Not Available</div>
+                <% } %>
               </div>
               <div class="person-contact">
                 <span class="contact-icon">📧</span>
