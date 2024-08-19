@@ -76,7 +76,7 @@
                                                             flex-direction: row;
                                                             align-items: center;
                                                             transition: all 0.3s ease;
-                                                            animation: slideIn 0.5s ease-out forwards;
+                                                            animation: slideIn 0.05s ease-out forwards;
                                                             opacity: 0;
                                                             transform: translateX(-50px);
                                                           }
@@ -240,7 +240,7 @@
                                                           }
                                                           #selectAll:checked {
                                                             background-color: #3498db;
-                                                            animation: pulse 0.5s;
+                                                            animation: pulse 0.05s;
                                                           }
                                                           #selectAll:checked::before {
                                                             content: "✔";
@@ -272,7 +272,7 @@
                                                           }
                                                           .select-checkbox:checked {
                                                             background-color: #3498db;
-                                                            animation: pulse 0.5s;
+                                                            animation: pulse 0.05s;
                                                           }
                                                           .select-checkbox:checked::before {
                                                             content: "✔";
@@ -301,7 +301,7 @@
                                                             color: #3498db;
                                                             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
                                                             transition: all 0.3s ease;
-                                                            animation: pulse 1.5s infinite alternate;
+                                                            animation: pulse 0.15s infinite alternate;
                                                           }
 
                                                           @keyframes pulse {
@@ -314,7 +314,7 @@
                                                           }
 
                                                           .selected-count.party {
-                                                            animation: party 0.5s ease-in-out;
+                                                            animation: party 0.05s ease-in-out;
                                                           }
 
                                                           @keyframes party {
@@ -350,7 +350,7 @@
                                                             color: #3498db;
                                                             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
                                                             transition: all 0.3s ease;
-                                                            animation: pulse 1.5s infinite alternate;
+                                                            animation: pulse 0.15s infinite alternate;
                                                           }
 
                                                           @keyframes pulse {
@@ -363,7 +363,7 @@
                                                           }
 
                                                           .selected-count.party {
-                                                            animation: party 0.5s ease-in-out;
+                                                            animation: party 0.05s ease-in-out;
                                                           }
 
                                                           @keyframes party {
@@ -718,10 +718,10 @@
             text-align: center;
             z-index: 1001;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            animation: slideDown 0.5s ease-out;
+            animation: slideDown 0.05s ease-out;
             max-height: 100px;
             overflow: hidden;
-            transition: max-height 0.5s ease-out;
+            transition: max-height 0.05s ease-out;
           }
 
           @keyframes slideDown {
@@ -767,7 +767,7 @@
             height: 6px;
             border-radius: 8px;
             width: 0%;
-            transition: width 0.5s ease;
+            transition: width 0.05s ease;
           }
           .pagination {
         display: flex;
@@ -999,7 +999,7 @@
       document.addEventListener("DOMContentLoaded", (event) => {
         const personCards = document.querySelectorAll(".person-card");
         personCards.forEach((card, index) => {
-          card.style.animationDelay = `${index * 0.1}s`;
+          card.style.animationDelay = `${index * 0.01}s`;
         });
 
         const selectAllCheckbox = document.getElementById("selectAll");
@@ -1348,8 +1348,7 @@
             .then((data) => {
               if (data.completed) {
                 // Process is completed, remove the status div
-                processStatus.style.animation =
-                  "slideUp 0.5s ease-out forwards";
+                processStatus.style.animation = "slideUp 0s ease-out forwards";
                 setTimeout(() => {
                   processStatus.remove();
                   // Adjust the padding of the main content
