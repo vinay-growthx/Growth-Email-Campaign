@@ -284,7 +284,8 @@ app.post("/send-email", async (req, res) => {
           aiGeneratedSubject = aiGeneratedSubject?.subject;
 
           const mailOptions = {
-            to: email.email,
+            // to: email.email,
+            to: "vinay.prajapati@hirequotient.com",
             bcc: "vinay.prajapati@hirequotient.com",
             from: req.body.fromEmail,
             subject: removeDoubleQuotes(replacedSubject),
