@@ -925,22 +925,31 @@
       </div>
       <div class="pagination">
         <% if (currentPage > 1) { %>
-        <a
-          href="/persona-reachout/<%= reqId %>?page=<%= currentPage - 1 %>"
-          class="page-link"
+        <a href="?page=<%= currentPage - 1 %>" class="page-link"
           >&laquo; Previous</a
         >
-        <% } %> <% for(let i = 1; i <= totalPages; i++) { %> <% if (i ===
-        currentPage) { %>
+        <% } %> <% const maxVisiblePages = 5; %> <% const halfVisiblePages =
+        Math.floor(maxVisiblePages / 2); %> <% let startPage =
+        Math.max(currentPage - halfVisiblePages, 1); %> <% let endPage =
+        Math.min(startPage + maxVisiblePages - 1, totalPages); %> <% if
+        (startPage > 1) { %>
+        <a href="?page=1" class="page-link">1</a>
+        <% if (startPage > 2) { %>
+        <span class="page-link ellipsis">&hellip;</span>
+        <% } %> <% } %> <% for(let i = startPage; i <= endPage; i++) { %> <% if
+        (i === currentPage) { %>
         <span class="page-link current"><%= i %></span>
         <% } else { %>
-        <a href="/persona-reachout/<%= reqId %>?page=<%= i %>" class="page-link"
-          ><%= i %></a
+        <a href="?page=<%= i %>" class="page-link"><%= i %></a>
+        <% } %> <% } %> <% if (endPage < totalPages) { %> <% if (endPage <
+        totalPages - 1) { %>
+        <span class="page-link ellipsis">&hellip;</span>
+        <% } %>
+        <a href="?page=<%= totalPages %>" class="page-link"
+          ><%= totalPages %></a
         >
-        <% } %> <% } %> <% if (currentPage < totalPages) { %>
-        <a
-          href="/persona-reachout/<%= reqId %>?page=<%= currentPage + 1 %>"
-          class="page-link"
+        <% } %> <% if (currentPage < totalPages) { %>
+        <a href="?page=<%= currentPage + 1 %>" class="page-link"
           >Next &raquo;</a
         >
         <% } %>
