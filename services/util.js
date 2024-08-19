@@ -202,7 +202,7 @@ async function saveJobDataJobListing(apiResponse) {
   }
 }
 
-async function findAllJobs(reqId) {
+async function findAllJobs(reqId, page, limit) {
   const jobIds = await requestIdRepository.findOne({
     reqId: reqId,
   });
@@ -210,11 +210,20 @@ async function findAllJobs(reqId) {
   // console.log("job ids ===>", jobIds.jobIds);
   const cleanedJobIdsArray = jobIds.jobIds;
 
-  let jobData;
-  if (cleanedJobIdsArray?.length) {
-    jobData = await linkedinJobRepository.find({ job_id: cleanedJobIdsArray });
+  const totalCount = cleanedJobIdsArray.length;
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  const paginatedIds = cleanedJobIdsArray.slice(startIndex, endIndex);
+
+  const jobData = await linkedinJobRepository.find({
+    job_id: { $in: paginatedIds },
+  });
+
+  if (!jobData || !Array.isArray(jobData)) {
+    console.error("No job data found for paginatedIds:", paginatedIds);
+    return { people: [], totalCount };
   }
-  return jobData;
+  return { jobData, totalCount };
 }
 async function findAllPersonas(reqId, page, limit) {
   try {

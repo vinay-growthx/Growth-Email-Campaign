@@ -126,35 +126,28 @@ app.get("/find-jobs", (req, res) => {
 app.get("/get-jobs/:reqId", async (req, res) => {
   const reqId = req.params.reqId;
   const page = parseInt(req.query.page) || 1;
-  const limit = 50000; // Number of jobs per page
+  const limit = 500;
 
   try {
-    const jobs = await findAllJobs(reqId);
-    if (Array.isArray(jobs)) {
-      let jobSorted = jobs.sort(
-        (a, b) =>
-          new Date(b.job_posted_at_datetime_utc) -
-          new Date(a.job_posted_at_datetime_utc)
-      );
+    const { jobData, totalCount } = await findAllJobs(reqId, page, limit);
+    const totalPages = Math.ceil(totalCount / limit);
+    console.log(`Total Jobs: ${totalCount}`);
+    console.log(`Total Pages: ${totalPages}`);
+    console.log(`Current Page: ${page}`);
 
-      const startIndex = (page - 1) * limit;
-      const endIndex = page * limit;
-      const paginatedJobs = jobSorted.slice(startIndex, endIndex);
-      const totalPages = Math.ceil(jobSorted.length / limit);
-
-      res.render("showJob", {
-        jobs: paginatedJobs,
-        currentPage: page,
-        totalPages: totalPages,
-        reqId,
-        locationArr,
-        industryArr,
-        jobFunctionArr,
-      });
-    }
+    res.render("showJob", {
+      jobs: jobData,
+      reqId,
+      currentPage: page,
+      totalPages,
+      totalCount,
+      locationArr,
+      industryArr,
+      jobFunctionArr,
+    });
   } catch (error) {
     console.error("Error fetching jobs:", error);
-    res.status(500).send("Please Refresh Page");
+    res.status(500).send("An error occurred. Please try again later.");
   }
 });
 app.get("/persona-reachout/:reqId", async (req, res) => {
