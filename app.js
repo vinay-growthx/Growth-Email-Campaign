@@ -243,7 +243,7 @@ app.post("/send-email", async (req, res) => {
       null
     );
     const emailArray = emailData.map((obj) => obj.toEmails[0]);
-    console.log("email arr =>", emailArray);
+    // console.log("email arr =>", emailArray);
     for (const email of emails) {
       if (!uniqueEmails.has(email.email)) {
         uniqueEmails.add(email.email);
