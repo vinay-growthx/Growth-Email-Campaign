@@ -235,13 +235,22 @@ app.post("/send-email", async (req, res) => {
       );
       jobData = addJobLocation(jobData);
     }
-
+    const emailData = await emailRepository.find(
+      null,
+      { toEmails: 1, _id: 0 },
+      null,
+      null,
+      null
+    );
+    const emailArray = emailData.map((obj) => obj.toEmails[0]);
+    console.log("email arr =>", emailArray);
     for (const email of emails) {
       if (!uniqueEmails.has(email.email)) {
-        uniqueEmails.add(email.email); // Add the email to the Set to track it as processed
+        uniqueEmails.add(email.email);
         if (
           blockedEmails.includes(email.email) ||
-          excludeEmail.includes(email.email)
+          excludeEmail.includes(email.email) ||
+          emailArray.includes(email.email)
         ) {
           console.log("****************************************");
           console.log(`Skipping blocked email: ${email.email}`);
