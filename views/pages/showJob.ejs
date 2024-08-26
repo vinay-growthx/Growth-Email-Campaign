@@ -1361,6 +1361,16 @@
         color: white;
         cursor: default;
       }
+      .pagination-ellipsis {
+        display: inline-block;
+        margin: 0 4px;
+        color: #3498db;
+      }
+      .job-title a, .company-name {
+        color: inherit;
+        text-decoration: none;
+      }
+
     </style>
   </head>
   <body>
@@ -1371,7 +1381,7 @@
       <div class="parallax-layer content">
         <h1>Job Search Results</h1>
         <div id="total-count" class="total-count">
-          Total Jobs: <%= jobs.length %>
+          Total Jobs: <%= totalCount %>
         </div>
         <div class="results-header">
           <div class="select-all-container">
@@ -1390,7 +1400,7 @@
                   Companies</label
                 >
                 <% const companies = [...new Set(jobs.map(job =>
-                job.employer_name))]; %> <% companies.forEach(company => { %>
+                job.companyName))]; %> <% companies.forEach(company => { %>
                 <label class="option-item"
                   ><input type="checkbox" value="<%= company %>" /> <%= company
                   %></label
@@ -1679,10 +1689,27 @@
             <div style="flex-grow: 1">
               <div class="job-header">
                 <div>
-                  <div class="job-title"><%= job.job_title || 'N/A' %></div>
+                  <div class="job-title">
+                    <% if (job.jobPostingUrl) { %>
+                    <a href="<%= job.jobPostingUrl %>" target="_blank"
+                      ><%= job.title || 'N/A' %></a
+                    >
+                    <% } %>
+                  </div>
                   <div class="company-info">
-                    <span class="company-name"
-                      ><%= job.employer_name || 'N/A' %></span
+                    <span class="company-name"></span>
+                      <% if (job.comapnyURL2) { %>
+                      <a
+                        href="<%= job.comapnyURL2 %>"
+                        target="_blank"
+                        class="company-name"
+                        ><%= job.companyName || 'N/A' %></a
+                      >
+                      <% } else { %>
+                      <span class="company-name"
+                        ><%= job.companyName || 'N/A' %></span
+                      >
+                      <% } %></span
                     >
                     <% if (job.ai_industry) { %>
                     <span class="ai-industry-tag"><%= job.ai_industry %></span>
@@ -1708,37 +1735,43 @@
               <% } %>
               <div class="job-details">
                 <div class="job-detail">
-                  <span>Location:</span>
-                  <% if (job.job_city || job.job_state || job.job_country) { %>
-                  <%= job.job_city || '' %><%= job.job_city && (job.job_state ||
-                  job.job_country) ? ', ' : '' %> <%= job.job_state || '' %><%=
-                  job.job_state && job.job_country ? ', ' : '' %> <%=
-                  job.job_country || '' %> <% } else { %> N/A <% } %>
+                  <span>Location: </span>
+                  <%= job.formattedLocation || 'N/A' %>
                 </div>
                 <div class="job-detail">
-                  <span>Posted:</span> <%= job.job_posted_at_datetime_utc ? new
-                  Date(job.job_posted_at_datetime_utc).toLocaleDateString() :
-                  'N/A' %>
+                  <span>Posted: </span><%= job.listedAt ? new
+                  Date(job.listedAt).toLocaleDateString() : 'N/A' %>
                 </div>
-                <div class="job-detail">
+                <!-- <div class="job-detail">
                   <span>Employer Linkedin Url:</span>
-                  <% if (job.employer_website) { %>
+                  <% if (job.comapnyURL2) { %>
                   <a
-                    href="<%= job.employer_website %>"
+                    href="<%= job.comapnyURL2 %>"
                     target="_blank"
                     class="employer-website-link"
-                    ><%= job.employer_website %></a
+                    ><%= job.comapnyURL2 %></a
                   >
                   <% } else { %> N/A <% } %>
-                </div>
+                </div> -->
+                <!-- <div class="job-detail">
+                  <span>Job Posting Url:</span>
+                  <% if (job.jobPostingUrl) { %>
+                  <a
+                    href="<%= job.jobPostingUrl %>"
+                    target="_blank"
+                    class="employer-website-link"
+                    ><%= job.jobPostingUrl %></a
+                  >
+                  <% } else { %> N/A <% } %>
+                </div> -->
               </div>
-              <% if (job.job_description) { %>
+              <% if (job.jobDescription) { %>
               <div class="job-description">
-                <% if (job.job_description.includes('Qualifications:')) { %>
+                <% if (job.jobDescription.includes('Qualifications:')) { %>
                 <h2>Responsibilities/Job Duties:</h2>
                 <ul class="scrollable-list">
                   <%
-                  job.job_description.split('Qualifications:')[0].trim().split(/[•·]/).forEach(function(duty)
+                  job.jobDescription.split('Qualifications:')[0].trim().split(/[•·]/).forEach(function(duty)
                   { %> <% if (duty.trim() !== '') { %>
                   <li><%= duty.trim() %></li>
                   <% } %> <% }); %>
@@ -1746,7 +1779,7 @@
                 <h2>Qualifications:</h2>
                 <ul class="scrollable-list">
                   <%
-                  job.job_description.split('Qualifications:')[1].trim().split(/[•·]/).forEach(function(qualification)
+                  job.jobDescription.split('Qualifications:')[1].trim().split(/[•·]/).forEach(function(qualification)
                   { %> <% if (qualification.trim() !== '') { %>
                   <li><%= qualification.trim() %></li>
                   <% } %> <% }); %>
@@ -1754,7 +1787,7 @@
                 <% } else { %>
                 <h2>Description:</h2>
                 <ul class="job-description-points">
-                  <% job.job_description.trim().split(/[•·]/).filter(point =>
+                  <% job.jobDescription.trim().split(/[•·]/).filter(point =>
                   point.trim() !== '').forEach((point, index) => { %>
                   <li
                     class="description-point"
@@ -1783,24 +1816,19 @@
         </form>
         <div class="pagination">
           <% if (currentPage > 1) { %>
-          <a
-            href="/get-jobs/<%= reqId %>?page=<%= currentPage - 1 %>"
-            class="pagination-btn"
-            >&laquo; Previous</a
-          >
-          <% } %> <% for (let i = 1; i <= totalPages; i++) { %> <% if (i ===
-          currentPage) { %>
-          <span class="pagination-btn active"><%= i %></span>
-          <% } else { %>
-          <a href="/get-jobs/<%= reqId %>?page=<%= i %>" class="pagination-btn"
-            ><%= i %></a
-          >
-          <% } %> <% } %> <% if (currentPage < totalPages) { %>
-          <a
-            href="/get-jobs/<%= reqId %>?page=<%= currentPage + 1 %>"
-            class="pagination-btn"
-            >Next &raquo;</a
-          >
+          <a href="/get-jobs/<%= reqId %>?page=<%= currentPage - 1 %>" class="pagination-btn">&laquo; Previous</a>
+          <% } %>
+          
+          <% for (let i = 1; i <= totalPages; i++) { %>
+            <% if (i === currentPage) { %>
+              <span class="pagination-btn active"><%= i %></span>
+            <% } else { %>
+              <a href="/get-jobs/<%= reqId %>?page=<%= i %>" class="pagination-btn"><%= i %></a>
+            <% } %>
+          <% } %>
+          
+          <% if (currentPage < totalPages) { %>
+          <a href="/get-jobs/<%= reqId %>?page=<%= currentPage + 1 %>" class="pagination-btn">Next &raquo;</a>
           <% } %>
         </div>
       </div>
@@ -1896,82 +1924,86 @@
           return "other";
         }
 
-        function updateJobVisibility() {
-          const selectedCompanies = Array.from(companyCheckboxes)
-            .filter((checkbox) => checkbox.checked && checkbox.value !== "")
-            .map((checkbox) => checkbox.value);
+     function updateJobVisibility() {
+  const selectedCompanies = Array.from(companyCheckboxes)
+    .filter((checkbox) => checkbox.checked && checkbox.value !== "")
+    .map((checkbox) => checkbox.value);
 
-          const selectedSources = Array.from(sourceCheckboxes)
-            .filter((checkbox) => checkbox.checked && checkbox.value !== "")
-            .map((checkbox) => checkbox.value);
+  const selectedSources = Array.from(sourceCheckboxes)
+    .filter((checkbox) => checkbox.checked && checkbox.value !== "")
+    .map((checkbox) => checkbox.value);
 
-          const allCompaniesSelected =
-            allCompaniesCheckbox.checked || selectedCompanies.length === 0;
+  const allCompaniesSelected =
+    allCompaniesCheckbox.checked || selectedCompanies.length === 0;
 
-          let visibleJobCount = 0;
+  let visibleJobCount = 0;
 
-          jobCards.forEach((card) => {
-            const companyName = card
-              .querySelector(".company-name")
-              .textContent.trim();
-            const applyLink = card.querySelector(".job-apply-link")?.href || "";
-            const jobSource = getJobSource(applyLink);
+  jobCards.forEach((card) => {
+    const companyName = card.querySelector(".company-name").textContent.trim();
+    const applyLink = card.querySelector(".job-title a")?.href || "";
+    const jobSource = getJobSource(applyLink);
 
-            const companyMatch =
-              allCompaniesSelected || selectedCompanies.includes(companyName);
-            const sourceMatch =
-              selectedSources.length === 0 ||
-              selectedSources.includes(jobSource);
+    const companyMatch =
+      allCompaniesSelected || selectedCompanies.includes(companyName);
+    const sourceMatch =
+      selectedSources.length === 0 || selectedSources.includes(jobSource);
 
-            if (companyMatch && sourceMatch) {
-              card.style.display = "flex";
-              visibleJobCount++;
-            } else {
-              card.style.display = "none";
-            }
-          });
+    if (companyMatch && sourceMatch) {
+      card.style.display = "flex";
+      visibleJobCount++;
+    } else {
+      card.style.display = "none";
+    }
+  });
 
-          updateCounts(visibleJobCount);
-          updatePagination(visibleJobCount);
-        }
+  updateCounts(visibleJobCount);
+  updatePagination();
+}
+  function updateCounts(visibleJobCount) {
+  totalCountElement.textContent = `Visible Jobs: ${visibleJobCount} / Total Jobs: <%= totalCount %>`;
+  updateSelectedCount();
+}
+        function updatePagination() {
+  const paginationContainer = document.querySelector(".pagination");
+  const totalPages = <%= totalPages %>;
+  const currentPage = <%= currentPage %>;
+  let paginationHTML = "";
 
-        function updateCounts(visibleJobCount) {
-          totalCountElement.textContent = `Total Jobs: ${visibleJobCount}`;
-          updateSelectedCount();
-        }
+  if (currentPage > 1) {
+    paginationHTML += `<a href="/get-jobs/<%= reqId %>?page=${currentPage - 1}" class="pagination-btn">&laquo; Previous</a>`;
+  }
 
-        function updatePagination(visibleJobCount) {
-          const limit = 500; // jobs per page
-          const totalPages = Math.ceil(visibleJobCount / limit);
-          const currentPage =
-            parseInt(new URLSearchParams(window.location.search).get("page")) ||
-            1;
-          const paginationContainer = document.querySelector(".pagination");
-          let paginationHTML = "";
+  const startPage = Math.max(1, currentPage - 2);
+  const endPage = Math.min(totalPages, currentPage + 2);
 
-          if (currentPage > 1) {
-            paginationHTML += `<a href="?page=${
-              currentPage - 1
-            }" class="pagination-btn">&laquo; Previous</a>`;
-          }
+  if (startPage > 1) {
+    paginationHTML += `<a href="/get-jobs/<%= reqId %>?page=1" class="pagination-btn">1</a>`;
+    if (startPage > 2) {
+      paginationHTML += `<span class="pagination-ellipsis">...</span>`;
+    }
+  }
 
-          for (let i = 1; i <= totalPages; i++) {
-            if (i === currentPage) {
-              paginationHTML += `<span class="pagination-btn active">${i}</span>`;
-            } else {
-              paginationHTML += `<a href="?page=${i}" class="pagination-btn">${i}</a>`;
-            }
-          }
+  for (let i = startPage; i <= endPage; i++) {
+    if (i === currentPage) {
+      paginationHTML += `<span class="pagination-btn active">${i}</span>`;
+    } else {
+      paginationHTML += `<a href="/get-jobs/<%= reqId %>?page=${i}" class="pagination-btn">${i}</a>`;
+    }
+  }
 
-          if (currentPage < totalPages) {
-            paginationHTML += `<a href="?page=${
-              currentPage + 1
-            }" class="pagination-btn">Next &raquo;</a>`;
-          }
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      paginationHTML += `<span class="pagination-ellipsis">...</span>`;
+    }
+    paginationHTML += `<a href="/get-jobs/<%= reqId %>?page=${totalPages}" class="pagination-btn">${totalPages}</a>`;
+  }
 
-          paginationContainer.innerHTML = paginationHTML;
-        }
+  if (currentPage < totalPages) {
+    paginationHTML += `<a href="/get-jobs/<%= reqId %>?page=${currentPage + 1}" class="pagination-btn">Next &raquo;</a>`;
+  }
 
+  paginationContainer.innerHTML = paginationHTML;
+}
         selectAllCheckbox.addEventListener("change", function () {
           const isChecked = this.checked;
           jobCheckboxes.forEach((checkbox) => {
@@ -2017,22 +2049,22 @@
         });
 
         allCompaniesCheckbox.addEventListener("change", function () {
-          companyCheckboxes.forEach((checkbox) => {
-            if (checkbox !== allCompaniesCheckbox) {
-              checkbox.checked = !this.checked;
-            }
-          });
-          updateJobVisibility();
-        });
+    companyCheckboxes.forEach((checkbox) => {
+      if (checkbox !== allCompaniesCheckbox) {
+        checkbox.checked = !this.checked;
+      }
+    });
+    updateJobVisibility();
+  });
 
-        companyCheckboxes.forEach((checkbox) => {
-          checkbox.addEventListener("change", function () {
-            if (this !== allCompaniesCheckbox) {
-              allCompaniesCheckbox.checked = false;
-            }
-            updateJobVisibility();
-          });
-        });
+  companyCheckboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", function () {
+      if (this !== allCompaniesCheckbox) {
+        allCompaniesCheckbox.checked = false;
+      }
+      updateJobVisibility();
+    });
+  });
 
         sourceFilterHeader.addEventListener("click", function () {
           sourceFilter.classList.toggle("active");
@@ -2106,7 +2138,7 @@
               }
 
               return {
-                job_title:
+                title:
                   jobCard.querySelector(".job-title").textContent.trim() ||
                   "N/A",
                 company_name:

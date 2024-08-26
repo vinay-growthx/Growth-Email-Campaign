@@ -22,7 +22,6 @@ const app = express();
 const { smtpTransport } = require("./services/ses");
 const { searchCompanyApollo } = require("./services/ApolloAPI/orgSearch");
 const { excludeEmail } = require("./excludeEmail");
-const { jobRoles } = require("./roles");
 const {
   saveJobData,
   findAllJobs,
@@ -40,6 +39,9 @@ const {
   removeEmojiFromName,
   removeDoubleQuotes,
   removeAfterFirstComma,
+  syncLinkedInJobs,
+  fetchAllJobs,
+  isRoleFunctionEmptyOrFalsy,
 } = require("./services/util");
 const {
   jobFunctionArr,
@@ -63,6 +65,8 @@ const {
   generateSalesNavUrl,
 } = require("./services/salesNav/salesNavConversation");
 const { searchPeopleLix } = require("./services/LixAPI/lix");
+const JobsRepository = require("./repository/JobsRepository");
+const jobsRepository = new JobsRepository();
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
@@ -195,7 +199,7 @@ function findJobPostByEmployerName(arr, employerName) {
   console.log("employer name", employerName);
 
   return arr.filter((job) => {
-    const name = job.employer_name;
+    const name = job.companyName;
     return (
       name &&
       typeof name === "string" &&
@@ -212,7 +216,7 @@ app.post("/send-email", async (req, res) => {
     {
       id: { $in: personaIds },
     },
-    "id name title organization.name first_name"
+    "id name title organization.linkedin_url organization.name first_name"
   );
 
   const uniqueEmails = new Set(); // Set to track unique email addresses
@@ -229,11 +233,16 @@ app.post("/send-email", async (req, res) => {
     const jobIds = jobIdReq?.jobIds;
     let jobData = [];
     if (jobIds && jobIds.length) {
-      jobData = await linkedinJobRepository.find(
+      // jobData = await linkedinJobRepository.find(
+      //   { job_id: { $in: jobIds } }
+      //   // "job_title job_posted_at_datetime_utc job_city job_state job_country employer_name"
+      // );
+      jobData = await jobsRepository.find(
         { job_id: { $in: jobIds } },
-        "job_title job_posted_at_datetime_utc job_city job_state job_country employer_name"
+        "title listedAt formattedLocation companyName"
       );
-      jobData = addJobLocation(jobData);
+      console.log("job data", jobData);
+      // jobData = addJobLocation(jobData);
     }
     const emailData = await emailRepository.find(
       null,
@@ -248,29 +257,35 @@ app.post("/send-email", async (req, res) => {
       if (!uniqueEmails.has(email.email)) {
         uniqueEmails.add(email.email);
         if (
-          blockedEmails.includes(email.email) ||
-          excludeEmail.includes(email.email) ||
-          emailArray.includes(email.email)
+          blockedEmails
+            .map((e) => e.toLowerCase())
+            .includes(email.email.toLowerCase()) ||
+          excludeEmail
+            .map((e) => e.toLowerCase())
+            .includes(email.email.toLowerCase()) ||
+          emailArray
+            .map((e) => e.toLowerCase())
+            .includes(email.email.toLowerCase())
         ) {
           console.log("****************************************");
           console.log(`Skipping blocked email: ${email.email}`);
           console.log("****************************************");
           continue; // Skip the current iteration if the email is in the blocked list
         }
+
         try {
           const personData = findPersonById(email.id, persona);
           const foundJob = findJobPostByEmployerName(
             jobData,
             personData.organization.name
           );
-          let jobPost = foundJob.map((job) => job.job_title).join(", ");
-          const jobDate = foundJob
-            .map((job) => job.job_posted_at_datetime_utc)
-            .join(", ");
+          let jobPost = foundJob.map((job) => job.title).join(", ");
+          const jobDate = foundJob.map((job) => job.listedAt).join(", ");
           const jobLocation = foundJob
-            .map((job) => job.job_location)
+            .map((job) => job.formattedLocation)
             .join(", ");
-          jobPost = removeAfterFirstComma(jobPost) || "your open roles";
+          jobPost =
+            removeAfterFirstComma(jobPost) || "recently posted job openings";
 
           let replacedSubject = subject
             .replaceAll("{name}", personData?.name)
@@ -286,8 +301,8 @@ app.post("/send-email", async (req, res) => {
           aiGeneratedSubject = aiGeneratedSubject?.subject;
 
           const mailOptions = {
-            // to: email.email,
-            to: "vinay.prajapati@hirequotient.com",
+            to: email.email,
+            // to: "vinay.prajapati@hirequotient.com",
             bcc: "vinay.prajapati@hirequotient.com",
             from: req.body.fromEmail,
             subject: removeDoubleQuotes(replacedSubject),
@@ -347,6 +362,7 @@ function convertToStringArray(commaString) {
 }
 app.post("/create-persona", async (req, res) => {
   try {
+    console.log("req ---->", req);
     let seniorityLevel = req?.body?.seniorityLevel;
     if (req?.body?.seniorityLevel?.length) {
       const allItems = seniorityLevel.flatMap((str) => str.split(","));
@@ -499,7 +515,6 @@ app.get("/api/check-status/:reqId", async (req, res) => {
 });
 app.post("/search-jobs", async (req, res) => {
   try {
-    // console.log("req.body ===>", req.body);
     let query = req.body.job_title.trim() + " in " + req.body.location.trim();
 
     query = query.toLowerCase();
@@ -521,25 +536,46 @@ app.post("/search-jobs", async (req, res) => {
       role_function,
     } = req.body;
     console.log("req body", req.body);
+    // const roleFunction = isRoleFunctionEmptyOrFalsy(role_function);
+
+    const { allJobs, totalCount } = await fetchAllJobs(
+      job_title,
+      role_function,
+      false
+    );
+    const allJobsArr = allJobs.map((job) => job.job_id);
+
+    console.log("all jobs, total count", allJobsArr, totalCount);
+    const reqUUID = uuidv4();
     const convertedObject = {
       title: job_title,
       location: location_hidden,
       roleFunction: role_function,
       industryFunction: industry_hidden,
     };
-    if (role_function) {
-      job_title = jobRoles[role_function];
-    }
-    console.log("job title ===>", job_title);
-    let locationObj = JSON.parse(location_hidden);
-    let location = locationObj?.label || "USA";
-    const reqUUID = uuidv4();
-    const results = await searchLinkedInJobsMultipleTitles(
-      job_title,
-      location,
-      1,
-      num_pages
-    );
+    await requestIdRepository.create({
+      reqId: reqUUID,
+      jobIds: allJobsArr,
+      convertJobObject: convertedObject,
+    });
+
+    // if (role_function) {
+    //   job_title = jobRoles[role_function];
+    // }
+    // console.log("job title ===>", job_title);
+    // let locationObj = JSON.parse(location_hidden);
+    // let location = locationObj?.label || "USA";
+    // let remainingPages = num_pages;
+    // if (num_pages > 3) {
+    //   num_pages = 3;
+    // }
+    // const results = await searchLinkedInJobsMultipleTitles(
+    //   job_title,
+    //   location,
+    //   1,
+    //   num_pages
+    // );
+
     // const results = await searchJobs(
     //   query,
     //   page,
@@ -573,28 +609,39 @@ app.post("/search-jobs", async (req, res) => {
     //   }
     //   job.salaryRange = salaryRange;
     // });
-    if (results?.length) {
-      const jobDataSave = await saveJobData(results);
-      await updateRequestWithJobIds(reqUUID, jobDataSave, convertedObject);
-    } else {
-      const APIData = await fetchJobListings({
-        query,
-        page,
-        num_pages,
-        date_posted,
-        remote_jobs_only,
-        employment_types,
-        job_requirements,
-        job_title,
-        company_types,
-        employer,
-        actively_hiring,
-        radius,
-        exclude_job_publishers,
-      });
-      const jobDataSave = await saveJobDataJobListing(APIData);
-      updateRequestWithJobIds(reqUUID, jobDataSave);
-    }
+    // if (results?.length) {
+    //   const jobDataSave = await saveJobData(results);
+    //   await updateRequestWithJobIds(reqUUID, jobDataSave, convertedObject);
+    // } else {
+    //   const APIData = await fetchJobListings({
+    //     query,
+    //     page,
+    //     num_pages,
+    //     date_posted,
+    //     remote_jobs_only,
+    //     employment_types,
+    //     job_requirements,
+    //     job_title,
+    //     company_types,
+    //     employer,
+    //     actively_hiring,
+    //     radius,
+    //     exclude_job_publishers,
+    //   });
+    //   const jobDataSave = await saveJobDataJobListing(APIData);
+    //   updateRequestWithJobIds(reqUUID, jobDataSave);
+    // }
+    // if (remainingPages > 3) {
+    //   syncLinkedInJobs(
+    //     job_title,
+    //     location,
+    //     3,
+    //     remainingPages,
+    //     reqUUID,
+    //     convertedObject
+    //   );
+    // }
+
     res.redirect(`/get-jobs/${reqUUID}`);
   } catch (error) {
     // console.log("error ==>", error);
@@ -900,7 +947,8 @@ app.post("/send-email", async (req, res) => {
     const sendEmailPromises = enrichedData.map((person) => {
       const mailOptions = {
         from: process.env.EMAIL_USER,
-        to: person.email,
+        // to: person.email,
+        to: "vinay.prajapait@hirequotient.com",
         subject: emailSubject,
         text: emailTemplate
           .replace("{{name}}", person.name)

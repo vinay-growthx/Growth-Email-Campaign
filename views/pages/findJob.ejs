@@ -18,14 +18,12 @@
         overflow-x: hidden;
         color: #333;
       }
-
       .parallax-container {
         perspective: 1px;
         height: 100vh;
         overflow-x: hidden;
         overflow-y: auto;
       }
-
       .parallax-layer {
         position: absolute;
         top: 0;
@@ -33,7 +31,6 @@
         bottom: 0;
         left: 0;
       }
-
       .parallax-background {
         transform: translateZ(-1px) scale(2);
         background: url("https://source.unsplash.com/random/1920x1080?abstract")
@@ -41,7 +38,6 @@
         background-size: cover;
         z-index: -1;
       }
-
       .content {
         transform: translateZ(0);
         position: relative;
@@ -52,7 +48,6 @@
         padding: 40px;
         max-width: 800px;
       }
-
       h1 {
         text-align: center;
         font-size: 3em;
@@ -61,7 +56,6 @@
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         animation: slideDown 1s ease-out;
       }
-
       @keyframes slideDown {
         from {
           opacity: 0;
@@ -72,25 +66,21 @@
           transform: translateY(0);
         }
       }
-
       form {
         display: flex;
         flex-direction: column;
         gap: 20px;
       }
-
       .form-group {
         margin-bottom: 20px;
         animation: fadeIn 0.5s ease-out forwards;
         opacity: 0;
       }
-
       @keyframes fadeIn {
         to {
           opacity: 1;
         }
       }
-
       label {
         display: block;
         font-size: 1.2em;
@@ -98,9 +88,9 @@
         color: #2c3e50;
         font-weight: bold;
       }
-
       input[type="text"],
       input[type="number"],
+      input[type="date"], /* Added date style */
       select {
         width: 100%;
         padding: 10px;
@@ -111,20 +101,18 @@
         box-sizing: border-box;
         transition: all 0.3s ease;
       }
-
       input[type="text"]:focus,
       input[type="number"]:focus,
+      input[type="date"]:focus, /* Added date focus style */
       select:focus {
         border-color: #3498db;
         background-color: #fff;
         outline: none;
         box-shadow: 0 0 10px rgba(52, 152, 219, 0.1);
       }
-
       input[type="checkbox"] {
         margin-right: 10px;
       }
-
       button[type="submit"] {
         display: block;
         width: 100%;
@@ -141,7 +129,6 @@
         box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
         animation: float 3s ease-in-out infinite;
       }
-
       @keyframes float {
         0% {
           transform: translateY(0px);
@@ -153,7 +140,6 @@
           transform: translateY(0px);
         }
       }
-
       button[type="submit"]:hover {
         background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
         transform: translateY(-2px) scale(1.05);
@@ -169,11 +155,9 @@
         border-radius: 10px;
         transition: all 0.3s ease;
       }
-
       .checkbox-container:hover {
         background-color: rgba(52, 152, 219, 0.1);
       }
-
       .checkbox-container input {
         position: absolute;
         opacity: 0;
@@ -181,7 +165,6 @@
         height: 0;
         width: 0;
       }
-
       .checkmark {
         height: 25px;
         width: 25px;
@@ -194,15 +177,12 @@
         justify-content: center;
         transition: all 0.3s ease;
       }
-
       .checkbox-container:hover input ~ .checkmark {
         background-color: #eaf2f8;
       }
-
       .checkbox-container input:checked ~ .checkmark {
         background-color: #3498db;
       }
-
       .checkmark:after {
         content: "";
         position: absolute;
@@ -213,11 +193,9 @@
         border-width: 0 3px 3px 0;
         transform: rotate(45deg);
       }
-
       .checkbox-container input:checked ~ .checkmark:after {
         display: block;
       }
-
       .checkbox-label {
         color: #2c3e50;
         font-weight: 500;
@@ -239,11 +217,94 @@
         background-position: right 10px center;
         padding-right: 30px;
       }
-
       .form-group select:focus {
         border-color: #3498db;
         outline: none;
         box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+      }
+      .or-separator {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: #666;
+        font-weight: bold;
+        margin: 20px 0;
+      }
+      .or-separator::before,
+      .or-separator::after {
+        content: "";
+        flex: 1;
+        border-bottom: 1px solid #ccc;
+      }
+      .or-separator::before {
+        margin-right: 0.25em;
+      }
+      .or-separator::after {
+        margin-left: 0.25em;
+      }
+      .form-group-container {
+        position: relative;
+      }
+      .form-group-label {
+        position: absolute;
+        top: -10px;
+        left: 10px;
+        background-color: white;
+        padding: 0 5px;
+        font-size: 0.9em;
+        color: #666;
+      }
+      input[type="date"] {
+        appearance: none;
+        -webkit-appearance: none;
+        background-color: #ff69b4; /* Hot pink background */
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 25px;
+        font-size: 1em;
+        font-weight: bold;
+        box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        transition: all 0.3s ease;
+      }
+
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1); /* Make the calendar icon white */
+        opacity: 0.8;
+        cursor: pointer;
+      }
+
+      input[type="date"]:hover,
+      input[type="date"]:focus {
+        background-color: #ff1493; /* Deeper pink on hover/focus */
+        box-shadow: 0 0 15px rgba(255, 20, 147, 0.7);
+        transform: scale(1.05);
+      }
+      input[type="datetime-local"] {
+        appearance: none;
+        -webkit-appearance: none;
+        background-color: #f0f4f8; /* Subtle blue-gray background */
+        color: #333; /* Dark gray text for better readability */
+        padding: 10px;
+        border: 1px solid #ccc; /* Light gray border */
+        border-radius: 5px; /* Rounded corners */
+        font-size: 1em;
+        font-weight: bold;
+        box-shadow: 0 0 5px rgba(200, 200, 200, 0.5); /* Soft gray shadow */
+        transition: all 0.3s ease;
+      }
+
+      input[type="datetime-local"]:hover,
+      input[type="datetime-local"]:focus {
+        background-color: #dbe2e8; /* Slightly darker blue-gray on hover/focus */
+        box-shadow: 0 0 10px rgba(220, 220, 220, 0.7); /* Darker shadow on focus */
+        transform: scale(1.05); /* Slightly larger on focus for emphasis */
+      }
+
+      input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+        filter: invert(0.5); /* Darken the calendar icon a bit */
+        opacity: 0.8;
+        cursor: pointer;
       }
     </style>
   </head>
@@ -262,6 +323,36 @@
               name="job_title"
               placeholder="e.g., Backend developer, Frontend developer, Data analyst"
             />
+          </div>
+          <div class="or-separator">OR</div>
+          <div class="form-group" style="animation-delay: 0.2s">
+            <label for="role_function">Job Function:</label>
+            <select id="role_function" name="role_function">
+              <option value="" selected>Select a job function</option>
+              <option value="Sales">Sales</option>
+              <option value="Marketing">Marketing</option>
+              <option value="CustomerService">Customer Service</option>
+              <option value="HumanResource">Human Resources</option>
+              <option value="BusinessDevelopment">Business Development</option>
+              <option value="Engineering">Engineer</option>
+              <option value="Developer">Developer</option>
+              <option value="Growth">Growth</option>
+              <option value="Revenue">Revenue</option>
+              <option value="Accounting">Accounting</option>
+              <option value="Finance">Finance</option>
+              <option value="Healthcare">Health Care</option>
+              <option value="GeneralBusiness">General Business</option>
+              <option value="InformationTechnology">
+                Information Technology
+              </option>
+              <option value="Legal">Legal</option>
+              <option value="Education">Education</option>
+              <option value="Creative">Creative</option>
+              <option value="Design">Design</option>
+              <option value="Hospitality">Hospitality</option>
+              <option value="Tourism">Tourism</option>
+              <option value="Construction">Construction</option>
+            </select>
           </div>
           <div class="form-group" style="animation-delay: 0.4s">
             <label for="location">Location:</label>
@@ -283,45 +374,40 @@
             />
           </div>
           <div class="form-group" style="animation-delay: 0.3s">
-            <label for="num_pages">Number of Pages:</label>
+            <label for="num_jobs">Number of Jobs (optional):</label>
             <input
               type="number"
-              id="num_pages"
-              name="num_pages"
+              id="num_jobs"
+              name="num_jobs"
               min="1"
-              max="40"
-              value="1"
+              max="10000"
+              placeholder="Enter a number between 1 and 100K"
             />
           </div>
-          <div class="form-group" style="animation-delay: 0.2s">
-            <label for="role_function">Job Function:</label>
-            <select id="role_function" name="role_function">
-              <option value="" selected>Select a job function</option>
-              <option value="Sales">Sales</option>
-              <option value="Marketing">Marketing</option>
-              <option value="CustomerService">Customer Service</option>
-              <option value="HumanResource">Human Resources</option>
-              <option value="BusinessDevelopment">Business Development</option>
-              <option value="Engineering">Engineer</option>
-              <option value="Developer">Developer</option>
-              <option value="Growth">Growth</option>
-              <option value="Revenue">Revenue</option>
-              <option value="Accounting">Accounting</option>
-              <option value="Finance">Finance</option>
-              <option value="Healthcare">Health Care</option>
-              <option value="GeneralBusiness">General lBusiness</option>
-              <option value="InformationTechnology">
-                Information Technology
-              </option>
-              <option value="Legal">Legal</option>
-              <option value="Education">Education</option>
-              <option value="Creative">Creative</option>
-              <option value="Design">Design</option>
-              <option value="Hospitality">Hospitality</option>
-              <option value="Tourism">Tourism</option>
-              <option value="Construction">Construction</option>
+          <div class="form-group" style="animation-delay: 0.6s">
+            <label for="job_listed_date"
+              >Job Listed From (Date and Time):</label
+            >
+            <input
+              type="datetime-local"
+              id="job_listed_date"
+              name="job_listed_date"
+              placeholder="Select date and time"
+              step="60"
+              max="<%= new Date().toISOString().slice(0, 16) %>"
+            />
+          </div>
+          <div class="form-group" style="animation-delay: 0.7s">
+            <label for="job_listed_range">Job Listed Within:</label>
+            <select id="job_listed_range" name="job_listed_range">
+              <option value="" selected>Select a time range</option>
+              <option value="24hours">Past 24 hours</option>
+              <option value="48hours">Past 48 hours</option>
+              <option value="week">Past week</option>
+              <option value="month">Past month</option>
             </select>
           </div>
+
           <button type="submit" id="submitButton">Search Jobs</button>
         </form>
       </div>

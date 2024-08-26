@@ -15,7 +15,14 @@ const {
   generateJobSummary,
   extractIndustryFromSummary,
 } = require("../services/chatgpt");
+const { jobRoles } = require("../roles");
 
+const JobsRepository = require("../repository/JobsRepository");
+const jobsRepository = new JobsRepository();
+
+const {
+  searchLinkedInJobsMultipleTitles,
+} = require("../services/rapidAPI/linkedinJobSearch");
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require("uuid");
 
@@ -203,6 +210,7 @@ async function saveJobDataJobListing(apiResponse) {
 }
 
 async function findAllJobs(reqId, page, limit) {
+  console.log({ reqId, page, limit });
   const jobIds = await requestIdRepository.findOne({
     reqId: reqId,
   });
@@ -215,10 +223,9 @@ async function findAllJobs(reqId, page, limit) {
   const endIndex = startIndex + limit;
   const paginatedIds = cleanedJobIdsArray.slice(startIndex, endIndex);
 
-  const jobData = await linkedinJobRepository.find({
+  const jobData = await jobsRepository.find({
     job_id: { $in: paginatedIds },
   });
-
   if (!jobData || !Array.isArray(jobData)) {
     console.error("No job data found for paginatedIds:", paginatedIds);
     return { people: [], totalCount };
@@ -276,12 +283,27 @@ async function updateRequestWithJobIds(reqId, jobIdsObject, convertJobObject) {
     }
 
     // Create a new document using the base repository create function
-    const updatedRequest = await requestIdRepository.create({
-      reqId: reqId,
-      jobIds: jobIdsObject,
-      convertJobObject: convertJobObject,
-    });
-
+    // const updatedRequest = await requestIdRepository.create({
+    //   reqId: reqId,
+    //   jobIds: jobIdsObject,
+    //   convertJobObject: convertJobObject,
+    // });
+    const updatedRequest = await requestIdRepository.findOneAndUpdate(
+      { reqId: reqId },
+      {
+        $set: {
+          convertJobObject: convertJobObject,
+        },
+        $addToSet: {
+          jobIds: {
+            $each: Object.values(jobIdsObject),
+          },
+        },
+      },
+      {
+        upsert: true,
+      }
+    );
     console.log("Created request:", updatedRequest);
     return updatedRequest;
   } catch (error) {
@@ -1061,6 +1083,85 @@ function removeAfterFirstComma(inputString) {
   return inputString;
 }
 
+async function syncLinkedInJobs(
+  job_title,
+  location,
+  startPage,
+  remainingPages,
+  reqUUID,
+  convertedObject
+) {
+  let currentPage = startPage;
+
+  while (remainingPages > 0) {
+    const results = await searchLinkedInJobsMultipleTitles(
+      job_title,
+      location,
+      currentPage,
+      currentPage + 1 // Only fetch one page at a time
+    );
+
+    console.log(`Page ${currentPage}: ${results.length} results found.`);
+
+    if (results.length) {
+      const jobDataSave = await saveJobData(results);
+      await updateRequestWithJobIds(reqUUID, jobDataSave, convertedObject);
+    }
+
+    currentPage++;
+    remainingPages--;
+  }
+}
+
+async function fetchAllJobs(job_title, role_function, roleFunction) {
+  let offset = 0;
+  const limit = 500;
+  let hasMore = true;
+  let allJobs = [];
+
+  let query = {};
+  let jobTitlesArray = [];
+  if (roleFunction) {
+    jobTitlesArray = jobRoles[role_function]
+      .map((title) => title.trim())
+      .filter((title) => title.length > 0)
+      .map((title) => new RegExp(title, "i"));
+  } else if (job_title && job_title.trim() !== "") {
+    jobTitlesArray = job_title
+      .split(",")
+      .map((title) => title.trim())
+      .filter((title) => title.length > 0)
+      .map((title) => new RegExp(title, "i"));
+
+    query.title = { $in: jobTitlesArray };
+  }
+
+  const sortOption = { listedAt: -1 };
+  const totalCount = await jobsRepository.count(query);
+  console.log("total count", totalCount);
+  while (hasMore) {
+    const jobs = await jobsRepository.find(
+      query,
+      { job_id: 1, _id: 0 },
+      null,
+      sortOption,
+      limit,
+      offset
+    ); // console.log("jobs", jobs);
+    allJobs.push(...jobs);
+    if (jobs.length < limit) {
+      hasMore = false;
+    } else {
+      offset += limit;
+    }
+  }
+  return { allJobs, totalCount };
+}
+
+function isRoleFunctionEmptyOrFalsy(role_function) {
+  return !role_function || role_function.trim() === "";
+}
+
 module.exports = {
   convertData,
   findAllJobs,
@@ -1085,4 +1186,7 @@ module.exports = {
   updateRequestWithJobIds,
   updateRequestWithPersonaIds,
   removeAfterFirstComma,
+  syncLinkedInJobs,
+  fetchAllJobs,
+  isRoleFunctionEmptyOrFalsy,
 };
