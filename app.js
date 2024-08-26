@@ -547,12 +547,12 @@ app.post("/search-jobs", async (req, res) => {
       roleFunction: role_function,
       industryFunction: industry_hidden,
     };
-    await requestIdRepository.create({
+    const createdObj = await requestIdRepository.create({
       reqId: reqUUID,
       jobIds: allJobsArr,
       convertJobObject: convertedObject,
     });
-
+    console.log("created obj ===>", createdObj);
     // if (role_function) {
     //   job_title = jobRoles[role_function];
     // }
