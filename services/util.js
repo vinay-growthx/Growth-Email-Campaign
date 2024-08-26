@@ -1113,15 +1113,21 @@ async function syncLinkedInJobs(
   }
 }
 
-async function fetchAllJobs(job_title, role_function, roleFunction) {
+async function fetchAllJobs(
+  job_title,
+  role_function,
+  num_jobs,
+  job_listed_date,
+  job_listed_range
+) {
   let offset = 0;
-  const limit = 500;
+  const limit = num_jobs ? Math.min(500, num_jobs) : 500;
   let hasMore = true;
   let allJobs = [];
 
   let query = {};
   let jobTitlesArray = [];
-  if (roleFunction) {
+  if (role_function) {
     jobTitlesArray = jobRoles[role_function]
       .map((title) => title.trim())
       .filter((title) => title.length > 0)
@@ -1136,23 +1142,56 @@ async function fetchAllJobs(job_title, role_function, roleFunction) {
     query.title = { $in: jobTitlesArray };
   }
 
+  // Add date range filter
+  if (job_listed_date && job_listed_range) {
+    const startDate = new Date(job_listed_date);
+    let endDate;
+
+    switch (job_listed_range) {
+      case "24hours":
+        endDate = new Date(startDate.getTime() - 24 * 60 * 60 * 1000);
+        break;
+      case "48hours":
+        endDate = new Date(startDate.getTime() - 48 * 60 * 60 * 1000);
+        break;
+      case "week":
+        endDate = new Date(startDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case "month":
+        endDate = new Date(startDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+        break;
+      default:
+        throw new Error("Invalid job_listed_range");
+    }
+
+    query.listedAt = {
+      $gte: endDate.toISOString(),
+      $lte: startDate.toISOString(),
+    };
+  }
+
   const sortOption = { listedAt: -1 };
   const totalCount = await jobsRepository.count(query);
   console.log("total count", totalCount);
-  while (hasMore) {
+
+  while (hasMore && (!num_jobs || allJobs.length < num_jobs)) {
+    const remainingJobs = num_jobs ? num_jobs - allJobs.length : limit;
+    const currentLimit = Math.min(limit, remainingJobs);
+
     const jobs = await jobsRepository.find(
       query,
       { job_id: 1, _id: 0 },
       null,
       sortOption,
-      limit,
+      currentLimit,
       offset
-    ); // console.log("jobs", jobs);
+    );
     allJobs.push(...jobs);
-    if (jobs.length < limit) {
+
+    if (jobs.length < currentLimit) {
       hasMore = false;
     } else {
-      offset += limit;
+      offset += currentLimit;
     }
   }
   return { allJobs, totalCount };

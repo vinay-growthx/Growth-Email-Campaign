@@ -519,18 +519,10 @@ app.post("/search-jobs", async (req, res) => {
 
     query = query.toLowerCase();
     let {
-      page,
-      num_pages,
-      date_posted,
-      remote_jobs_only,
-      employment_types,
-      job_requirements,
+      num_jobs,
+      job_listed_date,
       job_title,
-      company_types,
-      employer,
-      actively_hiring,
-      radius,
-      exclude_job_publishers,
+      job_listed_range,
       location_hidden,
       industry_hidden,
       role_function,
@@ -541,7 +533,9 @@ app.post("/search-jobs", async (req, res) => {
     const { allJobs, totalCount } = await fetchAllJobs(
       job_title,
       role_function,
-      false
+      num_jobs,
+      job_listed_date,
+      job_listed_range
     );
     const allJobsArr = allJobs.map((job) => job.job_id);
 
