@@ -6,7 +6,6 @@
     <title>AAO EasyGrowth - Login</title>
     <link rel="stylesheet" href="styles.css" />
     <style>
-      /* Reset and base styles */
       body,
       html {
         margin: 0;
@@ -16,7 +15,6 @@
         background-color: #f5f5f5;
       }
 
-      /* Main container */
       .container {
         display: flex;
         height: 100vh;
@@ -177,6 +175,8 @@
         font-size: 1em;
       }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
   </head>
   <body>
     <div class="container">
@@ -208,7 +208,7 @@
           </div>
           <button type="submit" class="login-button">Login</button>
         </form>
-        <div class="google-login">
+        <div class="google-login" id="googleLogin">
           <img
             src="https://developers.google.com/identity/images/g-logo.png"
             alt="Google Logo"
@@ -237,17 +237,33 @@
     </div>
     <script>
       const firebaseConfig = {
-        // Your Firebase configuration object here
+        apiKey: "AIzaSyAWnYWICUAIRTgtUWUC6CE6--w3dRAq02k",
+        authDomain: "hq-sourcing-stag.firebaseapp.com",
+        projectId: "hq-sourcing-stag",
+        storageBucket: "hq-sourcing-stag.appspot.com",
+        messagingSenderId: "1052414885273",
+        appId: "1:1052414885273:web:acc82e41a7b23222d22708",
       };
 
-      // Initialize Firebase
       firebase.initializeApp(firebaseConfig);
 
-      // Get elements
-      const loginForm = document.getElementById("loginForm");
+      const loginForm = document.querySelector("form");
       const googleLogin = document.getElementById("googleLogin");
 
-      // Email/Password login
+      function redirectToFindJobs() {
+        // Replace this with the actual URL of your find-jobs page
+        window.location.href = "/find-jobs";
+      }
+
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          console.log("User signed in:", user);
+          // Redirect to the find-jobs page
+          redirectToFindJobs();
+        } else {
+          console.log("User signed out");
+        }
+      });
       loginForm.addEventListener("submit", (e) => {
         e.preventDefault();
         const email = document.getElementById("email").value;
@@ -257,32 +273,23 @@
           .auth()
           .signInWithEmailAndPassword(email, password)
           .then((userCredential) => {
-            // Signed in
-            const user = userCredential.user;
-            console.log("User signed in:", user);
-            // Redirect or update UI
+            console.log("User signed in:", userCredential.user);
           })
           .catch((error) => {
             console.error("Error signing in:", error);
-            // Handle errors here, such as displaying error messages
           });
       });
 
-      // Google Sign-In
       googleLogin.addEventListener("click", () => {
         const provider = new firebase.auth.GoogleAuthProvider();
         firebase
           .auth()
           .signInWithPopup(provider)
           .then((result) => {
-            // User signed in
-            const user = result.user;
-            console.log("User signed in with Google:", user);
-            // Redirect or update UI
+            console.log("User signed in with Google:", result.user);
           })
           .catch((error) => {
             console.error("Error signing in with Google:", error);
-            // Handle errors here
           });
       });
     </script>

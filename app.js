@@ -154,6 +154,10 @@ app.get("/get-jobs/:reqId", async (req, res) => {
     res.status(500).send("An error occurred. Please try again later.");
   }
 });
+app.get("/login", (req, res) => {
+  res.render("login", { title: "Login to Advanced Outreach AI" });
+});
+
 app.get("/persona-reachout/:reqId", async (req, res) => {
   const reqId = req.params.reqId;
   const page = parseInt(req.query.page) || 1;
