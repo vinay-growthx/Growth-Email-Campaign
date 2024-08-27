@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const admin = require("firebase-admin");
 const port = process.env.PORT || 4000;
 const { v4: uuidv4 } = require("uuid");
+const session = require("express-session");
 
 const healthRouter = require("./api/health/routes")();
 const logtail = require("./services/logtail");
@@ -101,24 +102,77 @@ app.use(function (req, res, next) {
 
 app.use(cors());
 app.use((req, res, next) => {
+  console.log(`Received request for ${req.method} ${req.url}`);
   if (process.env.ENV === "production") {
     const transaction = Sentry.startTransaction({
       op: "Backend",
       name: "HireQuotient BE",
     });
-    const date = new Date();
-    const dateString = date.toISOString();
-
-    transaction.setName(dateString);
+    res.on("finish", () => {
+      transaction.finish();
+    });
   }
-  express.urlencoded({ extended: true, limit: "500mb" });
-  express.json({ limit: "500mb" })(req, res, next);
+  next();
 });
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours
+    },
+  })
+);
 /**
  * Routers Setup
  */
+const authMiddleware = (req, res, next) => {
+  if (req.session.isAuthenticated) {
+    next();
+  } else {
+    res.redirect("/login");
+  }
+};
 app.use("/", healthRouter);
+app.use(async (req, res, next) => {
+  try {
+    // Skip authentication for login route and public assets
+    if (req.path === "/login" || req.path.startsWith("/public")) {
+      return next();
+    }
+
+    // Check for token in various places
+    const idToken =
+      req.headers.authorization ||
+      req.cookies.token ||
+      (req.body && req.body.token) ||
+      (req.query && req.query.token);
+
+    if (!idToken) {
+      throw new Error("No token provided");
+    }
+
+    // Verify the token
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+
+    // Attach the user information to the request
+    req.user = decodedToken;
+    next();
+  } catch (error) {
+    console.error("Authentication error:", error);
+
+    if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+      // If it's an AJAX request, send JSON response
+      res.status(403).json({ error: error.message || "Unauthorized" });
+    } else {
+      // For regular requests, redirect to login
+      res.redirect("/login");
+    }
+  }
+});
 app.get("/find-jobs", (req, res) => {
   res.render("findJob", {
     title: "Find the Best LinkedIn Jobs Available",
@@ -715,6 +769,35 @@ app.post("/email-enrich-process", async (req, res) => {
     res.status(500).json({ error: "Failed to process enriched data" });
   }
 });
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body; // Assuming you handle password verification
+  try {
+    const userRecord = await admin.auth().getUserByEmail(email);
+    // Initialize the session user object if it doesn't exist
+    if (!req.session.user) {
+      req.session.user = {}; // Always initialize an object
+    }
+
+    // Set user details and token in the session
+    req.session.user.uid = userRecord.uid;
+    req.session.user.token = await admin
+      .auth()
+      .createCustomToken(userRecord.uid);
+
+    req.session.isAuthenticated = true; // Mark the session as authenticated
+    res.redirect("/find-jobs"); // Redirect to a protected route
+  } catch (error) {
+    console.error("Error signing in:", error);
+    res.status(401).render("login", { error: "Invalid credentials" });
+  }
+});
+
+app.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) console.error("Error destroying session:", err);
+    res.redirect("/login");
+  });
+});
 
 app.post("/enriched-data-process", async (req, res) => {
   try {
@@ -876,15 +959,26 @@ app.post("/email-enrich-new", async (req, res) => {
 //       .json({ error: "Failed to send emails", details: error.message });
 //   }
 // });
+// app.get("/", (req, res) => {
+//   res.render("findJob", {
+//     title: "Find the Best LinkedIn Jobs Available",
+//     jobFunctionArr: jobFunctionArr,
+//     industryArr: industryArr,
+//     locationArr: locationArr,
+//   });
+// });
 app.get("/", (req, res) => {
-  res.render("findJob", {
-    title: "Find the Best LinkedIn Jobs Available",
-    jobFunctionArr: jobFunctionArr,
-    industryArr: industryArr,
-    locationArr: locationArr,
-  });
+  if (req.session.views) {
+    req.session.views++;
+    res.setHeader("Content-Type", "text/html");
+    res.write("<p>views: " + req.session.views + "</p>");
+    res.write("<p>expires in: " + req.session.cookie.maxAge / 1000 + "s</p>");
+    res.end();
+  } else {
+    req.session.views = 1;
+    res.end("welcome to the session demo. refresh!");
+  }
 });
-
 // app.post("/send-email", async (req, res) => {
 //   const { enrichedData, emailTemplate } = req.body;
 
