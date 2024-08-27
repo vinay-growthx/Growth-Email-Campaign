@@ -586,7 +586,7 @@ app.post("/create-persona", async (req, res) => {
         to: notifyCheck.email,
         from: "EasySource <no-reply@hirequotient.com>",
         subject: "Activity Notification: All Personas fetched Successfully!",
-        html: `All personas for your job title search "${notifyCheck?.convertJobObject?.title}" have been successfully fetched. A total of ${notifyCheck?.personaIds?.length} personas were found.`,
+        html: `All personas for your job title search "${notifyCheck?.convertJobObject?.title}" have been successfully fetched. A total of ${notifyCheck?.personaIds?.length} personas were found. <br><br> You can view the personas by following this link: <a href="https://advanced-outbound-ai.hirequotient.co/persona-reachout/${reqUUID}">View Personas</a>.`,
       };
       console.log({ mailOptions });
       smtpTransport.sendMail(mailOptions);
@@ -1094,7 +1094,7 @@ app.post("/notify", async (req, res) => {
     const existingNotification = await requestIdRepository.findOne({
       reqId: reqId,
     });
-    console.log("exisitning notification", existingNotification);
+    console.log(" notification", existingNotification);
     if (existingNotification) {
       const update = await requestIdRepository.updateOne(
         { _id: existingNotification._id },
