@@ -2,6 +2,7 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
+const { ObjectId } = require("mongodb");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const admin = require("firebase-admin");
@@ -420,13 +421,13 @@ function convertToStringArray(commaString) {
 }
 app.post("/create-persona", async (req, res) => {
   try {
-    console.log("req ---->", req);
     let seniorityLevel = req?.body?.seniorityLevel;
     if (req?.body?.seniorityLevel?.length) {
       const allItems = seniorityLevel.flatMap((str) => str.split(","));
       const uniqueItems = [...new Set(allItems)];
       seniorityLevel = uniqueItems.join(",");
     }
+    console.log("seniority level", seniorityLevel);
     const { jobSelect } = req.body;
     const employeeSize = req?.body?.employeeSize;
     const selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
@@ -439,35 +440,87 @@ app.post("/create-persona", async (req, res) => {
       reqId: req.body.reqId,
     });
     convertedObj = convertedObj.convertJobObject;
-    let linkedinJobs = await linkedinJobRepository.find(
+    console.log("selected ids --->", selectedIds);
+    const objectIds = selectedIds.map((id) => new ObjectId(id));
+    let linkedinJobs = await jobsRepository.find(
       {
-        _id: selectedIds,
+        _id: objectIds,
       },
-      "employer_name job_title employer_company_type job_description job_city job_state job_country employer_website"
+      "companyName title formattedIndustries jobDescription formattedLocation comapnyURL2"
     );
+
+    console.log("linkedin jobs ===>", linkedinJobs);
     linkedinJobs.forEach((job) => {
-      if (job.employer_website) {
-        job.employer_website = job.employer_website.split("?")[0];
+      if (job.comapnyURL2) {
+        job.companyLiName = job.comapnyURL2.split("/").pop();
       }
     });
     console.log("linkedin jobs ===>", linkedinJobs);
-    const jobLocations = linkedinJobs.map((job) => {
-      const parts = [job.job_city, job.job_state, job.job_country].filter(
-        Boolean
-      );
-      return parts.join(", ");
-    });
-    const employerNames = linkedinJobs.map((job) => job.employer_name);
+    const employerNames = linkedinJobs.map((job) => job.companyName);
     let personaDesignation = req?.body?.personaDesignations;
     // console.log("persona designation", personaDesignation);
     personaDesignation = convertToStringArray(personaDesignation);
-    // console.log("persona designation", personaDesignation);
+    console.log("persona designation", personaDesignation);
     const allPeople = [];
     convertedObj.title = personaDesignation;
     let flag = false;
-    for (const name of employerNames) {
+    // for (const name of employerNames) {
+    //   try {
+    //     convertedObj.currentCompany = name;
+    //     // console.log("converted obj ===>", convertedObj);
+    //     const salesNavUrl = await generateSalesNavUrl(convertedObj);
+    //     // console.log("sales nav url", salesNavUrl);
+    //     const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
+    //     for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
+    //       let personaLen = await requestIdRepository.findOne({
+    //         reqId: reqUUID,
+    //       });
+    //       personaLen = personaLen.personaIds.length;
+    //       console.log("persona len", personaLen);
+    //       if (personaLen > 2) {
+    //         if (!flag) {
+    //           flag = true;
+    //           res.redirect(`/persona-reachout/${reqUUID}`);
+    //         }
+    //         console.log("continue persona getting");
+    //       }
+    //       if (i == 0) {
+    //         console.log(
+    //           "search people lix ====>",
+    //           JSON.stringify(searchPeopleLixData.people[0].salesNavId)
+    //         );
+    //       }
+    //       const personData = await getLinkedInData(
+    //         searchPeopleLixData.people[i]?.salesNavId
+    //       );
+    //       convertToApolloPersona(personData, reqUUID);
+    //     }
+    //     const company = await searchCompanyApollo(name);
+    //     let orgId = company?.accounts?.[0]?.organization_id;
+    //     if (company) {
+    //       saveOrganizationData([company]);
+    //       const people = await searchPeople(
+    //         jobLocations,
+    //         orgId,
+    //         personaDesignation,
+    //         employeeSize,
+    //         seniorityLevel
+    //       );
+    //       if (people?.people) {
+    //         allPeople.push(...people.people);
+    //         await savePersonaData(allPeople);
+    //       }
+    //       updateRequestWithPersonaIds(reqUUID, allPeople);
+    //     } else {
+    //       console.warn(`No company found for name: ${name}`);
+    //     }
+    //   } catch (error) {
+    //     console.error(`Error processing company name ${name}:`, error);
+    //   }
+    // }
+    for (const employer of linkedinJobs) {
       try {
-        convertedObj.currentCompany = name;
+        convertedObj.currentCompany = employer.companyName;
         // console.log("converted obj ===>", convertedObj);
         const salesNavUrl = await generateSalesNavUrl(convertedObj);
         // console.log("sales nav url", salesNavUrl);
@@ -496,12 +549,12 @@ app.post("/create-persona", async (req, res) => {
           );
           convertToApolloPersona(personData, reqUUID);
         }
-        const company = await searchCompanyApollo(name);
+        const company = await searchCompanyApollo(employer.companyName);
         let orgId = company?.accounts?.[0]?.organization_id;
         if (company) {
           saveOrganizationData([company]);
           const people = await searchPeople(
-            jobLocations,
+            employer.formattedLocation,
             orgId,
             personaDesignation,
             employeeSize,
@@ -513,12 +566,16 @@ app.post("/create-persona", async (req, res) => {
           }
           updateRequestWithPersonaIds(reqUUID, allPeople);
         } else {
-          console.warn(`No company found for name: ${name}`);
+          console.warn(`No company found for name: ${employer.companyName}`);
         }
       } catch (error) {
-        console.error(`Error processing company name ${name}:`, error);
+        console.error(
+          `Error processing company name ${employer.companyName}:`,
+          error
+        );
       }
     }
+
     await requestIdRepository.updateOne(
       { reqId: reqUUID },
       { $set: { personaProcessCompleted: true } }
