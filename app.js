@@ -585,8 +585,10 @@ app.post("/create-persona", async (req, res) => {
       const mailOptions = {
         to: notifyCheck.email,
         from: "EasySource <no-reply@hirequotient.com>",
-        subject: "Activity Notification: All Personas fetched Successfully!",
-        html: `All personas for your job title search "${notifyCheck?.convertJobObject?.title}" have been successfully fetched. A total of ${notifyCheck?.personaIds?.length} personas were found. <br><br> You can view the personas by following this link: <a href="https://advanced-outbound-ai.hirequotient.co/persona-reachout/${reqUUID}">View Personas</a>.`,
+        subject: "EasyGrowth Notification: All Personas fetched Successfully!",
+        html: `All personas for your job title search "${notifyCheck?.convertJobObject?.title}" have been successfully fetched. A total of ${notifyCheck?.personaIds?.length} personas were found. <br><br> 
+        You can view the personas by following this link: <a href="https://advanced-outbound-ai.hirequotient.co/persona-reachout/${reqUUID}">View Personas</a>. <br><br>
+        If you want to check jobs, you can follow this link: <a href="https://advanced-outbound-ai.hirequotient.co/get-jobs/${reqUUID}">View Jobs</a>.`,
       };
       console.log({ mailOptions });
       smtpTransport.sendMail(mailOptions);
