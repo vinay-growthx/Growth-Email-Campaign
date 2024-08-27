@@ -580,6 +580,18 @@ app.post("/create-persona", async (req, res) => {
       { reqId: reqUUID },
       { $set: { personaProcessCompleted: true } }
     );
+    const notifyCheck = await requestIdRepository.findOne({ reqId: reqUUID });
+    if (notifyCheck.notify) {
+      const mailOptions = {
+        to: notifyCheck.email,
+        from: "EasySource <no-reply@hirequotient.com>",
+        subject: "Activity Notification: All Personas fetched Successfully!",
+        html: `All personas for your job title search "${notifyCheck?.convertJobObject?.title}" have been successfully fetched. A total of ${notifyCheck?.personaIds?.length} personas were found.`,
+      };
+      console.log({ mailOptions });
+      smtpTransport.sendMail(mailOptions);
+    }
+
     if (!flag) res.redirect(`/persona-reachout/${reqUUID}`);
   } catch (error) {
     console.error("Error creating persona:", error);
@@ -1071,6 +1083,32 @@ app.get("/", (req, res) => {
 //       .json({ error: "Failed to send emails", details: error.message });
 //   }
 // });
+app.post("/notify", async (req, res) => {
+  const { email, reqId } = req.body;
+
+  if (!email || !reqId) {
+    return res.status(400).json({ error: "Email and reqId are required." });
+  }
+
+  try {
+    const existingNotification = await requestIdRepository.findOne({
+      reqId: reqId,
+    });
+    console.log("exisitning notification", existingNotification);
+    if (existingNotification) {
+      const update = await requestIdRepository.updateOne(
+        { _id: existingNotification._id },
+        { $set: { notify: true, email: email } }
+      );
+      console.log("update ===>", update);
+    }
+    res.status(200).json({ message: "Notification Added successfully!!!" });
+  } catch (error) {
+    console.error("Error saving notification request:", error);
+    res.status(500).json({ error: "Failed to process notification request" });
+  }
+});
+
 app.post("/send-email", async (req, res) => {
   // console.log("req.body.reqId", req.body);
   const { enrichedData, emailTemplate, emailSubject } = req.body;
