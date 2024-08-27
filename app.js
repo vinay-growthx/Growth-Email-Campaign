@@ -587,30 +587,20 @@ app.post("/search-jobs", async (req, res) => {
     } = req.body;
     console.log("req body", req.body);
     // const roleFunction = isRoleFunctionEmptyOrFalsy(role_function);
+    const reqUUID = uuidv4();
 
-    const { allJobs, totalCount } = await fetchAllJobs(
+    await fetchAllJobs(
       job_title,
       role_function,
       num_jobs,
       job_listed_date,
-      job_listed_range
+      job_listed_range,
+      location_hidden,
+      industry_hidden,
+      role_function,
+      reqUUID
     );
-    const allJobsArr = allJobs.map((job) => job.job_id);
 
-    console.log("all jobs, total count", allJobsArr, totalCount);
-    const reqUUID = uuidv4();
-    const convertedObject = {
-      title: job_title,
-      location: location_hidden,
-      roleFunction: role_function,
-      industryFunction: industry_hidden,
-    };
-    const createdObj = await requestIdRepository.create({
-      reqId: reqUUID,
-      jobIds: allJobsArr,
-      convertJobObject: convertedObject,
-    });
-    console.log("created obj ===>", createdObj);
     // if (role_function) {
     //   job_title = jobRoles[role_function];
     // }
@@ -959,14 +949,14 @@ app.post("/email-enrich-new", async (req, res) => {
 //       .json({ error: "Failed to send emails", details: error.message });
 //   }
 // });
-// app.get("/", (req, res) => {
-//   res.render("findJob", {
-//     title: "Find the Best LinkedIn Jobs Available",
-//     jobFunctionArr: jobFunctionArr,
-//     industryArr: industryArr,
-//     locationArr: locationArr,
-//   });
-// });
+app.get("/", (req, res) => {
+  res.render("findJob", {
+    title: "Find the Best LinkedIn Jobs Available",
+    jobFunctionArr: jobFunctionArr,
+    industryArr: industryArr,
+    locationArr: locationArr,
+  });
+});
 // app.get("/", (req, res) => {
 //   if (req.session.views) {
 //     req.session.views++;

@@ -1118,7 +1118,11 @@ async function fetchAllJobs(
   role_function,
   num_jobs,
   job_listed_date,
-  job_listed_range
+  job_listed_range,
+  location_hidden,
+  industry_hidden,
+  role_function,
+  reqUUID
 ) {
   let offset = 0;
   const limit = num_jobs ? Math.min(500, num_jobs) : 500;
@@ -1194,7 +1198,20 @@ async function fetchAllJobs(
       offset += currentLimit;
     }
   }
-  return { allJobs, totalCount };
+  const convertedObject = {
+    title: job_title,
+    location: location_hidden,
+    roleFunction: role_function,
+    industryFunction: industry_hidden,
+  };
+  const allJobsArr = allJobs.map((job) => job.job_id);
+
+  const createdObj = await requestIdRepository.create({
+    reqId: reqUUID,
+    jobIds: allJobsArr,
+    convertJobObject: convertedObject,
+  });
+  return { totalCount };
 }
 
 function isRoleFunctionEmptyOrFalsy(role_function) {
