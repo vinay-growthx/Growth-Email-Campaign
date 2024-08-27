@@ -1375,29 +1375,29 @@
   </head>
   <body>
     <a href="#" class="floating-btn" id="scrollToBottomBtn">Scroll to Bottom</a>
-    <div id="selected-count" class="selected-count">0 Jobs Selected</div>
+    <div id="selected-count" class="selected-count">0 Jobs selected</div>
     <div class="parallax-container">
       <div class="parallax-layer parallax-background"></div>
       <div class="parallax-layer content">
         <h1>Job search results</h1>
         <div id="total-count" class="total-count">
-          Total Jobs: <%= totalCount %>
+          Total jobs: <%= totalCount %>
         </div>
         <div class="results-header">
           <div class="select-all-container">
             <input type="checkbox" id="selectAll" />
-            <label for="selectAll" class="select-all-label">Select All</label>
+            <label for="selectAll" class="select-all-label">Select all</label>
           </div>
           <div class="filter-container">
             <div class="company-filter">
               <div class="filter-header">
-                <span>Filter by Company</span>
+                <span>Filter by company</span>
                 <i class="fas fa-chevron-down"></i>
               </div>
               <div class="company-options">
                 <label class="option-item"
                   ><input type="checkbox" value="" checked /> All
-                  Companies</label
+                  companies</label
                 >
                 <% const companies = [...new Set(jobs.map(job =>
                 job.companyName))]; %> <% companies.forEach(company => { %>
@@ -1412,12 +1412,12 @@
           <div class="filter-container">
             <div class="source-filter">
               <div class="filter-header">
-                <span>Filter by Source</span>
+                <span>Filter by source</span>
                 <i class="fas fa-chevron-down"></i>
               </div>
               <div class="source-options">
                 <label class="option-item"
-                  ><input type="checkbox" value="" checked /> All Sources</label
+                  ><input type="checkbox" value="" checked /> All sources</label
                 >
                 <label class="option-item"
                   ><input type="checkbox" value="linkedin" /> LinkedIn</label
@@ -1449,7 +1449,7 @@
             hidden
           />
           <div class="form-group job-function-container">
-            <div class="select-label">Job Function for Persona</div>
+            <div class="select-label">Job function for Persona</div>
             <div class="multi-select-wrapper job-function-select">
               <div class="multi-select-header">
                 <span>Select job functions</span>
@@ -1471,7 +1471,7 @@
           </div>
 
           <div class="form-group industry-container">
-            <div class="select-label">Industry for Persona</div>
+            <div class="select-label">Industry for persona</div>
             <div class="multi-select-wrapper industry-select">
               <div class="multi-select-header">
                 <span>Select industries</span>
@@ -1492,7 +1492,7 @@
             </div>
           </div>
           <div class="form-group employee-size-container">
-            <div class="select-label">Company Size for Persona</div>
+            <div class="select-label">Company size for persona</div>
             <div class="multi-select-wrapper">
               <div class="multi-select-header">
                 <span>Select size ranges</span>
@@ -1551,7 +1551,7 @@
             </div>
           </div>
           <div class="form-group seniority-level-container">
-            <div class="select-label">Seniority Level for Persona</div>
+            <div class="select-label">Seniority level for persona</div>
             <div class="multi-select-wrapper seniority-select">
               <div class="multi-select-header">
                 <span>Select seniority levels</span>
@@ -1634,7 +1634,7 @@
             </div>
           </div>
           <div class="persona-designation">
-            <label for="personaDesignations">Persona Designations:</label>
+            <label for="personaDesignations">Persona designations:</label>
             <input type="text" id="personaDesignations" />
             <div id="designationTags" class="designation-tags"></div>
             <div class="default-designations">
