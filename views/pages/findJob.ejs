@@ -326,6 +326,28 @@
       .or-separator::after {
         margin-left: 0.25em;
       }
+      /* #totalJobsButton {
+        margin-top: 20px;
+        background-color: #2ecc71;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.3s ease;
+      }
+
+      #totalJobsButton:hover {
+        background-color: #27ae60;
+      }
+
+      #totalJobsResult {
+        margin-top: 10px;
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #2c3e50;
+      } */
     </style>
   </head>
   <body>
@@ -430,6 +452,8 @@
 
           <button type="submit" id="submitButton">Search Jobs</button>
         </form>
+        <!-- <button id="totalJobsButton">Get Total Jobs</button>
+        <div id="totalJobsResult"></div> -->
       </div>
     </div>
     <script>
@@ -442,6 +466,9 @@
             const jobFunctionSelect = document.getElementById("role_function");
             const jobListedDateInput = document.getElementById("job_listed_date");
             const jobListedRangeSelect = document.getElementById("job_listed_range");
+
+        //     const totalJobsButton = document.getElementById("totalJobsButton");
+        // const totalJobsResult = document.getElementById("totalJobsResult");
 
             const locationArr = [
               <% locationArr.forEach(function(location) { %>

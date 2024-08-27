@@ -137,42 +137,42 @@ const authMiddleware = (req, res, next) => {
   }
 };
 app.use("/", healthRouter);
-app.use(async (req, res, next) => {
-  try {
-    // Skip authentication for login route and public assets
-    if (req.path === "/login" || req.path.startsWith("/public")) {
-      return next();
-    }
+// app.use(async (req, res, next) => {
+//   try {
+//     // Skip authentication for login route and public assets
+//     if (req.path === "/login" || req.path.startsWith("/public")) {
+//       return next();
+//     }
 
-    // Check for token in various places
-    const idToken =
-      req.headers.authorization ||
-      req.cookies.token ||
-      (req.body && req.body.token) ||
-      (req.query && req.query.token);
+//     // Check for token in various places
+//     const idToken =
+//       req.headers.authorization ||
+//       req.cookies.token ||
+//       (req.body && req.body.token) ||
+//       (req.query && req.query.token);
 
-    if (!idToken) {
-      throw new Error("No token provided");
-    }
+//     if (!idToken) {
+//       throw new Error("No token provided");
+//     }
 
-    // Verify the token
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
+//     // Verify the token
+//     const decodedToken = await admin.auth().verifyIdToken(idToken);
 
-    // Attach the user information to the request
-    req.user = decodedToken;
-    next();
-  } catch (error) {
-    console.error("Authentication error:", error);
+//     // Attach the user information to the request
+//     req.user = decodedToken;
+//     next();
+//   } catch (error) {
+//     console.error("Authentication error:", error);
 
-    if (req.xhr || req.headers.accept.indexOf("json") > -1) {
-      // If it's an AJAX request, send JSON response
-      res.status(403).json({ error: error.message || "Unauthorized" });
-    } else {
-      // For regular requests, redirect to login
-      res.redirect("/login");
-    }
-  }
-});
+//     if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+//       // If it's an AJAX request, send JSON response
+//       res.status(403).json({ error: error.message || "Unauthorized" });
+//     } else {
+//       // For regular requests, redirect to login
+//       res.redirect("/login");
+//     }
+//   }
+// });
 app.get("/find-jobs", (req, res) => {
   res.render("findJob", {
     title: "Find the Best LinkedIn Jobs Available",
@@ -769,28 +769,28 @@ app.post("/email-enrich-process", async (req, res) => {
     res.status(500).json({ error: "Failed to process enriched data" });
   }
 });
-app.post("/login", async (req, res) => {
-  const { email, password } = req.body; // Assuming you handle password verification
-  try {
-    const userRecord = await admin.auth().getUserByEmail(email);
-    // Initialize the session user object if it doesn't exist
-    if (!req.session.user) {
-      req.session.user = {}; // Always initialize an object
-    }
+// app.post("/login", async (req, res) => {
+//   const { email, password } = req.body; // Assuming you handle password verification
+//   try {
+//     const userRecord = await admin.auth().getUserByEmail(email);
+//     // Initialize the session user object if it doesn't exist
+//     if (!req.session.user) {
+//       req.session.user = {}; // Always initialize an object
+//     }
 
-    // Set user details and token in the session
-    req.session.user.uid = userRecord.uid;
-    req.session.user.token = await admin
-      .auth()
-      .createCustomToken(userRecord.uid);
+//     // Set user details and token in the session
+//     req.session.user.uid = userRecord.uid;
+//     req.session.user.token = await admin
+//       .auth()
+//       .createCustomToken(userRecord.uid);
 
-    req.session.isAuthenticated = true; // Mark the session as authenticated
-    res.redirect("/find-jobs"); // Redirect to a protected route
-  } catch (error) {
-    console.error("Error signing in:", error);
-    res.status(401).render("login", { error: "Invalid credentials" });
-  }
-});
+//     req.session.isAuthenticated = true; // Mark the session as authenticated
+//     res.redirect("/find-jobs"); // Redirect to a protected route
+//   } catch (error) {
+//     console.error("Error signing in:", error);
+//     res.status(401).render("login", { error: "Invalid credentials" });
+//   }
+// });
 
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {
@@ -967,18 +967,18 @@ app.post("/email-enrich-new", async (req, res) => {
 //     locationArr: locationArr,
 //   });
 // });
-app.get("/", (req, res) => {
-  if (req.session.views) {
-    req.session.views++;
-    res.setHeader("Content-Type", "text/html");
-    res.write("<p>views: " + req.session.views + "</p>");
-    res.write("<p>expires in: " + req.session.cookie.maxAge / 1000 + "s</p>");
-    res.end();
-  } else {
-    req.session.views = 1;
-    res.end("welcome to the session demo. refresh!");
-  }
-});
+// app.get("/", (req, res) => {
+//   if (req.session.views) {
+//     req.session.views++;
+//     res.setHeader("Content-Type", "text/html");
+//     res.write("<p>views: " + req.session.views + "</p>");
+//     res.write("<p>expires in: " + req.session.cookie.maxAge / 1000 + "s</p>");
+//     res.end();
+//   } else {
+//     req.session.views = 1;
+//     res.end("welcome to the session demo. refresh!");
+//   }
+// });
 // app.post("/send-email", async (req, res) => {
 //   const { enrichedData, emailTemplate } = req.body;
 
