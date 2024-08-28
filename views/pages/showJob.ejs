@@ -2353,8 +2353,7 @@
           if (applyLink.includes("glassdoor.com")) return "glassdoor";
           return "other";
         }
-
-     function updateJobVisibility() {
+        function updateJobVisibility() {
   const selectedCompanies = Array.from(companyCheckboxes)
     .filter((checkbox) => checkbox.checked && checkbox.value !== "")
     .map((checkbox) => checkbox.value);
@@ -2363,8 +2362,7 @@
     .filter((checkbox) => checkbox.checked && checkbox.value !== "")
     .map((checkbox) => checkbox.value);
 
-  const allCompaniesSelected =
-    allCompaniesCheckbox.checked || selectedCompanies.length === 0;
+  const allCompaniesSelected = allCompaniesCheckbox.checked;
 
   let visibleJobCount = 0;
 
@@ -2373,10 +2371,8 @@
     const applyLink = card.querySelector(".job-title a")?.href || "";
     const jobSource = getJobSource(applyLink);
 
-    const companyMatch =
-      allCompaniesSelected || selectedCompanies.includes(companyName);
-    const sourceMatch =
-      selectedSources.length === 0 || selectedSources.includes(jobSource);
+    const companyMatch = allCompaniesSelected || selectedCompanies.includes(companyName);
+    const sourceMatch = selectedSources.length === 0 || selectedSources.includes(jobSource);
 
     if (companyMatch && sourceMatch) {
       card.style.display = "flex";
@@ -2389,7 +2385,8 @@
   updateCounts(visibleJobCount);
   updatePagination();
 }
-  function updateCounts(visibleJobCount) {
+
+        function updateCounts(visibleJobCount) {
   totalCountElement.textContent = `Visible jobs: ${visibleJobCount} / Total jobs: <%= totalCount %>`;
   updateSelectedCount();
 }
@@ -2477,24 +2474,30 @@
         companyFilterHeader.addEventListener("click", function () {
           companyFilter.classList.toggle("active");
         });
-
         allCompaniesCheckbox.addEventListener("change", function () {
+  if (this.checked) {
     companyCheckboxes.forEach((checkbox) => {
       if (checkbox !== allCompaniesCheckbox) {
-        checkbox.checked = !this.checked;
+        checkbox.checked = false;
       }
     });
+  }
+  updateJobVisibility();
+});
+
+companyCheckboxes.forEach((checkbox) => {
+  checkbox.addEventListener("change", function () {
+    if (this.checked && this !== allCompaniesCheckbox) {
+      allCompaniesCheckbox.checked = false;
+    } else if (!this.checked && this !== allCompaniesCheckbox) {
+      const anyChecked = Array.from(companyCheckboxes).some(
+        (cb) => cb.checked && cb !== allCompaniesCheckbox
+      );
+      allCompaniesCheckbox.checked = !anyChecked;
+    }
     updateJobVisibility();
   });
-
-  companyCheckboxes.forEach((checkbox) => {
-    checkbox.addEventListener("change", function () {
-      if (this !== allCompaniesCheckbox) {
-        allCompaniesCheckbox.checked = false;
-      }
-      updateJobVisibility();
-    });
-  });
+});
 
         sourceFilterHeader.addEventListener("click", function () {
           sourceFilter.classList.toggle("active");
