@@ -1122,6 +1122,7 @@ async function fetchAllJobs(
   location_hidden,
   industry_hidden,
   role_function,
+  industry,
   reqUUID
 ) {
   let offset = 0;
@@ -1144,6 +1145,10 @@ async function fetchAllJobs(
       .map((title) => new RegExp(title, "i"));
 
     query.title = { $in: jobTitlesArray };
+  }
+  if (industry) {
+    const industryRegex = new RegExp(industry, "i");
+    query.formattedIndustries = { $regex: industryRegex };
   }
 
   // Add date range filter
@@ -1211,6 +1216,7 @@ async function fetchAllJobs(
     jobIds: allJobsArr,
     convertJobObject: convertedObject,
   });
+  console.log("create obj --->", createdObj);
   return { totalCount };
 }
 

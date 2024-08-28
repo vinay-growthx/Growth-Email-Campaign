@@ -655,6 +655,7 @@ app.post("/search-jobs", async (req, res) => {
       location_hidden,
       industry_hidden,
       role_function,
+      industry,
     } = req.body;
     console.log("req body", req.body);
     // const roleFunction = isRoleFunctionEmptyOrFalsy(role_function);
@@ -669,6 +670,7 @@ app.post("/search-jobs", async (req, res) => {
       location_hidden,
       industry_hidden,
       role_function,
+      industry,
       reqUUID
     );
 

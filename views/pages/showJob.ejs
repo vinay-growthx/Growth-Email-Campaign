@@ -2027,7 +2027,19 @@
                   <img src="<%= job.company_data.logo %>" alt="<%= job.companyName %> logo" class="company-logo">
                   <% if (job.company_data && job.company_data.description) { %>
                     <div class="company-description-tooltip">
-                      <%= job.company_data.description %>
+                      <% 
+                      // Split the description into paragraphs
+                      const paragraphs = job.company_data.description.split(/\n\n|\r\n\r\n/);
+                      paragraphs.forEach(function(paragraph) { 
+                        // Further split each paragraph by sentences
+                        const sentences = paragraph.split(/(?<=[.!?])\s+/);
+                      %>
+                        <p>
+                          <% sentences.forEach(function(sentence) { %>
+                            <%= sentence %><br>
+                          <% }); %>
+                        </p>
+                      <% }); %>
                     </div>
                   <% } %>
                 </div>
