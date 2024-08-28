@@ -348,6 +348,28 @@
         font-weight: bold;
         color: #2c3e50;
       } */
+
+      .logout-button {
+        display: block;
+        width: 100%;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+        color: #fff;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 1.2em;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-align: center;
+        margin-top: 20px; /* Space from the search button */
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+      }
+      .logout-button:hover {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+      }
     </style>
   </head>
   <body>
@@ -1447,155 +1469,177 @@
           </div>
 
           <button type="submit" id="submitButton">Search Jobs</button>
+          <!-- <button
+            type="button"
+            class="logout-button"
+            onclick="location.href='/logout'"
+          >
+            Log Out
+          </button> -->
         </form>
         <!-- <button id="totalJobsButton">Get Total Jobs</button>
         <div id="totalJobsResult"></div> -->
       </div>
     </div>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const form = document.querySelector("form");
-        const submitButton = document.getElementById("submitButton");
-        const locationInput = document.getElementById("location");
-        const errorMessage = document.getElementById("error-message");
-        const jobTitleInput = document.getElementById("job_title");
-        const jobFunctionSelect = document.getElementById("role_function");
-        const industrySelect = document.getElementById("industry");
-        const jobListedDateInput = document.getElementById("job_listed_date");
-        const jobListedRangeSelect =
-          document.getElementById("job_listed_range");
+          //      document.getElementById('logoutButton').addEventListener('click', function() {
+          //     window.location.href = '/logout'; // Update this URL if needed
+          // });
+          document.addEventListener("DOMContentLoaded", function() {
+        const logoutButton = document.getElementById('logoutButton');
 
-            const locationArr = [
-              <% locationArr.forEach(function(location) { %>
-                {
-                  label: "<%= location.label %>",
-                  value: "<%= location.value %>"
-                },
-              <% }); %>
-            ];
-
-        function suggestOptions(input, optionsArr) {
-          const suggestions = optionsArr.filter((option) =>
-            option.label.toLowerCase().startsWith(input.toLowerCase())
-          );
-          suggestions.sort((a, b) => a.label.length - b.label.length);
-          return suggestions.slice(0, 5); // Limit to 5 suggestions
-        }
-
-        function displaySuggestions(suggestions, datalistId) {
-          const datalist = document.getElementById(datalistId);
-          datalist.innerHTML = "";
-
-          suggestions.forEach((suggestion) => {
-            const option = document.createElement("option");
-            option.value = suggestion.label;
-            option.dataset.value = JSON.stringify(suggestion);
-            datalist.appendChild(option);
+        if(logoutButton) {
+          logoutButton.addEventListener('click', function() {
+            console.log('Logout button clicked');
+            window.location.href = '/logout'; // Update this URL if needed
           });
+        } else {
+          console.log('Logout button not found');
         }
-
-
-        function updateHiddenField(input, optionsArr, hiddenFieldId) {
-          const matchedOption = optionsArr.find(
-            (option) => option.label.toLowerCase() === input.value.toLowerCase()
-          );
-          if (matchedOption) {
-            document.getElementById(hiddenFieldId).value =
-              JSON.stringify(matchedOption);
-            errorMessage.style.display = "none";
-          } else {
-            document.getElementById(hiddenFieldId).value = "";
-            errorMessage.textContent = `Please select a valid ${input.id} from the list.`;
-            errorMessage.style.display = "block";
-          }
-        }
-
-        function handleInputChange(
-          input,
-          optionsArr,
-          suggestionsId,
-          hiddenFieldId
-        ) {
-          input.addEventListener("input", function () {
-            const suggestions = suggestOptions(this.value, optionsArr);
-            displaySuggestions(suggestions, suggestionsId);
-            updateHiddenField(this, optionsArr, hiddenFieldId);
-          });
-
-          input.addEventListener("change", function () {
-            updateHiddenField(this, optionsArr, hiddenFieldId);
-          });
-        }
-
-        handleInputChange(
-          locationInput,
-          locationArr,
-          "location-suggestions",
-          "location_hidden"
-        );
-
-        // Add event listeners for job listed date and range
-        jobListedDateInput.addEventListener("change", function () {
-          if (this.value) {
-            jobListedRangeSelect.disabled = true;
-          } else {
-            jobListedRangeSelect.disabled = false;
-          }
-        });
-
-        jobListedRangeSelect.addEventListener("change", function () {
-          if (this.value) {
-            jobListedDateInput.disabled = true;
-          } else {
-            jobListedDateInput.disabled = false;
-          }
-        });
-
-        form.addEventListener("submit", function (e) {
-          let isValid = true;
-          errorMessage.textContent = "";
-
-          updateHiddenField(locationInput, locationArr, "location_hidden");
-
-          if (document.getElementById("location_hidden").value === "") {
-            errorMessage.textContent +=
-              "Please select a valid location from the list. ";
-            isValid = false;
-          }
-
-          if (
-            jobTitleInput.value.trim() === "" &&
-            jobFunctionSelect.value === "" &&
-            industrySelect.value === ""
-          ) {
-            errorMessage.textContent +=
-              "Please provide either job titles, select a job function, or select an industry. ";
-            isValid = false;
-          }
-
-          // if (jobListedDateInput.value && jobListedRangeSelect.value) {
-          //   errorMessage.textContent +=
-          //     "Please select either 'Job Listed From' or 'Job Listed Within', not both. ";
-          //   isValid = false;
-          // }
-
-          if (!isValid) {
-            e.preventDefault(); // Prevent form submission
-            errorMessage.style.display = "block";
-            return;
-          }
-
-          errorMessage.style.display = "none";
-          // Disable the button
-          submitButton.disabled = true;
-          submitButton.textContent = "Searching...";
-
-          setTimeout(function () {
-            submitButton.disabled = false;
-            submitButton.textContent = "Search Jobs";
-          }, 20000); // Re-enable after 20 seconds
-        });
       });
+              document.addEventListener("DOMContentLoaded", function () {
+                const form = document.querySelector("form");
+                const submitButton = document.getElementById("submitButton");
+                const locationInput = document.getElementById("location");
+                const errorMessage = document.getElementById("error-message");
+                const jobTitleInput = document.getElementById("job_title");
+                const jobFunctionSelect = document.getElementById("role_function");
+                const industrySelect = document.getElementById("industry");
+                const jobListedDateInput = document.getElementById("job_listed_date");
+                const jobListedRangeSelect =
+                  document.getElementById("job_listed_range");
+
+                    const locationArr = [
+                      <% locationArr.forEach(function(location) { %>
+                        {
+                          label: "<%= location.label %>",
+                          value: "<%= location.value %>"
+                        },
+                      <% }); %>
+                    ];
+
+                function suggestOptions(input, optionsArr) {
+                  const suggestions = optionsArr.filter((option) =>
+                    option.label.toLowerCase().startsWith(input.toLowerCase())
+                  );
+                  suggestions.sort((a, b) => a.label.length - b.label.length);
+                  return suggestions.slice(0, 5); // Limit to 5 suggestions
+                }
+
+                function displaySuggestions(suggestions, datalistId) {
+                  const datalist = document.getElementById(datalistId);
+                  datalist.innerHTML = "";
+
+                  suggestions.forEach((suggestion) => {
+                    const option = document.createElement("option");
+                    option.value = suggestion.label;
+                    option.dataset.value = JSON.stringify(suggestion);
+                    datalist.appendChild(option);
+                  });
+                }
+
+
+                function updateHiddenField(input, optionsArr, hiddenFieldId) {
+                  const matchedOption = optionsArr.find(
+                    (option) => option.label.toLowerCase() === input.value.toLowerCase()
+                  );
+                  if (matchedOption) {
+                    document.getElementById(hiddenFieldId).value =
+                      JSON.stringify(matchedOption);
+                    errorMessage.style.display = "none";
+                  } else {
+                    document.getElementById(hiddenFieldId).value = "";
+                    errorMessage.textContent = `Please select a valid ${input.id} from the list.`;
+                    errorMessage.style.display = "block";
+                  }
+                }
+
+                function handleInputChange(
+                  input,
+                  optionsArr,
+                  suggestionsId,
+                  hiddenFieldId
+                ) {
+                  input.addEventListener("input", function () {
+                    const suggestions = suggestOptions(this.value, optionsArr);
+                    displaySuggestions(suggestions, suggestionsId);
+                    updateHiddenField(this, optionsArr, hiddenFieldId);
+                  });
+
+                  input.addEventListener("change", function () {
+                    updateHiddenField(this, optionsArr, hiddenFieldId);
+                  });
+                }
+
+                handleInputChange(
+                  locationInput,
+                  locationArr,
+                  "location-suggestions",
+                  "location_hidden"
+                );
+
+                // Add event listeners for job listed date and range
+                jobListedDateInput.addEventListener("change", function () {
+                  if (this.value) {
+                    jobListedRangeSelect.disabled = true;
+                  } else {
+                    jobListedRangeSelect.disabled = false;
+                  }
+                });
+
+                jobListedRangeSelect.addEventListener("change", function () {
+                  if (this.value) {
+                    jobListedDateInput.disabled = true;
+                  } else {
+                    jobListedDateInput.disabled = false;
+                  }
+                });
+
+                form.addEventListener("submit", function (e) {
+                  let isValid = true;
+                  errorMessage.textContent = "";
+
+                  updateHiddenField(locationInput, locationArr, "location_hidden");
+
+                  if (document.getElementById("location_hidden").value === "") {
+                    errorMessage.textContent +=
+                      "Please select a valid location from the list. ";
+                    isValid = false;
+                  }
+
+                  if (
+                    jobTitleInput.value.trim() === "" &&
+                    jobFunctionSelect.value === "" &&
+                    industrySelect.value === ""
+                  ) {
+                    errorMessage.textContent +=
+                      "Please provide either job titles, select a job function, or select an industry. ";
+                    isValid = false;
+                  }
+
+                  // if (jobListedDateInput.value && jobListedRangeSelect.value) {
+                  //   errorMessage.textContent +=
+                  //     "Please select either 'Job Listed From' or 'Job Listed Within', not both. ";
+                  //   isValid = false;
+                  // }
+
+                  if (!isValid) {
+                    e.preventDefault(); // Prevent form submission
+                    errorMessage.style.display = "block";
+                    return;
+                  }
+
+                  errorMessage.style.display = "none";
+                  // Disable the button
+                  submitButton.disabled = true;
+                  submitButton.textContent = "Searching...";
+
+                  setTimeout(function () {
+                    submitButton.disabled = false;
+                    submitButton.textContent = "Search Jobs";
+                  }, 20000); // Re-enable after 20 seconds
+                });
+              });
     </script>
   </body>
 </html>

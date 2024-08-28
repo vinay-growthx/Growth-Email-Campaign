@@ -174,7 +174,7 @@ app.use("/", healthRouter);
 //     }
 //   }
 // });
-app.get("/find-jobs", (req, res) => {
+app.get("/find-jobs", authMiddleware, (req, res) => {
   res.render("findJob", {
     title: "Find the Best LinkedIn Jobs Available",
     jobFunctionArr: jobFunctionArr,
@@ -182,7 +182,7 @@ app.get("/find-jobs", (req, res) => {
     locationArr: locationArr,
   });
 });
-app.get("/get-jobs/:reqId", async (req, res) => {
+app.get("/get-jobs/:reqId", authMiddleware, async (req, res) => {
   const reqId = req.params.reqId;
   const page = parseInt(req.query.page) || 1;
   const limit = 500;
@@ -225,6 +225,15 @@ app.use((req, res, next) => {
     authMiddleware(req, res, next);
   }
 });
+app.post("/logout", function (req, res) {
+  req.session.destroy(function (err) {
+    if (err) {
+      console.error("Logout failed:", err);
+      return res.status(500).send("Logout failed");
+    }
+    res.redirect("/login");
+  });
+});
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -251,7 +260,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/persona-reachout/:reqId", async (req, res) => {
+app.get("/persona-reachout/:reqId", authMiddleware, async (req, res) => {
   const reqId = req.params.reqId;
   const page = parseInt(req.query.page) || 1;
   const limit = 1000;
@@ -285,7 +294,7 @@ app.get("/persona-reachout/:reqId", async (req, res) => {
 
 //   res.render("personaReachout", { people });
 // });
-app.get("/send-email", (req, res) => {
+app.get("/send-email", authMiddleware, (req, res) => {
   console.log("req query data ====>", req.query);
 
   const enrichedData = JSON.parse(req.query.enrichedId);
@@ -644,7 +653,7 @@ app.post("/create-persona", async (req, res) => {
   }
 });
 
-app.get("/api/check-status/:reqId", async (req, res) => {
+app.get("/api/check-status/:reqId", authMiddleware, async (req, res) => {
   try {
     if (!req.session.isAuthenticated) {
       return res.redirect("/login");
@@ -813,7 +822,7 @@ app.post("/search-jobs", async (req, res) => {
   }
 });
 
-app.get("/enriched-data", (req, res) => {
+app.get("/enriched-data", authMiddleware, (req, res) => {
   const people = JSON.parse(req.query.data);
   res.render("enrichedData", { people });
 });
@@ -914,7 +923,7 @@ app.get("/logout", (req, res) => {
   });
 });
 
-app.post("/enriched-data-process", async (req, res) => {
+app.post("/enriched-data-process", authMiddleware, async (req, res) => {
   try {
     if (!req.session.isAuthenticated) {
       return res.redirect("/login");
@@ -1083,14 +1092,14 @@ app.post("/email-enrich-new", async (req, res) => {
 //       .json({ error: "Failed to send emails", details: error.message });
 //   }
 // });
-app.get("/", (req, res) => {
-  res.render("findJob", {
-    title: "Find the Best LinkedIn Jobs Available",
-    jobFunctionArr: jobFunctionArr,
-    industryArr: industryArr,
-    locationArr: locationArr,
-  });
-});
+// app.get("/", authMiddleware, (req, res) => {
+//   res.render("findJob", {
+//     title: "Find the Best LinkedIn Jobs Available",
+//     jobFunctionArr: jobFunctionArr,
+//     industryArr: industryArr,
+//     locationArr: locationArr,
+//   });
+// });
 // app.get("/", (req, res) => {
 //   if (req.session.views) {
 //     req.session.views++;

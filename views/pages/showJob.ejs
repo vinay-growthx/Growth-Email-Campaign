@@ -1706,6 +1706,20 @@
     visibility: visible;
     opacity: 1;
   }
+  .logout-btn {
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #2980b9;
+}
+
     </style>
   </head>
   <body>
@@ -1722,7 +1736,7 @@
           <div class="select-all-container">
             <input type="checkbox" id="selectAll" />
             <label for="selectAll" class="select-all-label">Select all</label>
-          </div>
+          </div>    
           <div class="filter-container">
             <div class="company-filter">
               <div class="filter-header">
@@ -2235,6 +2249,21 @@
       </div>
     </div>
     <script>
+      function logout() {
+  fetch('/logout', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    }
+  }).then(response => {
+    if (response.ok) {
+      window.location.href = '/login';
+    } else {
+      alert('Failed to log out.');
+    }
+  }).catch(error => console.error('Error logging out:', error));
+}
+
       document.addEventListener("DOMContentLoaded", function () {
         const selectAllCheckbox = document.getElementById("selectAll");
         const jobCheckboxes = document.querySelectorAll(
