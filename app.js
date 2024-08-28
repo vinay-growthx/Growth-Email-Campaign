@@ -175,9 +175,6 @@ app.use("/", healthRouter);
 //   }
 // });
 app.get("/find-jobs", (req, res) => {
-  if (!req.session.isAuthenticated) {
-    return res.redirect("/login");
-  }
   res.render("findJob", {
     title: "Find the Best LinkedIn Jobs Available",
     jobFunctionArr: jobFunctionArr,
@@ -186,9 +183,6 @@ app.get("/find-jobs", (req, res) => {
   });
 });
 app.get("/get-jobs/:reqId", async (req, res) => {
-  if (!req.session.isAuthenticated) {
-    return res.redirect("/login");
-  }
   const reqId = req.params.reqId;
   const page = parseInt(req.query.page) || 1;
   const limit = 500;
@@ -234,7 +228,7 @@ app.use((req, res, next) => {
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-
+  console.log("email password ---->", email, password);
   try {
     // Perform authentication logic here (e.g., check credentials against Firebase)
     // For simplicity, let's assume the authentication is successful if the email is "john@octosp.com" and the password is "john@octosp"
@@ -258,9 +252,6 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/persona-reachout/:reqId", async (req, res) => {
-  if (!req.session.isAuthenticated) {
-    return res.redirect("/login");
-  }
   const reqId = req.params.reqId;
   const page = parseInt(req.query.page) || 1;
   const limit = 1000;
@@ -296,9 +287,7 @@ app.get("/persona-reachout/:reqId", async (req, res) => {
 // });
 app.get("/send-email", (req, res) => {
   console.log("req query data ====>", req.query);
-  if (!req.session.isAuthenticated) {
-    return res.redirect("/login");
-  }
+
   const enrichedData = JSON.parse(req.query.enrichedId);
   console.log("enriched data --->", enrichedData);
   res.render("sendEmail", { enrichedData });
@@ -319,9 +308,7 @@ function findJobPostByEmployerName(arr, employerName) {
 
 app.post("/send-email", async (req, res) => {
   const { subject, body, emails } = req.body;
-  if (!req.session.isAuthenticated) {
-    return res.redirect("/login");
-  }
+
   const blockedEmails = [];
   const personaIds = emails.map((item) => item.id);
   const persona = await apolloPersonaRepository.find(
@@ -827,9 +814,6 @@ app.post("/search-jobs", async (req, res) => {
 });
 
 app.get("/enriched-data", (req, res) => {
-  if (!req.session.isAuthenticated) {
-    return res.redirect("/login");
-  }
   const people = JSON.parse(req.query.data);
   res.render("enrichedData", { people });
 });

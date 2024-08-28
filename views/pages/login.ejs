@@ -187,7 +187,31 @@
           class="logo"
         />
         <h1>Login with your EasyGrowth account</h1>
-        <form>
+        <form id="login-form" action="/login" method="POST">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="your.email@example.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="••••••••••"
+              required
+            />
+          </div>
+          <button type="submit" class="login-button">Login</button>
+        </form>
+
+        <!-- <form>
           <div class="form-group">
             <label for="email">Email</label>
             <input
@@ -207,7 +231,7 @@
             />
           </div>
           <button type="submit" class="login-button">Login</button>
-        </form>
+        </form> -->
         <div class="google-login" id="googleLogin">
           <img
             src="https://developers.google.com/identity/images/g-logo.png"
@@ -236,46 +260,47 @@
       </div>
     </div>
     <script>
-      const loginForm = document.querySelector("form");
-      const googleLogin = document.getElementById("googleLogin");
+      // const loginForm = document.querySelector("form");
+      // const googleLogin = document.getElementById("googleLogin");
 
-      function redirectToFindJobs() {
-        // Replace this with the actual URL of your find-jobs page
-        window.location.href = "/find-jobs";
-      }
+      // function redirectToFindJobs() {
+      //   // Replace this with the actual URL of your find-jobs page
+      //   // window.location.href = "/find-jobs";
+      // }
 
-      const validCredentials = [
-        {
-          username: "john@octosp.com",
-          password: "john@octosp",
-        },
-      ];
+      // const validCredentials = [
+      //   {
+      //     username: "john@octosp.com",
+      //     password: "john@octosp",
+      //   },
+      // ];
 
-      loginForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+      // loginForm.addEventListener("submit", (e) => {
+      //   console.log("inside submit");
+      //   e.preventDefault();
+      //   const email = document.getElementById("email").value;
+      //   const password = document.getElementById("password").value;
 
-        const user = validCredentials.find(
-          (cred) => cred.username === email && cred.password === password
-        );
+      //   const user = validCredentials.find(
+      //     (cred) => cred.username === email && cred.password === password
+      //   );
 
-        if (user) {
-          console.log("User signed in:", user);
-          redirectToFindJobs();
-        } else {
-          console.error("Invalid credentials");
-          alert("Invalid username or password. Please try again.");
-        }
-      });
+      //   if (user) {
+      //     console.log("User signed in:", user);
+      //     redirectToFindJobs();
+      //   } else {
+      //     console.error("Invalid credentials");
+      //     alert("Invalid username or password. Please try again.");
+      //   }
+      // });
 
-      googleLogin.addEventListener("click", () => {
-        // Replace this with your desired Google sign-in functionality
-        console.log("Google sign-in clicked");
-        // Add your Google sign-in logic here
-        // If the user successfully signs in with Google, you can call the redirectToFindJobs() function
-        // redirectToFindJobs();
-      });
+      // googleLogin.addEventListener("click", () => {
+      //   // Replace this with your desired Google sign-in functionality
+      //   console.log("Google sign-in clicked");
+      //   // Add your Google sign-in logic here
+      //   // If the user successfully signs in with Google, you can call the redirectToFindJobs() function
+      //   // redirectToFindJobs();
+      // });
     </script>
   </body>
 </html>
