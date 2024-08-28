@@ -1572,11 +1572,11 @@
             isValid = false;
           }
 
-          if (jobListedDateInput.value && jobListedRangeSelect.value) {
-            errorMessage.textContent +=
-              "Please select either 'Job Listed From' or 'Job Listed Within', not both. ";
-            isValid = false;
-          }
+          // if (jobListedDateInput.value && jobListedRangeSelect.value) {
+          //   errorMessage.textContent +=
+          //     "Please select either 'Job Listed From' or 'Job Listed Within', not both. ";
+          //   isValid = false;
+          // }
 
           if (!isValid) {
             e.preventDefault(); // Prevent form submission

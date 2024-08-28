@@ -1125,6 +1125,7 @@ async function fetchAllJobs(
   industry,
   reqUUID
 ) {
+  console.log("industry ---------->", industry);
   let offset = 0;
   const limit = num_jobs ? Math.min(500, num_jobs) : 500;
   let hasMore = true;
@@ -1132,6 +1133,8 @@ async function fetchAllJobs(
 
   let query = {};
   let jobTitlesArray = [];
+
+  // Handle job titles filtering
   if (role_function) {
     jobTitlesArray = jobRoles[role_function]
       .map((title) => title.trim())
@@ -1143,17 +1146,24 @@ async function fetchAllJobs(
       .map((title) => title.trim())
       .filter((title) => title.length > 0)
       .map((title) => new RegExp(title, "i"));
+  }
 
+  // Combine job titles filter into query
+  if (jobTitlesArray.length > 0) {
     query.title = { $in: jobTitlesArray };
   }
+
+  // Handle industry filtering
   if (industry) {
     const industryRegex = new RegExp(industry, "i");
     query.formattedIndustries = { $regex: industryRegex };
   }
 
   // Add date range filter
-  if (job_listed_date && job_listed_range) {
-    const startDate = new Date(job_listed_date);
+  console.log("job listed date ===>", job_listed_date);
+  console.log("job listed range ===>", job_listed_range);
+  if (job_listed_range) {
+    const startDate = new Date();
     let endDate;
 
     switch (job_listed_range) {
@@ -1174,18 +1184,25 @@ async function fetchAllJobs(
     }
 
     query.listedAt = {
-      $gte: endDate.toISOString(),
-      $lte: startDate.toISOString(),
+      $gte: endDate.toISOString().slice(0, 19), // Compare as string
+      $lte: startDate.toISOString().slice(0, 19), // Compare as string
     };
   }
-
+  if (job_listed_date) {
+    query.listedAt = {
+      $gte: convertDateFormat(job_listed_date),
+    };
+  }
+  // Define sorting option
   const sortOption = { listedAt: -1 };
+
+  // Get the total count of jobs matching the query
   const totalCount = await jobsRepository.count(query);
-  console.log("total count", totalCount);
 
   while (hasMore && (!num_jobs || allJobs.length < num_jobs)) {
     const remainingJobs = num_jobs ? num_jobs - allJobs.length : limit;
     const currentLimit = Math.min(limit, remainingJobs);
+    console.log("query =====>", query);
 
     const jobs = await jobsRepository.find(
       query,
@@ -1203,6 +1220,7 @@ async function fetchAllJobs(
       offset += currentLimit;
     }
   }
+
   const convertedObject = {
     title: job_title,
     location: location_hidden,
@@ -1216,12 +1234,19 @@ async function fetchAllJobs(
     jobIds: allJobsArr,
     convertJobObject: convertedObject,
   });
-  console.log("create obj --->", createdObj);
+
   return { totalCount };
 }
-
 function isRoleFunctionEmptyOrFalsy(role_function) {
   return !role_function || role_function.trim() === "";
+}
+
+function convertDateFormat(dateString) {
+  // Convert the input string to a Date object
+  const date = new Date(dateString);
+  date.setUTCHours(date.getUTCHours(), 57, 23, 0); // Set minutes, seconds, milliseconds
+  const formattedDate = date.toISOString();
+  return formattedDate;
 }
 
 module.exports = {

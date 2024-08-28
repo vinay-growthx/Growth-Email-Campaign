@@ -193,7 +193,7 @@ app.get("/get-jobs/:reqId", async (req, res) => {
     console.log(`Total Jobs: ${totalCount}`);
     console.log(`Total Pages: ${totalPages}`);
     console.log(`Current Page: ${page}`);
-    console.log("job data ===>", jobData);
+    // console.log("job data ===>", jobData);
     res.render("showJob", {
       jobs: jobData,
       reqId,
