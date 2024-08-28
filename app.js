@@ -175,6 +175,9 @@ app.use("/", healthRouter);
 //   }
 // });
 app.get("/find-jobs", (req, res) => {
+  if (!req.session.isAuthenticated) {
+    return res.redirect("/login");
+  }
   res.render("findJob", {
     title: "Find the Best LinkedIn Jobs Available",
     jobFunctionArr: jobFunctionArr,
@@ -183,6 +186,9 @@ app.get("/find-jobs", (req, res) => {
   });
 });
 app.get("/get-jobs/:reqId", async (req, res) => {
+  if (!req.session.isAuthenticated) {
+    return res.redirect("/login");
+  }
   const reqId = req.params.reqId;
   const page = parseInt(req.query.page) || 1;
   const limit = 500;
@@ -212,8 +218,49 @@ app.get("/get-jobs/:reqId", async (req, res) => {
 app.get("/login", (req, res) => {
   res.render("login", { title: "Login to Advanced Outreach AI" });
 });
+app.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) console.error("Error destroying session:", err);
+    res.redirect("/login");
+  });
+});
+app.use((req, res, next) => {
+  if (req.path === "/login" || req.path === "/logout") {
+    next();
+  } else {
+    authMiddleware(req, res, next);
+  }
+});
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Perform authentication logic here (e.g., check credentials against Firebase)
+    // For simplicity, let's assume the authentication is successful if the email is "john@octosp.com" and the password is "john@octosp"
+    if (email === "john@octosp.com" && password === "john@octosp") {
+      req.session.isAuthenticated = true;
+      req.session.save((err) => {
+        if (err) {
+          console.error("Error saving session:", err);
+          res.status(500).render("login", { error: "Internal Server Error" });
+        } else {
+          res.redirect("/find-jobs");
+        }
+      });
+    } else {
+      res.status(401).render("login", { error: "Invalid credentials" });
+    }
+  } catch (error) {
+    console.error("Error signing in:", error);
+    res.status(401).render("login", { error: "Invalid credentials" });
+  }
+});
 
 app.get("/persona-reachout/:reqId", async (req, res) => {
+  if (!req.session.isAuthenticated) {
+    return res.redirect("/login");
+  }
   const reqId = req.params.reqId;
   const page = parseInt(req.query.page) || 1;
   const limit = 1000;
@@ -249,6 +296,9 @@ app.get("/persona-reachout/:reqId", async (req, res) => {
 // });
 app.get("/send-email", (req, res) => {
   console.log("req query data ====>", req.query);
+  if (!req.session.isAuthenticated) {
+    return res.redirect("/login");
+  }
   const enrichedData = JSON.parse(req.query.enrichedId);
   console.log("enriched data --->", enrichedData);
   res.render("sendEmail", { enrichedData });
@@ -269,6 +319,9 @@ function findJobPostByEmployerName(arr, employerName) {
 
 app.post("/send-email", async (req, res) => {
   const { subject, body, emails } = req.body;
+  if (!req.session.isAuthenticated) {
+    return res.redirect("/login");
+  }
   const blockedEmails = [];
   const personaIds = emails.map((item) => item.id);
   const persona = await apolloPersonaRepository.find(
@@ -421,6 +474,9 @@ function convertToStringArray(commaString) {
 }
 app.post("/create-persona", async (req, res) => {
   try {
+    if (!req.session.isAuthenticated) {
+      return res.redirect("/login");
+    }
     let seniorityLevel = req?.body?.seniorityLevel;
     if (req?.body?.seniorityLevel?.length) {
       const allItems = seniorityLevel.flatMap((str) => str.split(","));
@@ -603,6 +659,9 @@ app.post("/create-persona", async (req, res) => {
 
 app.get("/api/check-status/:reqId", async (req, res) => {
   try {
+    if (!req.session.isAuthenticated) {
+      return res.redirect("/login");
+    }
     const reqId = req.params.reqId;
 
     // Find the request in the database
@@ -644,6 +703,9 @@ app.get("/api/check-status/:reqId", async (req, res) => {
 });
 app.post("/search-jobs", async (req, res) => {
   try {
+    if (!req.session.isAuthenticated) {
+      return res.redirect("/login");
+    }
     let query = req.body.job_title.trim() + " in " + req.body.location.trim();
 
     query = query.toLowerCase();
@@ -765,11 +827,17 @@ app.post("/search-jobs", async (req, res) => {
 });
 
 app.get("/enriched-data", (req, res) => {
+  if (!req.session.isAuthenticated) {
+    return res.redirect("/login");
+  }
   const people = JSON.parse(req.query.data);
   res.render("enrichedData", { people });
 });
 app.post("/email-enrich-process", async (req, res) => {
   try {
+    if (!req.session.isAuthenticated) {
+      return res.redirect("/login");
+    }
     // console.log(req.body);
     let selectedPeople = req.body.enrichedIds;
     const reqId = req.body.reqId;
@@ -864,6 +932,9 @@ app.get("/logout", (req, res) => {
 
 app.post("/enriched-data-process", async (req, res) => {
   try {
+    if (!req.session.isAuthenticated) {
+      return res.redirect("/login");
+    }
     // console.log("req body", req.body);
     let selectedPeople = req.body.selectedPeople;
     const reqId = req.body.reqId;
@@ -939,6 +1010,9 @@ app.post("/enriched-data-process", async (req, res) => {
 // });
 app.post("/email-enrich", async (req, res) => {
   try {
+    if (!req.session.isAuthenticated) {
+      return res.redirect("/login");
+    }
     const { linkedinUrls } = req.body;
     const enrichedData = [];
 
@@ -971,6 +1045,9 @@ app.post("/email-enrich", async (req, res) => {
 });
 app.post("/email-enrich-new", async (req, res) => {
   try {
+    if (!req.session.isAuthenticated) {
+      return res.redirect("/login");
+    }
     const emails = req.body.emails;
     res.status(200).json({
       message: "Data successfully enriched",
@@ -1124,6 +1201,9 @@ app.post("/send-email", async (req, res) => {
   }
 
   try {
+    if (!req.session.isAuthenticated) {
+      return res.redirect("/login");
+    }
     // Send an email to each enriched data entry
     const sendEmailPromises = enrichedData.map((person) => {
       const mailOptions = {

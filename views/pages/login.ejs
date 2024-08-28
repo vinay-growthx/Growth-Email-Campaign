@@ -236,17 +236,6 @@
       </div>
     </div>
     <script>
-      const firebaseConfig = {
-        apiKey: "AIzaSyAWnYWICUAIRTgtUWUC6CE6--w3dRAq02k",
-        authDomain: "hq-sourcing-stag.firebaseapp.com",
-        projectId: "hq-sourcing-stag",
-        storageBucket: "hq-sourcing-stag.appspot.com",
-        messagingSenderId: "1052414885273",
-        appId: "1:1052414885273:web:acc82e41a7b23222d22708",
-      };
-
-      firebase.initializeApp(firebaseConfig);
-
       const loginForm = document.querySelector("form");
       const googleLogin = document.getElementById("googleLogin");
 
@@ -255,42 +244,37 @@
         window.location.href = "/find-jobs";
       }
 
-      firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-          console.log("User signed in:", user);
-          // Redirect to the find-jobs page
-          redirectToFindJobs();
-        } else {
-          console.log("User signed out");
-        }
-      });
+      const validCredentials = [
+        {
+          username: "john@octosp.com",
+          password: "john@octosp",
+        },
+      ];
+
       loginForm.addEventListener("submit", (e) => {
         e.preventDefault();
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
 
-        firebase
-          .auth()
-          .signInWithEmailAndPassword(email, password)
-          .then((userCredential) => {
-            console.log("User signed in:", userCredential.user);
-          })
-          .catch((error) => {
-            console.error("Error signing in:", error);
-          });
+        const user = validCredentials.find(
+          (cred) => cred.username === email && cred.password === password
+        );
+
+        if (user) {
+          console.log("User signed in:", user);
+          redirectToFindJobs();
+        } else {
+          console.error("Invalid credentials");
+          alert("Invalid username or password. Please try again.");
+        }
       });
 
       googleLogin.addEventListener("click", () => {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        firebase
-          .auth()
-          .signInWithPopup(provider)
-          .then((result) => {
-            console.log("User signed in with Google:", result.user);
-          })
-          .catch((error) => {
-            console.error("Error signing in with Google:", error);
-          });
+        // Replace this with your desired Google sign-in functionality
+        console.log("Google sign-in clicked");
+        // Add your Google sign-in logic here
+        // If the user successfully signs in with Google, you can call the redirectToFindJobs() function
+        // redirectToFindJobs();
       });
     </script>
   </body>
