@@ -8,6 +8,7 @@ const RequestIdSchema = new Schema(
     personaIds: { type: [String], default: [] },
     convertJobObject: { type: Object },
     personaProcessCompleted: { type: Boolean, default: false },
+    jobProcessCompleted: { type: Boolean, default: false },
     notify: { type: Boolean, default: false },
     email: { type: String },
   },
