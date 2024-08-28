@@ -1620,6 +1620,92 @@
 .job-description-points::-webkit-scrollbar-thumb:hover {
   background: #2980b9;
 }
+.job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  .job-detail {
+    display: flex;
+    align-items: center;
+    font-size: 0.9em;
+    color: #555;
+  }
+  .job-detail i {
+    margin-right: 5px;
+    color: #3498db;
+  }
+  .experience-level {
+    background-color: #e8f4fd;
+    border-left: 4px solid #3498db;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 0 5px 5px 0;
+  }
+  .experience-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-right: 10px;
+  }
+  .experience-value {
+    color: #3498db;
+    font-weight: 500;
+  }
+  .logo-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .company-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .logo-container:hover .company-logo {
+    transform: scale(1.05);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .company-description-tooltip {
+    visibility: hidden;
+    width: 300px;
+    background-color: #34495e;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -150px;
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s;
+    font-size: 0.9em;
+    line-height: 1.4;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .company-description-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #34495e transparent transparent transparent;
+  }
+
+  .logo-container:hover .company-description-tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
     </style>
   </head>
   <body>
@@ -1935,13 +2021,20 @@
                 value="<%= job._id %>"
               />
             </div>
-              <div class="company-info">
-    <% if (job.company_data && job.company_data.logo) { %>
-      <img src="<%= job.company_data.logo %>" alt="<%= job.companyName %> logo" class="company-logo">
-    <% } else { %>
-      <div class="company-logo"></div>
-    <% } %>
-  </div>
+            <div class="company-info">
+              <% if (job.company_data && job.company_data.logo) { %>
+                <div class="logo-container">
+                  <img src="<%= job.company_data.logo %>" alt="<%= job.companyName %> logo" class="company-logo">
+                  <% if (job.company_data && job.company_data.description) { %>
+                    <div class="company-description-tooltip">
+                      <%= job.company_data.description %>
+                    </div>
+                  <% } %>
+                </div>
+              <% } else { %>
+                <div class="company-logo"></div>
+              <% } %>
+            </div>
             <div style="flex-grow: 1">
               <div class="job-header">
                 <div>
@@ -2057,6 +2150,10 @@
                 <span>Employment Status: </span>
                 <%= job.formattedEmploymentStatus || 'N/A' %>
               </div>
+               <div class="job-detail">
+        <span>Experience Level: </span>
+        <%= job.formattedExperienceLevel || 'N/A' %>
+      </div>
               <% if (job.jobDescription) { %>
               <div class="job-description">
                 <% if (job.jobDescription.includes('Qualifications:')) { %>
