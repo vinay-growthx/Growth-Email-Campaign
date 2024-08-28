@@ -1123,6 +1123,7 @@ async function fetchAllJobs(
   industry_hidden,
   role_function,
   industry,
+  location,
   reqUUID
 ) {
   console.log("industry ---------->", industry);
@@ -1158,7 +1159,11 @@ async function fetchAllJobs(
     const industryRegex = new RegExp(industry, "i");
     query.formattedIndustries = { $regex: industryRegex };
   }
-
+  if (location) {
+    const primaryLocation = location.split(",")[0].trim();
+    const locationRegex = new RegExp(primaryLocation, "i");
+    query.formattedLocation = { $regex: locationRegex };
+  }
   // Add date range filter
   console.log("job listed date ===>", job_listed_date);
   console.log("job listed range ===>", job_listed_range);
@@ -1193,6 +1198,7 @@ async function fetchAllJobs(
       $gte: convertDateFormat(job_listed_date),
     };
   }
+
   // Define sorting option
   const sortOption = { listedAt: -1 };
 

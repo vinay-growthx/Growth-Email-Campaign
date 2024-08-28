@@ -572,9 +572,10 @@ app.post("/create-persona", async (req, res) => {
     // }
     for (const employer of linkedinJobs) {
       try {
-        convertedObj.currentCompany = employer.companyName;
+        convertedObj.currentCompany = employer.companyLiName;
         // console.log("converted obj ===>", convertedObj);
         const salesNavUrl = await generateSalesNavUrl(convertedObj);
+        console.log("sales nav url ====>", salesNavUrl);
         // console.log("sales nav url", salesNavUrl);
         const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
         for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
@@ -714,6 +715,7 @@ app.post("/search-jobs", async (req, res) => {
       industry_hidden,
       role_function,
       industry,
+      location,
     } = req.body;
     console.log("req body", req.body);
     // const roleFunction = isRoleFunctionEmptyOrFalsy(role_function);
@@ -729,6 +731,7 @@ app.post("/search-jobs", async (req, res) => {
       industry_hidden,
       role_function,
       industry,
+      location,
       reqUUID
     );
 
