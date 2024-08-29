@@ -2362,7 +2362,8 @@
     .filter((checkbox) => checkbox.checked && checkbox.value !== "")
     .map((checkbox) => checkbox.value);
 
-  const allCompaniesSelected = allCompaniesCheckbox.checked;
+  const allCompaniesSelected =
+    allCompaniesCheckbox.checked || selectedCompanies.length === 0;
 
   let visibleJobCount = 0;
 
@@ -2371,8 +2372,10 @@
     const applyLink = card.querySelector(".job-title a")?.href || "";
     const jobSource = getJobSource(applyLink);
 
-    const companyMatch = allCompaniesSelected || selectedCompanies.includes(companyName);
-    const sourceMatch = selectedSources.length === 0 || selectedSources.includes(jobSource);
+    const companyMatch =
+      allCompaniesSelected || selectedCompanies.includes(companyName);
+    const sourceMatch =
+      selectedSources.length === 0 || selectedSources.includes(jobSource);
 
     if (companyMatch && sourceMatch) {
       card.style.display = "flex";
@@ -2385,8 +2388,7 @@
   updateCounts(visibleJobCount);
   updatePagination();
 }
-
-        function updateCounts(visibleJobCount) {
+function updateCounts(visibleJobCount) {
   totalCountElement.textContent = `Visible jobs: ${visibleJobCount} / Total jobs: <%= totalCount %>`;
   updateSelectedCount();
 }
@@ -2475,29 +2477,21 @@
           companyFilter.classList.toggle("active");
         });
         allCompaniesCheckbox.addEventListener("change", function () {
-  if (this.checked) {
-    companyCheckboxes.forEach((checkbox) => {
-      if (checkbox !== allCompaniesCheckbox) {
-        checkbox.checked = false;
-      }
-    });
-  }
+  companyCheckboxes.forEach((checkbox) => {
+    if (checkbox !== allCompaniesCheckbox) {
+      checkbox.checked = this.checked;
+    }
+  });
   updateJobVisibility();
 });
-
-companyCheckboxes.forEach((checkbox) => {
-  checkbox.addEventListener("change", function () {
-    if (this.checked && this !== allCompaniesCheckbox) {
-      allCompaniesCheckbox.checked = false;
-    } else if (!this.checked && this !== allCompaniesCheckbox) {
-      const anyChecked = Array.from(companyCheckboxes).some(
-        (cb) => cb.checked && cb !== allCompaniesCheckbox
-      );
-      allCompaniesCheckbox.checked = !anyChecked;
-    }
-    updateJobVisibility();
+  companyCheckboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", function () {
+      if (this !== allCompaniesCheckbox) {
+        allCompaniesCheckbox.checked = false;
+      }
+      updateJobVisibility();
+    });
   });
-});
 
         sourceFilterHeader.addEventListener("click", function () {
           sourceFilter.classList.toggle("active");
@@ -2533,119 +2527,88 @@ companyCheckboxes.forEach((checkbox) => {
         updateJobVisibility();
 
         function downloadCSV() {
-          const selectedJobs = Array.from(
-            document.querySelectorAll('input[name="jobSelect"]:checked')
-          )
-            .map((checkbox) => {
-              const jobCard = checkbox.closest(".job-card");
-              if (!jobCard) return null;
+  const selectedJobs = Array.from(
+    document.querySelectorAll('input[name="jobSelect"]:checked')
+  )
+    .map((checkbox) => {
+      const jobCard = checkbox.closest(".job-card");
+      if (!jobCard) return null;
 
-              const jobDetails = jobCard.querySelectorAll(".job-detail");
-              const locationDetail = Array.from(jobDetails).find((detail) =>
-                detail.textContent.includes("Location:")
-              );
-              const typeDetail = Array.from(jobDetails).find((detail) =>
-                detail.textContent.includes("Type:")
-              );
-              const postedDateDetail = Array.from(jobDetails).find((detail) =>
-                detail.textContent.includes("Posted:")
-              );
-              const industryTypeDetail = Array.from(jobDetails).find((detail) =>
-                detail.textContent.includes("Industry Type:")
-              );
-              const employerWebsiteDetail = Array.from(jobDetails).find(
-                (detail) => detail.textContent.includes("Employer Website:")
-              );
-              const jobPublisherDetail = Array.from(jobDetails).find((detail) =>
-                detail.textContent.includes("Job Publisher:")
-              );
+      const jobTitle = jobCard.querySelector(".job-title a");
+      const companyNameElement = jobCard.querySelector(".company-info a.company-name") ||
+                               jobCard.querySelector(".company-info .company-name:not(:empty)");
+    const companyName = companyNameElement ? companyNameElement.textContent.trim() : "N/A";
 
-              const descriptionElement =
-                jobCard.querySelector(".job-description");
-              let description = "";
-              if (descriptionElement) {
-                const points = descriptionElement.querySelectorAll("li");
-                description = Array.from(points)
-                  .map((point) => point.textContent.trim())
-                  .join(" | ");
-              }
+    console.log('Company Name:', companyName);  // Debugging to see what is captured
 
-              return {
-                title:
-                  jobCard.querySelector(".job-title").textContent.trim() ||
-                  "N/A",
-                company_name:
-                  jobCard.querySelector(".company-name").textContent.trim() ||
-                  "N/A",
-                location: locationDetail
-                  ? locationDetail.textContent.split("Location:")[1].trim()
-                  : "N/A",
-                // type: typeDetail
-                //   ? typeDetail.textContent.split("Type:")[1].trim()
-                //   : "N/A",
-                posted_date: postedDateDetail
-                  ? postedDateDetail.textContent.split("Posted:")[1].trim()
-                  : "N/A",
-                industry_type: industryTypeDetail
-                  ? industryTypeDetail.textContent
-                      .split("Industry Type:")[1]
-                      .trim()
-                  : "N/A",
-                employer_website: employerWebsiteDetail
-                  ? employerWebsiteDetail.querySelector("a")?.href || "N/A"
-                  : "N/A",
-                // job_publisher: jobPublisherDetail
-                //   ? jobPublisherDetail.textContent
-                //       .split("Job Publisher:")[1]
-                //       .trim()
-                //   : "N/A",
-                apply_link: jobCard.querySelector(".job-apply-link")
-                  ? jobCard.querySelector(".job-apply-link").href
-                  : "N/A",
-                description: description || "N/A",
-              };
-            })
-            .filter((job) => job !== null);
+      const staffCount = jobCard.querySelector(".staff-count");
+      const industry = jobCard.querySelector(".industry");
+      const aiIndustry = jobCard.querySelector(".ai-industry-tag");
+      const specialties = jobCard.querySelectorAll(".specialty-tag");
+      const aiSummary = jobCard.querySelector(".ai-summary p");
+      const jobDetails = jobCard.querySelectorAll(".job-detail");
+      const jobDescription = jobCard.querySelector(".job-description-points");
 
-          if (selectedJobs.length === 0) {
-            alert("Please select at least one job to download.");
-            return;
-          }
+      return {
+        title: jobTitle ? jobTitle.textContent.trim() : "N/A",
+        company_name: companyName,
+        staff_count: staffCount ? staffCount.textContent.trim() : "N/A",
+        industry: industry ? industry.textContent.trim() : "N/A",
+        // ai_industry: aiIndustry ? aiIndustry.textContent.trim() : "N/A",
+        specialties: Array.from(specialties).map(s => s.textContent.trim()).join(", "),
+        // ai_summary: aiSummary ? aiSummary.textContent.trim() : "N/A",
+        location: getDetailValue(jobDetails, "Location:"),
+        posted_date: getDetailValue(jobDetails, "Posted:"),
+        employment_status: getDetailValue(jobDetails, "Employment Status:"),
+        experience_level: getDetailValue(jobDetails, "Experience Level:"),
+        job_description: jobDescription 
+          ? Array.from(jobDescription.querySelectorAll("li"))
+              .map(li => li.textContent.trim())
+              .join(" | ")
+          : "N/A",
+        apply_link: jobTitle ? jobTitle.href : "N/A",
+      };
+    })
+    .filter((job) => job !== null);
 
-          const headers = Object.keys(selectedJobs[0]);
-          let csvContent = headers.join(",") + "\n";
+  if (selectedJobs.length === 0) {
+    alert("Please select at least one job to download.");
+    return;
+  }
 
-          selectedJobs.forEach((job) => {
-            const row = headers.map((header) => {
-              let cell = job[header] || "";
-              cell = cell.replace(/"/g, '""');
-              if (
-                cell.includes(",") ||
-                cell.includes("\n") ||
-                cell.includes('"')
-              ) {
-                cell = `"${cell}"`;
-              }
-              return cell;
-            });
-            csvContent += row.join(",") + "\n";
-          });
+  const headers = Object.keys(selectedJobs[0]);
+  let csvContent = headers.join(",") + "\n";
 
-          const blob = new Blob([csvContent], {
-            type: "text/csv;charset=utf-8;",
-          });
-          const link = document.createElement("a");
-          if (link.download !== undefined) {
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", "job_data.csv");
-            link.style.visibility = "hidden";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          }
-        }
-        document
+  selectedJobs.forEach((job) => {
+    const row = headers.map((header) => {
+      let cell = job[header] || "";
+      cell = cell.replace(/"/g, '""');
+      if (cell.includes(",") || cell.includes("\n") || cell.includes('"')) {
+        cell = `"${cell}"`;
+      }
+      return cell;
+    });
+    csvContent += row.join(",") + "\n";
+  });
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "job_data.csv");
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+}
+
+function getDetailValue(details, label) {
+  const detail = Array.from(details).find(d => d.textContent.includes(label));
+  return detail ? detail.textContent.split(label)[1].trim() : "N/A";
+}
+  document
           .querySelector(".download-btn")
           .addEventListener("click", downloadCSV);
 
