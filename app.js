@@ -491,8 +491,9 @@ app.post("/create-persona", async (req, res) => {
     let convertedObj = await requestIdRepository.findOne({
       reqId: req.body.reqId,
     });
+    console.log("converted obj ===>", convertedObj);
     convertedObj = convertedObj.convertJobObject;
-    console.log("selected ids --->", selectedIds);
+    // console.log("selected ids --->", selectedIds);
     const objectIds = selectedIds.map((id) => new ObjectId(id));
     let linkedinJobs = await jobsRepository.find(
       {
@@ -501,7 +502,7 @@ app.post("/create-persona", async (req, res) => {
       "companyName title formattedIndustries jobDescription formattedLocation comapnyURL2"
     );
 
-    console.log("linkedin jobs ===>", linkedinJobs);
+    // console.log("linkedin jobs ===>", linkedinJobs);
     linkedinJobs.forEach((job) => {
       if (job.comapnyURL2) {
         job.companyLiName = job.comapnyURL2.split("/").pop();
@@ -573,6 +574,8 @@ app.post("/create-persona", async (req, res) => {
     for (const employer of linkedinJobs) {
       try {
         convertedObj.currentCompany = employer.companyLiName;
+        console.log("converted obj =====>", convertedObj);
+        return;
         // console.log("converted obj ===>", convertedObj);
         const salesNavUrl = await generateSalesNavUrl(convertedObj);
         console.log("sales nav url ====>", salesNavUrl);

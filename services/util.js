@@ -1126,7 +1126,7 @@ async function fetchAllJobs(
   location,
   reqUUID
 ) {
-  console.log("industry ---------->", industry);
+  // console.log("industry ---------->", industry);
   let offset = 0;
   const limit = num_jobs ? Math.min(500, num_jobs) : 500;
   let hasMore = true;
@@ -1165,8 +1165,8 @@ async function fetchAllJobs(
     query.formattedLocation = { $regex: locationRegex };
   }
   // Add date range filter
-  console.log("job listed date ===>", job_listed_date);
-  console.log("job listed range ===>", job_listed_range);
+  // console.log("job listed date ===>", job_listed_date);
+  // console.log("job listed range ===>", job_listed_range);
   if (job_listed_range) {
     const startDate = new Date();
     let endDate;
