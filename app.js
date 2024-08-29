@@ -711,7 +711,8 @@ app.post("/search-jobs", async (req, res) => {
       subject: "AI Outbound search Notification: Search has performed!!!",
       html: `Search performed on job title: ${req.body.job_title}<br>
       Location: ${req.body.location}<br>
-      Industry: ${req.body.industry}
+      Industry: ${req.body.industry}<br>
+      Number of Jobs: ${req.body.num_jobs}<br>
       `,
     };
     console.log({ mailOptions });
