@@ -704,6 +704,18 @@ app.post("/search-jobs", async (req, res) => {
     if (!req.session.isAuthenticated) {
       return res.redirect("/login");
     }
+    console.log("req --->", req.body);
+    const mailOptions = {
+      to: "utkarsh@hirequotient.com,vinay.prajapati@hirequotient.com",
+      from: "AI OutBound Tool <no-reply@hirequotient.com>",
+      subject: "AI Outbound search Notification: Search has performed!!!",
+      html: `Search performed on job title: ${req.body.job_title}<br>
+      Location: ${req.body.location}<br>
+      Industry: ${req.body.industry}
+      `,
+    };
+    console.log({ mailOptions });
+    smtpTransport.sendMail(mailOptions);
     let query = req.body.job_title.trim() + " in " + req.body.location.trim();
 
     query = query.toLowerCase();
