@@ -85818,8 +85818,7 @@
             (option) => option.label.toLowerCase() === input.value.toLowerCase()
           );
           if (matchedOption) {
-            document.getElementById(hiddenFieldId).value =
-              JSON.stringify(matchedOption);
+            document.getElementById(hiddenFieldId).value = matchedOption.value;
             errorMessage.style.display = "none";
           } else {
             document.getElementById(hiddenFieldId).value = "";
