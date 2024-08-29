@@ -5,6 +5,7 @@ const {
   getCleanedLocations,
   updatePageQueryParam,
 } = require("../util");
+const { locationArr } = require("../../services/arrValues");
 async function generateSalesNavUrl(filters) {
   console.log("FILTERS-----", filters);
   const params = [];
@@ -85,12 +86,13 @@ async function generateSalesNavUrl(filters) {
       }
     }
   }
-
+  console.log("filters =====>", filters);
   if (
     has(filters, "currentCompany") &&
     isArray(filters.currentCompany) &&
     !isEmpty(filters.currentCompany)
   ) {
+    console.log("current company =====>", filters.currentCompany);
     let values = [];
     if (filters.currentCompany.every((item) => isString(item))) {
       values = await getCleanedCompanies(filters.currentCompany);
@@ -201,7 +203,8 @@ async function generateSalesNavUrl(filters) {
       values,
     });
   }
-
+  filters.location = [findMatchingObject(locationArr, filters.location?.[0])];
+  console.log("filter location ===>", filters.location);
   if (
     has(filters, "location") &&
     isArray(filters.location) &&
@@ -209,7 +212,7 @@ async function generateSalesNavUrl(filters) {
   ) {
     let locationIdList = [];
     if (filters.location.every((item) => isString(item))) {
-      locationIdList = await getCleanedLocations(filters.location);
+      locationIdList = filters.location;
     } else {
       locationIdList = filters.location;
     }
@@ -610,4 +613,22 @@ async function generateSalesNavUrl(filters) {
   const outputUrl = updatePageQueryParam(searchUrl, 1);
   return outputUrl;
 }
+function findMatchingObject(objects, searchString) {
+  // Normalize the search string: lowercase and remove spaces
+  const normalizedSearch = searchString.toLowerCase().replace(/\s/g, "");
+
+  // Iterate over the array of objects
+  for (const obj of objects) {
+    if (
+      obj.label &&
+      obj.label.toLowerCase().replace(/\s/g, "") === normalizedSearch
+    ) {
+      return obj;
+    }
+  }
+
+  // Return null if no match is found
+  return null;
+}
+
 module.exports = { generateSalesNavUrl };

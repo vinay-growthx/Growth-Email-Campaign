@@ -573,13 +573,11 @@ app.post("/create-persona", async (req, res) => {
     // }
     for (const employer of linkedinJobs) {
       try {
-        convertedObj.currentCompany = employer.companyLiName;
+        convertedObj.location = [employer.formattedLocation];
+        convertedObj.currentCompany = [employer.companyName];
         console.log("converted obj =====>", convertedObj);
-        return;
-        // console.log("converted obj ===>", convertedObj);
         const salesNavUrl = await generateSalesNavUrl(convertedObj);
         console.log("sales nav url ====>", salesNavUrl);
-        // console.log("sales nav url", salesNavUrl);
         const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
         for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
           let personaLen = await requestIdRepository.findOne({

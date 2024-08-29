@@ -1745,16 +1745,19 @@
               </div>
               <div class="company-options">
                 <label class="option-item"
-                  ><input type="checkbox" value="" checked /> All
-                  companies</label
+                  ><input type="checkbox" value="" checked /> Coming Soon</label
                 >
-                <% const companies = [...new Set(jobs.map(job =>
-                job.companyName))]; %> <% companies.forEach(company => { %>
-                <label class="option-item"
-                  ><input type="checkbox" value="<%= company %>" /> <%= company
-                  %></label
-                >
-                <% }); %>
+                <!-- <% const companies = [...new Set(jobs.map(job =>
+                job.companyName))
+                ]; %> <% companies.forEach(company => { %> -->
+                <!-- <label class="option-item"
+                  ><input type="checkbox" value="<%= company %>" />  -->
+                  <!-- <%= company
+                  %> -->
+                  <!-- "Coming soon" -->
+                  <!-- </label
+                > -->
+                <!-- <% }); %> -->
               </div>
             </div>
           </div>
@@ -1766,9 +1769,9 @@
               </div>
               <div class="source-options">
                 <label class="option-item"
-                  ><input type="checkbox" value="" checked /> All sources</label
+                  ><input type="checkbox" value="" checked /> Coming Soon</label
                 >
-                <label class="option-item"
+              <!--   <label class="option-item"
                   ><input type="checkbox" value="linkedin" /> LinkedIn</label
                 >
                 <label class="option-item"
@@ -1783,7 +1786,7 @@
                 >
                 <label class="option-item"
                   ><input type="checkbox" value="other" /> Other</label
-                >
+                > -->
               </div>
             </div>
           </div>
@@ -2249,22 +2252,10 @@
       </div>
     </div>
     <script>
-      function logout() {
-  fetch('/logout', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    }
-  }).then(response => {
-    if (response.ok) {
-      window.location.href = '/login';
-    } else {
-      alert('Failed to log out.');
-    }
-  }).catch(error => console.error('Error logging out:', error));
-}
-
+     
       document.addEventListener("DOMContentLoaded", function () {
+        const params = new URLSearchParams(window.location.search);
+  const fromBack = params.get('fromBack');
         const selectAllCheckbox = document.getElementById("selectAll");
         const jobCheckboxes = document.querySelectorAll(
           'input[name="jobSelect"]'
@@ -2828,33 +2819,33 @@ function getDetailValue(details, label) {
 
         function updateScrollButton() {
           const scrollPosition = parallaxContainer.scrollTop;
-          const maxScroll =
-            parallaxContainer.scrollHeight - parallaxContainer.clientHeight;
+    const maxScroll = parallaxContainer.scrollHeight - parallaxContainer.clientHeight;
 
-          if (scrollPosition >= maxScroll - 20) {
-            // Within 20px of the bottom
-            scrollButton.textContent = "Scroll to Top";
-            scrollButton.classList.add("at-bottom");
-          } else {
-            scrollButton.textContent = "Scroll to Bottom";
-            scrollButton.classList.remove("at-bottom");
-          }
+    if (scrollPosition >= maxScroll - 20) { // Within 20px of the bottom
+      scrollButton.textContent = "Scroll to Top";
+      scrollButton.classList.add("at-bottom");
+    } else {
+      scrollButton.textContent = "Scroll to Bottom";
+      scrollButton.classList.remove("at-bottom");
+    }
         }
 
         scrollButton.addEventListener("click", function (e) {
-          e.preventDefault();
-          if (this.classList.contains("at-bottom")) {
-            parallaxContainer.scrollTo({
-              top: 0,
-              behavior: "smooth",
-            });
-          } else {
-            parallaxContainer.scrollTo({
-              top: parallaxContainer.scrollHeight,
-              behavior: "smooth",
-            });
-          }
-        });
+    e.preventDefault();
+    if (this.classList.contains("at-bottom")) {
+      // If the button says "Scroll to Top", then scroll to the top of the container
+      parallaxContainer.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    } else {
+      // Otherwise, scroll to the bottom of the container
+      parallaxContainer.scrollTo({
+        top: parallaxContainer.scrollHeight,
+        behavior: "smooth"
+      });
+    }
+  });
 
         parallaxContainer.addEventListener("scroll", updateScrollButton);
 
@@ -2867,35 +2858,58 @@ function getDetailValue(details, label) {
     const parallaxContainer = document.querySelector(".parallax-container");
 
     function scrollToPosition(position) {
-        parallaxContainer.scrollTo({
-            top: position,
-            behavior: "smooth"
-        });
-    }
-
-    function updateScrollButton() {
-        const scrollPosition = parallaxContainer.scrollTop;
-        const maxScroll = parallaxContainer.scrollHeight - parallaxContainer.clientHeight;
-
-        if (scrollPosition >= maxScroll - 20) {
-            scrollButton.textContent = "Scroll to Top";
-            scrollButton.classList.add("at-bottom");
-        } else {
-            scrollButton.textContent = "Scroll to Bottom";
-            scrollButton.classList.remove("at-bottom");
-        }
-    }
-
-    scrollButton.addEventListener("click", function (e) {
-        e.preventDefault();
-        if (this.classList.contains("at-bottom")) {
-            scrollToPosition(0); // Scroll to the top
-        } else {
-            scrollToPosition(parallaxContainer.scrollHeight); // Scroll to the bottom
-        }
+    parallaxContainer.scrollTo({
+      top: position,
+      behavior: "smooth"
     });
+  }
 
-    parallaxContainer.addEventListener("scroll", updateScrollButton);
+  function updateScrollButton() {
+    const scrollPosition = parallaxContainer.scrollTop;
+    const maxScroll = parallaxContainer.scrollHeight - parallaxContainer.clientHeight;
+
+    console.log("Scroll Position:", scrollPosition);
+    console.log("Max Scroll:", maxScroll);
+    
+    if (scrollPosition >= maxScroll - 20) { // Close to the bottom
+      scrollButton.textContent = "Scroll to Top";
+      scrollButton.classList.add("at-bottom");
+    } else {
+      scrollButton.textContent = "Scroll to Bottom";
+      scrollButton.classList.remove("at-bottom");
+    }
+  }
+  scrollButton.addEventListener("click", function (e) {
+    e.preventDefault();
+    if (this.classList.contains("at-bottom")) {
+      scrollToPosition(0); // Scroll to the top if it's at the bottom
+    } else {
+      scrollToPosition(parallaxContainer.scrollHeight); // Scroll to the bottom if not
+    }
+  });
+
+  function resetFilters() {
+    document.querySelectorAll('.filter-container input[type="checkbox"]').forEach(checkbox => {
+      checkbox.checked = false;
+    });
+    updateJobVisibility(); // Assuming you have a function to update job visibility based on filters
+  }
+
+
+  if (fromBack) {
+    resetFilters();
+  }
+
+  // Example of setting the fromBack flag when navigating to a detail page
+  document.querySelectorAll('.job-detail-link').forEach(link => {
+    link.addEventListener('click', () => {
+      // localStorage.setItem('fromBack', true); // Use local storage
+      // Or modify the link's href to include the query parameter
+      link.href += link.href.includes('?') ? '&fromBack=true' : '?fromBack=true';
+    });
+  });
+
+  parallaxContainer.addEventListener("scroll", updateScrollButton);
 
     // Initial update of the button status
     updateScrollButton();
