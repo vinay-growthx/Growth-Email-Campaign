@@ -2816,36 +2816,79 @@ function getDetailValue(details, label) {
         // Floating scroll button functionality
         const scrollButton = document.getElementById("scrollToBottomBtn");
         const parallaxContainer = document.querySelector(".parallax-container");
+    
+function updateScrollButton() {
+  const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+  const windowHeight = window.innerHeight;
+  const documentHeight = Math.max(
+    document.body.scrollHeight,
+    document.body.offsetHeight,
+    document.documentElement.clientHeight,
+    document.documentElement.scrollHeight,
+    document.documentElement.offsetHeight
+  );
 
-        function updateScrollButton() {
-          const scrollPosition = parallaxContainer.scrollTop;
-    const maxScroll = parallaxContainer.scrollHeight - parallaxContainer.clientHeight;
+  console.log("Scroll Position:", scrollPosition);
+  console.log("Window Height:", windowHeight);
+  console.log("Document Height:", documentHeight);
 
-    if (scrollPosition >= maxScroll - 20) { // Within 20px of the bottom
-      scrollButton.textContent = "Scroll to Top";
-      scrollButton.classList.add("at-bottom");
-    } else {
-      scrollButton.textContent = "Scroll to Bottom";
-      scrollButton.classList.remove("at-bottom");
-    }
-        }
+  if (scrollPosition + windowHeight >= documentHeight - 100) {
+    console.log("Near bottom, changing to Scroll to Top");
+    scrollButton.textContent = "Scroll to Top";
+    scrollButton.classList.add("at-bottom");
+  } else {
+    console.log("Not near bottom, changing to Scroll to Bottom");
+    scrollButton.textContent = "Scroll to Bottom";
+    scrollButton.classList.remove("at-bottom");
+  }
+}
 
-        scrollButton.addEventListener("click", function (e) {
-    e.preventDefault();
-    if (this.classList.contains("at-bottom")) {
-      // If the button says "Scroll to Top", then scroll to the top of the container
-      parallaxContainer.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    } else {
-      // Otherwise, scroll to the bottom of the container
-      parallaxContainer.scrollTo({
-        top: parallaxContainer.scrollHeight,
-        behavior: "smooth"
-      });
-    }
+function scrollToPosition(position) {
+  window.scrollTo({
+    top: position,
+    behavior: "smooth"
   });
+}
+scrollButton.addEventListener("click", function (e) {
+  e.preventDefault();
+  console.log("Button clicked. Current text:", this.textContent);
+  if (this.textContent === "Scroll to Top") {
+    console.log("Scrolling to top");
+    scrollToPosition(0);
+  } else {
+    console.log("Scrolling to bottom");
+    scrollToPosition(document.documentElement.scrollHeight);
+  }
+});
+
+
+// Ensure we're listening for scroll events on the correct element
+parallaxContainer.addEventListener("scroll", updateScrollButton);
+
+scrollButton.addEventListener("click", function (e) {
+  e.preventDefault();
+  if (this.textContent === "Scroll to Top") {
+    scrollToPosition(0); // Scroll to the top
+  } else {
+    scrollToPosition(parallaxContainer.scrollHeight); // Scroll to the bottom
+  }
+});
+scrollButton.addEventListener("click", function (e) {
+  e.preventDefault();
+  if (this.classList.contains("at-bottom")) {
+    scrollToPosition(0); // Scroll to the top if the button says "Scroll to Top"
+  } else {
+    scrollToPosition(parallaxContainer.scrollHeight); // Scroll to the bottom if the button says "Scroll to Bottom"
+  }
+});
+scrollButton.addEventListener("click", function (e) {
+  e.preventDefault();
+  if (this.classList.contains("at-bottom")) {
+    scrollToPosition(0); // Scroll to the top if it's at the bottom
+  } else {
+    scrollToPosition(parallaxContainer.scrollHeight); // Scroll to the bottom if not
+  }
+});
 
         parallaxContainer.addEventListener("scroll", updateScrollButton);
 
@@ -2858,35 +2901,36 @@ function getDetailValue(details, label) {
     const parallaxContainer = document.querySelector(".parallax-container");
 
     function scrollToPosition(position) {
-    parallaxContainer.scrollTo({
-      top: position,
-      behavior: "smooth"
-    });
-  }
-
-  function updateScrollButton() {
-    const scrollPosition = parallaxContainer.scrollTop;
-    const maxScroll = parallaxContainer.scrollHeight - parallaxContainer.clientHeight;
-
-    console.log("Scroll Position:", scrollPosition);
-    console.log("Max Scroll:", maxScroll);
-    
-    if (scrollPosition >= maxScroll - 20) { // Close to the bottom
-      scrollButton.textContent = "Scroll to Top";
-      scrollButton.classList.add("at-bottom");
-    } else {
-      scrollButton.textContent = "Scroll to Bottom";
-      scrollButton.classList.remove("at-bottom");
-    }
-  }
-  scrollButton.addEventListener("click", function (e) {
-    e.preventDefault();
-    if (this.classList.contains("at-bottom")) {
-      scrollToPosition(0); // Scroll to the top if it's at the bottom
-    } else {
-      scrollToPosition(parallaxContainer.scrollHeight); // Scroll to the bottom if not
-    }
+  parallaxContainer.scrollTo({
+    top: position,
+    behavior: "smooth"
   });
+}
+
+//   function updateScrollButton() {
+//   const scrollPosition = parallaxContainer.scrollTop;
+//   const maxScroll = parallaxContainer.scrollHeight - parallaxContainer.clientHeight;
+
+//   console.log("Scroll Position:", scrollPosition);
+//   console.log("Max Scroll:", maxScroll);
+
+//   if (scrollPosition > 100) { // Show "Scroll to Top" when scrolled down more than 100px
+//     scrollButton.textContent = "Scroll to Top";
+//     scrollButton.classList.add("at-bottom");
+//   } else {
+//     scrollButton.textContent = "Scroll to Bottom";
+//     scrollButton.classList.remove("at-bottom");
+//   }
+// }
+
+scrollButton.addEventListener("click", function (e) {
+  e.preventDefault();
+  if (this.classList.contains("at-bottom")) {
+    scrollToPosition(0); // Scroll to the top if the button says "Scroll to Top"
+  } else {
+    scrollToPosition(parallaxContainer.scrollHeight); // Scroll to the bottom if the button says "Scroll to Bottom"
+  }
+});
 
   function resetFilters() {
     document.querySelectorAll('.filter-container input[type="checkbox"]').forEach(checkbox => {

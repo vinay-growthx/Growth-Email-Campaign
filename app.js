@@ -716,7 +716,7 @@ app.post("/search-jobs", async (req, res) => {
       `,
     };
     console.log({ mailOptions });
-    smtpTransport.sendMail(mailOptions);
+    if (process.env.ENV === "production") smtpTransport.sendMail(mailOptions);
     let query = req.body.job_title.trim() + " in " + req.body.location.trim();
 
     query = query.toLowerCase();
