@@ -370,6 +370,14 @@
         transform: translateY(-2px) scale(1.05);
         box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
       }
+      select[multiple] {
+        height: auto;
+        padding: 8px;
+      }
+
+      select[multiple] option {
+        padding: 5px;
+      }
     </style>
   </head>
   <body>
@@ -479,8 +487,8 @@
             </select>
           </div> -->
           <div class="form-group" style="animation-delay: 0.3s">
-            <label for="industry">Industry:</label>
-            <select id="industry" name="industry">
+            <label for="industry">Industries:</label>
+            <select id="industry" name="industry" multiple>
               <option value="" selected>Select an industry</option>
               <option value="Abrasives and Nonmetallic Minerals Manufacturing">
                 Abrasives and Nonmetallic Minerals Manufacturing
