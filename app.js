@@ -138,6 +138,10 @@ const authMiddleware = (req, res, next) => {
   }
 };
 app.use("/", healthRouter);
+
+app.get("/", (req, res) => {
+  res.redirect("/login");
+});
 // app.use(async (req, res, next) => {
 //   try {
 //     // Skip authentication for login route and public assets
