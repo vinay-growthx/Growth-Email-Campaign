@@ -1155,9 +1155,9 @@ async function fetchAllJobs(
   }
 
   // Handle industry filtering
-  if (industry) {
-    const industryRegex = new RegExp(industry, "i");
-    query.formattedIndustries = { $regex: industryRegex };
+  if (industry && Array.isArray(industry) && industry.length > 0) {
+    const industryRegexes = industry.map((ind) => new RegExp(ind, "i"));
+    query.formattedIndustries = { $in: industryRegexes };
   }
   if (location) {
     const primaryLocation = location.split(",")[0].trim();
