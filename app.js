@@ -747,7 +747,6 @@ app.post("/search-jobs", async (req, res) => {
       job_listed_range,
       location_hidden,
       industry_hidden,
-      role_function,
       industry,
       location,
       reqUUID

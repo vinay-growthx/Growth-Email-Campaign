@@ -1112,6 +1112,42 @@ async function syncLinkedInJobs(
     remainingPages--;
   }
 }
+const parseBooleanQuery = (query) => {
+  // First, check if the query contains any Boolean operators
+  if (!query.includes("AND") && !query.includes("OR")) {
+    // Handle simple comma-separated values
+    return {
+      title: {
+        $in: query.split(",").map((title) => new RegExp(title.trim(), "i")),
+      },
+    };
+  }
+
+  // If the query contains Boolean logic, proceed with complex parsing
+  const parts = query.match(/\(([^()]+)\)|\w+|\S+/g); // Split by words and symbols, including grouped expressions
+  const output = [];
+  let mode = "$and"; // Default mode
+
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i].trim();
+    if (part === "AND") {
+      mode = "$and";
+    } else if (part === "OR") {
+      mode = "$or";
+    } else if (part.startsWith("(") && part.endsWith(")")) {
+      // Nested or grouped conditions
+      const subParts = part
+        .slice(1, -1)
+        .split(" OR ")
+        .map((p) => new RegExp(p.trim(), "i"));
+      output.push({ [mode]: [{ title: { $in: subParts } }] });
+    } else {
+      // Simple words
+      output.push({ title: new RegExp(part, "i") });
+    }
+  }
+  return { [mode]: output };
+};
 
 async function fetchAllJobs(
   job_title,
@@ -1121,37 +1157,34 @@ async function fetchAllJobs(
   job_listed_range,
   location_hidden,
   industry_hidden,
-  role_function,
   industry,
   location,
   reqUUID
 ) {
-  // console.log("industry ---------->", industry);
+  console.log({
+    job_title,
+    role_function,
+    num_jobs,
+    job_listed_date,
+    job_listed_range,
+    location_hidden,
+    industry_hidden,
+    industry,
+    location,
+    reqUUID,
+  });
   let offset = 0;
   const limit = num_jobs ? Math.min(500, num_jobs) : 500;
   let hasMore = true;
   let allJobs = [];
 
   let query = {};
-  let jobTitlesArray = [];
 
   // Handle job titles filtering
   if (role_function) {
-    jobTitlesArray = jobRoles[role_function]
-      .map((title) => title.trim())
-      .filter((title) => title.length > 0)
-      .map((title) => new RegExp(title, "i"));
+    query = { ...query, ...parseBooleanQuery(role_function) };
   } else if (job_title && job_title.trim() !== "") {
-    jobTitlesArray = job_title
-      .split(",")
-      .map((title) => title.trim())
-      .filter((title) => title.length > 0)
-      .map((title) => new RegExp(title, "i"));
-  }
-
-  // Combine job titles filter into query
-  if (jobTitlesArray.length > 0) {
-    query.title = { $in: jobTitlesArray };
+    query = { ...query, ...parseBooleanQuery(job_title) };
   }
 
   // Handle industry filtering
@@ -1165,8 +1198,6 @@ async function fetchAllJobs(
     query.formattedLocation = { $regex: locationRegex };
   }
   // Add date range filter
-  // console.log("job listed date ===>", job_listed_date);
-  // console.log("job listed range ===>", job_listed_range);
   if (job_listed_range) {
     const startDate = new Date();
     let endDate;
