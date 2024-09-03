@@ -270,7 +270,8 @@ app.get("/persona-reachout/:reqId", authMiddleware, async (req, res) => {
   const limit = 1000;
 
   try {
-    const { people, totalCount } = await findAllPersonas(reqId, page, limit);
+    const { people, totalCount, personaProcessCompleted } =
+      await findAllPersonas(reqId, page, limit);
     const totalPages = Math.ceil(totalCount / limit);
 
     res.render("personaReachout", {
@@ -279,6 +280,7 @@ app.get("/persona-reachout/:reqId", authMiddleware, async (req, res) => {
       currentPage: page,
       totalPages,
       totalCount,
+      personaProcessCompleted,
     });
   } catch (error) {
     console.error("Error fetching personas:", error);

@@ -261,7 +261,11 @@ async function findAllPersonas(reqId, page, limit) {
       return { people: [], totalCount };
     }
 
-    return { people: jobData, totalCount };
+    return {
+      people: jobData,
+      totalCount,
+      personaProcessCompleted: personaIds.personaProcessCompleted,
+    };
   } catch (error) {
     console.error("Error in findAllPersonas:", error);
     // throw error;
