@@ -1116,19 +1116,21 @@ async function syncLinkedInJobs(
     remainingPages--;
   }
 }
-const parseBooleanQuery = (query) => {
+
+const parseBooleanQuery = (query, field) => {
   // First, check if the query contains any Boolean operators
   if (!query.includes("AND") && !query.includes("OR")) {
     // Handle simple comma-separated values
     return {
-      title: {
-        $in: query.split(",").map((title) => new RegExp(title.trim(), "i")),
+      [field]: {
+        $regex: query.split(",").map((value) => new RegExp(value.trim(), "i")),
+        $options: "i",
       },
     };
   }
 
   // If the query contains Boolean logic, proceed with complex parsing
-  const parts = query.match(/\(([^()]+)\)|\w+|\S+/g); // Split by words and symbols, including grouped expressions
+  const parts = query.match(/\(([^()]+)\)|\w+|"[^"]+"/g); // Split by words, symbols, and quoted phrases
   const output = [];
   let mode = "$and"; // Default mode
 
@@ -1143,16 +1145,17 @@ const parseBooleanQuery = (query) => {
       const subParts = part
         .slice(1, -1)
         .split(" OR ")
-        .map((p) => new RegExp(p.trim(), "i"));
-      output.push({ [mode]: [{ title: { $in: subParts } }] });
+        .map((p) => new RegExp(p.trim().replace(/"/g, ""), "i"));
+      output.push({ [mode]: [{ [field]: { $in: subParts } }] });
     } else {
-      // Simple words
-      output.push({ title: new RegExp(part, "i") });
+      // Simple words or quoted phrases
+      output.push({
+        [field]: { $regex: new RegExp(part.replace(/"/g, ""), "i") },
+      });
     }
   }
   return { [mode]: output };
 };
-
 async function fetchAllJobs(
   job_title,
   role_function,
@@ -1186,9 +1189,9 @@ async function fetchAllJobs(
 
   // Handle job titles filtering
   if (role_function) {
-    query = { ...query, ...parseBooleanQuery(role_function) };
+    query = { ...query, ...parseBooleanQuery(role_function, "roleFunction") };
   } else if (job_title && job_title.trim() !== "") {
-    query = { ...query, ...parseBooleanQuery(job_title) };
+    query = { ...query, ...parseBooleanQuery(job_title, "title") };
   }
 
   // Handle industry filtering
@@ -1243,7 +1246,8 @@ async function fetchAllJobs(
   while (hasMore && (!num_jobs || allJobs.length < num_jobs)) {
     const remainingJobs = num_jobs ? num_jobs - allJobs.length : limit;
     const currentLimit = Math.min(limit, remainingJobs);
-    console.log("query =====>", query);
+    console.log("query ---->", query);
+    console.log("query =====>", JSON.stringify(query));
 
     const jobs = await jobsRepository.find(
       query,
