@@ -1532,7 +1532,7 @@
         }
 
         // Send the data to the server
-        fetch("/api/sync-with-easygrowth", {
+        fetch("/sync-with-easygrowth", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -1545,8 +1545,16 @@
             alert("Synchronization with EasyGrowth was successful!");
           })
           .catch((error) => {
-            console.error("Error syncing with EasyGrowth:", error);
-            alert("Failed to start synchronization.");
+            console.log(
+              "Error syncing with EasyGrowth:",
+              error,
+              selectedPeopleData
+            );
+            alert(
+              `Failed to start synchronization. ${JSON.stringify(
+                selectedPeopleData
+              )}`
+            );
           });
       }
     </script>
