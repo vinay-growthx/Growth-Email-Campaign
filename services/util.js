@@ -1118,14 +1118,14 @@ async function syncLinkedInJobs(
 }
 
 const parseBooleanQuery = (query, field) => {
-  // First, check if the query contains any Boolean operators
+  // Check if the query contains any Boolean operators
   if (!query.includes("AND") && !query.includes("OR")) {
-    // Handle simple comma-separated values
+    // Handle simple comma-separated values by using the $in operator with regex
+    const regexArray = query
+      .split(",")
+      .map((value) => new RegExp(value.trim(), "i"));
     return {
-      [field]: {
-        $regex: query.split(",").map((value) => new RegExp(value.trim(), "i")),
-        $options: "i",
-      },
+      [field]: { $in: regexArray },
     };
   }
 
@@ -1156,6 +1156,7 @@ const parseBooleanQuery = (query, field) => {
   }
   return { [mode]: output };
 };
+
 async function fetchAllJobs(
   job_title,
   role_function,
