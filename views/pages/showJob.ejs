@@ -2958,6 +2958,45 @@ scrollButton.addEventListener("click", function (e) {
     // Initial update of the button status
     updateScrollButton();
 });
+document.addEventListener("DOMContentLoaded", function () {
+  const scrollButton = document.getElementById("scrollToBottomBtn");
+  const parallaxContainer = document.querySelector(".parallax-container");
+
+  function scrollToPosition(position) {
+    parallaxContainer.scrollTo({
+      top: position,
+      behavior: "smooth"
+    });
+  }
+
+  function updateScrollButton() {
+    const scrollPosition = parallaxContainer.scrollTop;
+    const maxScroll = parallaxContainer.scrollHeight - parallaxContainer.clientHeight;
+    
+    // Check if we're near the bottom (within 100px)
+    if (maxScroll - scrollPosition <= 100) {
+      scrollButton.textContent = "Scroll to Top";
+      scrollButton.classList.add("at-bottom");
+    } else {
+      scrollButton.textContent = "Scroll to Bottom";
+      scrollButton.classList.remove("at-bottom");
+    }
+  }
+
+  scrollButton.addEventListener("click", function (e) {
+    e.preventDefault();
+    if (this.classList.contains("at-bottom")) {
+      scrollToPosition(0); // Scroll to the top
+    } else {
+      scrollToPosition(parallaxContainer.scrollHeight); // Scroll to the bottom
+    }
+  });
+
+  parallaxContainer.addEventListener("scroll", updateScrollButton);
+
+  // Initial update of the button status
+  updateScrollButton();
+});
 </script>
   </body>
 </html>
