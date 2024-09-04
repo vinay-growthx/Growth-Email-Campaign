@@ -299,9 +299,9 @@
                                                                         text-align: center;
                                                                         margin-bottom: 20px;
                                                                         color: #3498db;
-                                                                        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-                                                                        transition: all 0.3s ease;
-                                                                        animation: pulse 0.15s infinite alternate;
+                                                                        /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); */
+                                                                        /* transition: all 0.3s ease; */
+                                                                        /* animation: pulse 0.15s infinite alternate; */
                                                                       }
 
                                                                       @keyframes pulse {
@@ -313,9 +313,9 @@
                                                                         }
                                                                       }
 
-                                                                      .selected-count.party {
+                                                                      /* .selected-count.party {
                                                                         animation: party 0.05s ease-in-out;
-                                                                      }
+                                                                      } */
 
                                                                       @keyframes party {
                                                                         0% {
@@ -349,8 +349,8 @@
                                                                         text-align: center;
                                                                         color: #3498db;
                                                                         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-                                                                        transition: all 0.3s ease;
-                                                                        animation: pulse 0.15s infinite alternate;
+                                                                        /* transition: all 0.3s ease;
+                                                                        animation: pulse 0.15s infinite alternate; */
                                                                       }
 
                                                                       @keyframes pulse {
@@ -361,11 +361,6 @@
                                                                           transform: scale(1.05);
                                                                         }
                                                                       }
-
-                                                                      .selected-count.party {
-                                                                        animation: party 0.05s ease-in-out;
-                                                                      }
-
                                                                       @keyframes party {
                                                                         0% {
                                                                           transform: rotate(0deg) scale(1);
@@ -858,15 +853,20 @@
       }
     </style>
   </head>
-  <body data-req-id="<%= reqId %>">
+  <body
+    data-req-id="<%= reqId %>"
+    data-process-completed="<%= personaProcessCompleted %>"
+  >
+    <% if (!personaProcessCompleted) { %>
     <div id="process-status" class="process-status">
       <div class="spinner"></div>
       <h2>Finding Personas</h2>
-      <p>Please wait while we gather the all personas for you.</p>
+      <p>Please wait while we gather all personas for you.</p>
       <div class="progress-bar">
         <div class="progress"></div>
       </div>
     </div>
+    <% } %>
     <a href="#" class="floating-btn" id="scrollToBottomBtn">Scroll to Bottom</a>
     <div class="parallax-container">
       <div id="selected-count-container" class="selected-count-container">
