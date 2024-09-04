@@ -1,5 +1,7 @@
 const { isArray, isEmpty, has, isString, uniq } = require("lodash");
-
+const axios = require("axios");
+const fs = require("fs");
+const FormData = require("form-data");
 const LinkedinJobRepository = require("../repository/LinkedinJobRepository");
 const linkedinJobRepository = new LinkedinJobRepository();
 const ApolloPersonaRepository = require("../repository/ApolloPersonaRepository");
@@ -1304,6 +1306,74 @@ function convertDateFormat(dateString) {
   return formattedDate;
 }
 
+async function createJDProject(uuid, name) {
+  const url =
+    "https://easysource-stag2.hirequotient.com/api/v2/project/create-jd-project";
+  const projectData = {
+    name: name,
+    bdrRegions: "AMER",
+    // Add any other required fields here
+  };
+
+  try {
+    console.log("Sending project data:", projectData);
+
+    const response = await axios({
+      method: "post",
+      url: url,
+      data: projectData,
+      headers: {
+        "Content-Type": "application/json",
+        internalCall: "true",
+        uuid: uuid.toString(),
+      },
+    });
+
+    console.log("Response status:", response.status);
+    console.log("Response data:", response.data);
+
+    return response.data;
+  } catch (error) {
+    console.error("Error creating JD project:", error);
+  }
+}
+async function uploadBulkData(projectId) {
+  const url =
+    "https://easysource-stag2.hirequotient.com/api/v2/project/bulk-upload";
+
+  const formData = new FormData();
+
+  formData.append("projectId", projectId);
+  formData.append("file", fs.createReadStream("people_data.csv"));
+  formData.append("csvHeaders[name]", "name");
+  formData.append("csvHeaders[email]", "email");
+  formData.append("csvHeaders[linkedInProfileUrl]", "linkedInProfileUrl");
+  formData.append("liCookie", "your_li_cookie_value_here"); // Replace with actual liCookie value
+  formData.append("detailScrape", "false");
+  formData.append("emailScrape", "false");
+  formData.append("isSalesNav", "false");
+  formData.append("cvSource[label]", "Other");
+  formData.append("cvSource[value]", "AI Outbound Tool");
+
+  try {
+    const response = await axios.post(url, formData, {
+      headers: {
+        ...formData.getHeaders(),
+        internalCall: true,
+        uuid: 411,
+      },
+    });
+
+    console.log("Bulk upload response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error in bulk upload:",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
+}
 module.exports = {
   convertData,
   findAllJobs,
@@ -1330,5 +1400,7 @@ module.exports = {
   removeAfterFirstComma,
   syncLinkedInJobs,
   fetchAllJobs,
+  createJDProject,
+  uploadBulkData,
   isRoleFunctionEmptyOrFalsy,
 };
