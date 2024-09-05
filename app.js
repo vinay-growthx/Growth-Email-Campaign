@@ -242,12 +242,21 @@ app.post("/logout", function (req, res) {
 });
 
 app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  console.log("email password ---->", email, password);
+  const { email, password, "user-id": userId } = req.body;
+  console.log(
+    "Login Attempt ---->",
+    `Email: ${email}, Password: ${password}, User ID: ${userId}`
+  );
+
   try {
-    // Perform authentication logic here (e.g., check credentials against Firebase)
-    // For simplicity, let's assume the authentication is successful if the email is "john@octosp.com" and the password is "john@octosp"
-    if (email === "john@octosp.com" && password === "john@octosp") {
+    // Perform authentication logic here
+    // For simplicity, let's assume the authentication is successful if the email is "john@octosp.com",
+    // the password is "john@octosp", and the user ID is "12345"
+    if (
+      email === "john@octosp.com" &&
+      password === "john@octosp" &&
+      userId === "858"
+    ) {
       req.session.isAuthenticated = true;
       req.session.save((err) => {
         if (err) {
@@ -261,8 +270,8 @@ app.post("/login", async (req, res) => {
       res.status(401).render("login", { error: "Invalid credentials" });
     }
   } catch (error) {
-    console.error("Error signing in:", error);
-    res.status(401).render("login", { error: "Invalid credentials" });
+    console.log("Error signing in:", error);
+    res.status(500).render("login", { error: "Invalid credentials" });
   }
 });
 

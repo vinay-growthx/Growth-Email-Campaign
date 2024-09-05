@@ -24,7 +24,6 @@
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
       }
 
-      /* Panel styles */
       .left-panel,
       .right-panel {
         flex: 1;
@@ -37,10 +36,8 @@
       .right-panel {
         background-color: #1e3a5f;
         color: white;
-        padding: 40px;
       }
 
-      /* Logo */
       .logo {
         max-width: 100px;
         margin-bottom: 30px;
@@ -48,20 +45,12 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
 
-      /* Headings */
-      h1 {
-        font-size: 1.8em;
-        color: #4a4a4a;
+      h1,
+      h2 {
         margin-bottom: 20px;
         text-align: center;
       }
 
-      h2 {
-        font-size: 2em;
-        margin-bottom: 20px;
-      }
-
-      /* Form styles */
       .form-group {
         margin-bottom: 20px;
       }
@@ -73,7 +62,8 @@
       }
 
       input[type="email"],
-      input[type="password"] {
+      input[type="password"],
+      input[type="text"] {
         width: 100%;
         padding: 10px;
         border: 1px solid #e0e0e0;
@@ -89,15 +79,14 @@
         border-radius: 5px;
         font-size: 16px;
         cursor: pointer;
-        transition: background-color 0.3s;
         width: 100%;
+        transition: background-color 0.3s;
       }
 
       .login-button:hover {
         background-color: #2c4d6d;
       }
 
-      /* Google login button */
       .google-login {
         display: flex;
         align-items: center;
@@ -108,7 +97,6 @@
         margin-top: 20px;
         cursor: pointer;
         background-color: white;
-        transition: background-color 0.3s, box-shadow 0.3s;
       }
 
       .google-login:hover {
@@ -126,7 +114,6 @@
         font-weight: 500;
       }
 
-      /* Right panel content */
       .highlight {
         background-color: white;
         color: #1e3a5f;
@@ -147,7 +134,6 @@
         margin-bottom: 10px;
       }
 
-      /* Responsive design */
       @media (max-width: 768px) {
         .container {
           flex-direction: column;
@@ -158,25 +144,7 @@
           padding: 20px;
         }
       }
-      .right-panel h2 {
-        font-size: 1.8em;
-        margin-bottom: 20px;
-        line-height: 1.3;
-        font-weight: 600;
-      }
-
-      .highlight {
-        background-color: white;
-        color: #1e3a5f;
-        padding: 3px 6px;
-        font-weight: 600;
-        display: inline-block;
-        margin-top: 5px;
-        font-size: 1em;
-      }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
   </head>
   <body>
     <div class="container">
@@ -188,6 +156,16 @@
         />
         <h1>Login with your EasyGrowth account</h1>
         <form id="login-form" action="/login" method="POST">
+          <div class="form-group">
+            <label for="user-id">User ID</label>
+            <input
+              type="text"
+              id="user-id"
+              name="user-id"
+              placeholder="Enter your User ID"
+              required
+            />
+          </div>
           <div class="form-group">
             <label for="email">Email</label>
             <input
@@ -210,28 +188,6 @@
           </div>
           <button type="submit" class="login-button">Login</button>
         </form>
-
-        <!-- <form>
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="your.email@example.com"
-            />
-          </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="••••••••••"
-            />
-          </div>
-          <button type="submit" class="login-button">Login</button>
-        </form> -->
         <div class="google-login" id="googleLogin">
           <img
             src="https://developers.google.com/identity/images/g-logo.png"
@@ -259,48 +215,5 @@
         </p>
       </div>
     </div>
-    <script>
-      // const loginForm = document.querySelector("form");
-      // const googleLogin = document.getElementById("googleLogin");
-
-      // function redirectToFindJobs() {
-      //   // Replace this with the actual URL of your find-jobs page
-      //   // window.location.href = "/find-jobs";
-      // }
-
-      // const validCredentials = [
-      //   {
-      //     username: "john@octosp.com",
-      //     password: "john@octosp",
-      //   },
-      // ];
-
-      // loginForm.addEventListener("submit", (e) => {
-      //   console.log("inside submit");
-      //   e.preventDefault();
-      //   const email = document.getElementById("email").value;
-      //   const password = document.getElementById("password").value;
-
-      //   const user = validCredentials.find(
-      //     (cred) => cred.username === email && cred.password === password
-      //   );
-
-      //   if (user) {
-      //     console.log("User signed in:", user);
-      //     redirectToFindJobs();
-      //   } else {
-      //     console.error("Invalid credentials");
-      //     alert("Invalid username or password. Please try again.");
-      //   }
-      // });
-
-      // googleLogin.addEventListener("click", () => {
-      //   // Replace this with your desired Google sign-in functionality
-      //   console.log("Google sign-in clicked");
-      //   // Add your Google sign-in logic here
-      //   // If the user successfully signs in with Google, you can call the redirectToFindJobs() function
-      //   // redirectToFindJobs();
-      // });
-    </script>
   </body>
 </html>
