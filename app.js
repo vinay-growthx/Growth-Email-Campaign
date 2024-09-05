@@ -480,10 +480,18 @@ function convertToStringArray(commaString) {
 app.post("/sync-with-easygrowth", async (req, res) => {
   try {
     // Create JD Project
-    const { people } = req.body;
+    const { people, reqId } = req.body;
+
+    const reqIdData = await requestIdRepository.findOne({
+      reqId: reqId,
+    });
+    console.log("req id data --->", reqIdData);
     console.log("people ----->", people[0]);
     const csvFilePath = "people_data.csv";
-    const projectData = await createJDProject(411, "4sept"); // You might want to generate this UUID dynamically
+    const projectData = await createJDProject(
+      411,
+      `Job Title:   ${reqIdData.convertJobObject.title} Automated Project Created by AI Outbound Tool`
+    ); // You might want to generate this UUID dynamically
 
     // Here you would typically process the people data and add them to the project
     // For now, we'll just return the project data
@@ -511,7 +519,6 @@ app.post("/sync-with-easygrowth", async (req, res) => {
 
     res.json({
       message: "Sync successful",
-      // projectId: projectData.id, // Assuming the API returns an id field
     });
   } catch (error) {
     console.error("Error in sync process:", error);

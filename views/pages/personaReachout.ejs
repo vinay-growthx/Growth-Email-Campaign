@@ -908,7 +908,11 @@
             </div>
           </div>
           <button class="download-btn" onclick="downloadCSV()">Download</button>
-          <button class="sync-btn" onclick="syncWithEasyGrowth()">
+          <button
+            class="sync-btn"
+            class="sync-btn"
+            onclick="syncWithEasyGrowth()"
+          >
             Sync with EasyGrowth
           </button>
         </div>
@@ -1502,7 +1506,14 @@
           }
         });
       });
+
       function syncWithEasyGrowth() {
+        const syncButton = document.getElementById("syncButton");
+        syncButton.disabled = true;
+        syncButton.textContent = "Syncing...";
+
+        const reqId = document.body.getAttribute("data-req-id");
+
         // Collect all selected personas
         const selectedCheckboxes = document.querySelectorAll(
           'input[name="selectedPeople"]:checked'
@@ -1528,6 +1539,8 @@
         // Check if there are selected people to sync
         if (selectedPeopleData.length === 0) {
           alert("Please select at least one person to sync.");
+          syncButton.disabled = false;
+          syncButton.textContent = "Sync with EasyGrowth";
           return;
         }
 
@@ -1537,24 +1550,22 @@
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ people: selectedPeopleData }),
+          body: JSON.stringify({
+            people: selectedPeopleData,
+            reqId: reqId,
+          }),
         })
           .then((response) => response.json())
           .then((data) => {
             console.log("Sync successful:", data);
             alert("Synchronization with EasyGrowth was successful!");
+            syncButton.textContent = "Synced";
           })
           .catch((error) => {
-            console.log(
-              "Error syncing with EasyGrowth:",
-              error,
-              selectedPeopleData
-            );
-            alert(
-              `Failed to start synchronization. ${JSON.stringify(
-                selectedPeopleData
-              )}`
-            );
+            console.error("Error syncing with EasyGrowth:", error);
+            alert("Failed to synchronize. Please try again.");
+            syncButton.disabled = false;
+            syncButton.textContent = "Sync with EasyGrowth";
           });
       }
     </script>
