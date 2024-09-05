@@ -776,7 +776,8 @@ app.post("/search-jobs", async (req, res) => {
       Location: ${req.body.location}<br>
       Industry: ${req.body.industry}<br>
       Number of Jobs: ${req.body.num_jobs}<br>
-      `,
+      Job Functions: ${req.body.job_function.join(", ")}<br>
+      Industry: ${req.body.industry.join(", ")}<br>`,
     };
     console.log({ mailOptions });
     if (process.env.ENV === "production") smtpTransport.sendMail(mailOptions);
