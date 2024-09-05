@@ -417,6 +417,14 @@
         color: #7f8c8d;
         font-size: 0.85em;
       }
+      .tag {
+        margin-right: 5px;
+        padding: 5px;
+        background-color: #3498db;
+        color: white;
+        border-radius: 5px;
+        display: inline-block;
+      }
     </style>
   </head>
   <body>
@@ -476,6 +484,7 @@
               <option value="trng">Training</option>
               <option value="wrt">Writing / Editing</option>
             </select>
+            <div id="tag-container" style="padding-top: 10px"></div>
           </div>
           <div class="form-group" style="animation-delay: 0.4s">
             <label for="location">Location:</label>
@@ -1532,6 +1541,8 @@
                 Zoos and Botanical Gardens
               </option>
             </select>
+            <div id="industry-tag-container" style="padding-top: 10px"></div>
+            <!-- Industry tag container -->
           </div>
           <button type="submit" id="submitButton">Search Jobs</button>
           <!-- <button
@@ -85949,6 +85960,68 @@
             submitButton.textContent = "Search Jobs";
           }, 20000);
         });
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+        const jobFunctionSelect = document.getElementById("job_function");
+        const tagContainer = document.getElementById("tag-container");
+
+        function updateTags() {
+          tagContainer.innerHTML = ""; // Clear existing tags
+          const selectedOptions = Array.from(jobFunctionSelect.selectedOptions);
+          selectedOptions.forEach((option) => {
+            const tag = document.createElement("span");
+            tag.className = "tag";
+            tag.textContent = option.text;
+            tag.style =
+              "margin-right: 5px; padding: 5px; background-color: #3498db; color: white; border-radius: 5px; display: inline-block;";
+
+            // Optional: Add a remove button on each tag
+            const removeBtn = document.createElement("span");
+            removeBtn.textContent = " x";
+            removeBtn.style = "cursor: pointer; padding-left: 5px;";
+            removeBtn.onclick = function () {
+              option.selected = false;
+              updateTags();
+            };
+            tag.appendChild(removeBtn);
+
+            tagContainer.appendChild(tag);
+          });
+        }
+
+        jobFunctionSelect.addEventListener("change", updateTags); // Update tags on change
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+        const industrySelect = document.getElementById("industry");
+        const industryTagContainer = document.getElementById(
+          "industry-tag-container"
+        );
+
+        function updateIndustryTags() {
+          industryTagContainer.innerHTML = ""; // Clear existing tags
+          const selectedOptions = Array.from(industrySelect.selectedOptions);
+          selectedOptions.forEach((option) => {
+            const tag = document.createElement("span");
+            tag.className = "tag";
+            tag.textContent = option.text;
+            tag.style =
+              "margin-right: 5px; padding: 5px; background-color: #2980b9; color: white; border-radius: 5px; display: inline-block;";
+
+            // Optional: Add a remove button on each tag
+            const removeBtn = document.createElement("span");
+            removeBtn.textContent = " x";
+            removeBtn.style = "cursor: pointer; padding-left: 5px;";
+            removeBtn.onclick = function () {
+              option.selected = false;
+              updateIndustryTags();
+            };
+            tag.appendChild(removeBtn);
+
+            industryTagContainer.appendChild(tag);
+          });
+        }
+
+        industrySelect.addEventListener("change", updateIndustryTags); // Update tags on change
       });
     </script>
   </body>
