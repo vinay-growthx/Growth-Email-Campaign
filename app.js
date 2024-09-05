@@ -777,17 +777,41 @@ app.post("/search-jobs", async (req, res) => {
       return res.redirect("/login");
     }
     console.log("req --->", req.body);
-    const mailOptions = {
-      to: "utkarsh@hirequotient.com,vinay.prajapati@hirequotient.com",
-      from: "AI OutBound Tool <no-reply@hirequotient.com>",
-      subject: "AI Outbound search Notification: Search has performed!!!",
-      html: `Search performed on job title: ${req.body.job_title}<br>
-      Location: ${req.body.location}<br>
-      Industry: ${req.body.industry}<br>
-      Number of Jobs: ${req.body.num_jobs}<br>
-      Job Functions: ${req.body.job_function.join(", ")}<br>
-      Industry: ${req.body.industry.join(", ")}<br>`,
+    const generateEmailContent = (data) => {
+      const fields = [
+        { key: "job_title", label: "Search performed on job title" },
+        { key: "location", label: "Location" },
+        { key: "num_jobs", label: "Number of Jobs" },
+        { key: "job_function", label: "Job Functions" },
+        { key: "industry", label: "Industry" },
+      ];
+
+      const htmlContent = fields
+        .map(({ key, label }) => {
+          const value = data[key];
+          if (!value) return ""; // Skip falsy values
+
+          let displayValue = value;
+          if (Array.isArray(value)) {
+            displayValue = value.filter(Boolean).join(", "); // Filter out falsy values in arrays
+            if (!displayValue) return ""; // Skip if array is empty after filtering
+          }
+
+          return `${label}: ${displayValue}<br>`;
+        })
+        .filter(Boolean) // Remove empty strings
+        .join("\n      ");
+
+      return {
+        to: "vinay.prajapati@hirequotient.com,utkarsh@hirequotient.com",
+        from: "AI OutBound Tool <no-reply@hirequotient.com>",
+        subject: "AI Outbound search Notification: Search has performed!!!",
+        html: htmlContent,
+      };
     };
+
+    // Usage
+    const mailOptions = generateEmailContent(req.body);
     console.log({ mailOptions });
     if (process.env.ENV === "production") smtpTransport.sendMail(mailOptions);
     let query = req.body.job_title.trim() + " in " + req.body.location.trim();

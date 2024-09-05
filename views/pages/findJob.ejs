@@ -50,11 +50,10 @@
       }
       h1 {
         text-align: center;
-        font-size: 3em;
-        color: #333;
-        margin-bottom: 40px;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        animation: slideDown 1s ease-out;
+        font-size: 2.2em;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        font-weight: 500;
       }
       @keyframes slideDown {
         from {
@@ -67,30 +66,32 @@
         }
       }
       form {
-        display: flex;
-        flex-direction: column;
+        display: grid;
         gap: 20px;
       }
       .form-group {
         margin-bottom: 20px;
         animation: fadeIn 0.5s ease-out forwards;
-        opacity: 0;
       }
       @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
         to {
           opacity: 1;
         }
       }
       label {
         display: block;
-        font-size: 1.2em;
-        margin-bottom: 10px;
-        color: #2c3e50;
+        font-size: 0.95em;
+        margin-bottom: 8px;
+        color: #34495e;
         font-weight: bold;
+        font-weight: 500;
       }
       input[type="text"],
       input[type="number"],
-      input[type="date"], /* Added date style */
+      input[type="datetime-local"],
       select {
         width: 100%;
         padding: 10px;
@@ -103,10 +104,9 @@
       }
       input[type="text"]:focus,
       input[type="number"]:focus,
-      input[type="date"]:focus, /* Added date focus style */
+      input[type="datetime-local"]:focus,
       select:focus {
         border-color: #3498db;
-        background-color: #fff;
         outline: none;
         box-shadow: 0 0 10px rgba(52, 152, 219, 0.1);
       }
@@ -116,18 +116,18 @@
       button[type="submit"] {
         display: block;
         width: 100%;
-        padding: 15px 30px;
-        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-        color: #fff;
+        padding: 12px;
+        background-color: #3498db;
+        color: #ffffff;
         border: none;
-        border-radius: 30px;
+        border-radius: 4px;
         cursor: pointer;
-        font-size: 1.2em;
-        font-weight: 600;
+        font-size: 1.1em;
+        font-weight: 500;
         transition: all 0.3s ease;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-        animation: float 3s ease-in-out infinite;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 20px;
       }
       @keyframes float {
         0% {
@@ -141,9 +141,7 @@
         }
       }
       button[type="submit"]:hover {
-        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-        transform: translateY(-2px) scale(1.05);
-        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        background-color: #2980b9;
       }
       .checkbox-container {
         display: flex;
@@ -376,7 +374,48 @@
       }
 
       select[multiple] option {
-        padding: 5px;
+        padding: 8px;
+      }
+      .container {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        max-width: 800px;
+        width: 90%;
+        margin: 20px;
+      }
+      .or-separator {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: #7f8c8d;
+        font-weight: normal;
+        margin: 20px 0;
+      }
+      .or-separator::before,
+      .or-separator::after {
+        content: "";
+        flex: 1;
+        border-bottom: 1px solid #ecf0f1;
+      }
+      .or-separator::before {
+        margin-right: 0.5em;
+      }
+      .or-separator::after {
+        margin-left: 0.5em;
+      }
+      #error-message {
+        color: #e74c3c;
+        text-align: center;
+        margin-top: 10px;
+        font-weight: 500;
+      }
+      small {
+        display: block;
+        margin-top: 5px;
+        color: #7f8c8d;
+        font-size: 0.85em;
       }
     </style>
   </head>
