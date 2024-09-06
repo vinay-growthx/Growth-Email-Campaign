@@ -190,6 +190,7 @@ app.get("/find-jobs", authMiddleware, (req, res) => {
 });
 app.get("/get-jobs/:reqId", authMiddleware, async (req, res) => {
   const reqId = req.params.reqId;
+
   const page = parseInt(req.query.page) || 1;
   const limit = 500;
 
