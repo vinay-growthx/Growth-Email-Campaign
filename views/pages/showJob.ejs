@@ -9,13 +9,30 @@
       rel="stylesheet"
     />
     <style>
-      body,
-      html {
-        font-family: "Poppins", Arial, sans-serif;
-        background: linear-gradient(135deg, #f6f9fc 0%, #e9f2f9 100%);
+        :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #3498db;
+        --accent-color: #e74c3c;
+        --background-color: #f5f7fa;
+        --text-color: #333;
+        --card-background: #ffffff;
+        --hover-color: #2980b9;
+        --disabled-color: #bdc3c7;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        --transition-speed: 0.3s;
+    }
+    * {
+        box-sizing: border-box;
         margin: 0;
         padding: 0;
-        overflow-x: hidden;
+    }
+      body,
+      html {
+        font-family: 'Roboto', Arial, sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        font-size: 16px;
       }
 
       .parallax-container {
