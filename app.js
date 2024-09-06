@@ -500,7 +500,7 @@ app.post("/sync-with-easygrowth", async (req, res) => {
     console.log("people ----->", people[0]);
     const csvFilePath = "people_data.csv";
     const projectData = await createJDProject(
-      411,
+      858,
       `Job Title:   ${reqIdData.convertJobObject.title} Automated Project Created by AI Outbound Tool`
     ); // You might want to generate this UUID dynamically
 
