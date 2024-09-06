@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -166,6 +166,215 @@
               required
             />
           </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="your.email@example.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="••••••••••"
+              required
+            />
+          </div>
+          <button type="submit" class="login-button">Login</button>
+        </form>
+        <div class="google-login" id="googleLogin">
+          <img
+            src="https://developers.google.com/identity/images/g-logo.png"
+            alt="Google Logo"
+          />
+          <span>Sign in with Google</span>
+        </div>
+      </div>
+      <div class="right-panel">
+        <h2>
+          Elevate your GTM strategy on<br />
+          EasyGrowth with<br />
+          <span class="highlight">ADVANCED OUTBOUND TOOL</span>
+        </h2>
+        <p>Advanced outbound tool that automates your entire sales process:</p>
+        <ul>
+          <li>Picks up job postings from LinkedIn</li>
+          <li>Identifies relevant companies</li>
+          <li>Finds and enriches target personas</li>
+          <li>Sends personalized outreach based on your needs</li>
+        </ul>
+        <p class="emphasis">
+          Revolutionize your sales process with automated, targeted outreach for
+          exponential growth!
+        </p>
+      </div>
+    </div>
+  </body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AAO EasyGrowth - Login</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+      }
+
+      .container {
+        display: flex;
+        height: 100vh;
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: white;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .left-panel,
+      .right-panel {
+        flex: 1;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .right-panel {
+        background-color: #1e3a5f;
+        color: white;
+      }
+
+      .logo {
+        max-width: 100px;
+        margin-bottom: 30px;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      h1,
+      h2 {
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #4a4a4a;
+      }
+
+      input[type="email"],
+      input[type="password"],
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      .login-button {
+        background-color: #3d6998;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s;
+      }
+
+      .login-button:hover {
+        background-color: #2c4d6d;
+      }
+
+      .google-login {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #e0e0e0;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 20px;
+        cursor: pointer;
+        background-color: white;
+      }
+
+      .google-login:hover {
+        background-color: #f5f5f5;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .google-login img {
+        width: 20px;
+        margin-right: 10px;
+      }
+
+      .google-login span {
+        color: #757575;
+        font-weight: 500;
+      }
+
+      .highlight {
+        background-color: white;
+        color: #1e3a5f;
+        padding: 2px 5px;
+        font-weight: bold;
+      }
+
+      .emphasis {
+        font-weight: bold;
+        font-style: italic;
+      }
+
+      ul {
+        padding-left: 20px;
+      }
+
+      li {
+        margin-bottom: 10px;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+        }
+
+        .left-panel,
+        .right-panel {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="left-panel">
+        <img
+          src="https://images.softwaresuggest.com/software_logo/1659507828_hq.jpg"
+          alt="EasyGrowth Logo"
+          class="logo"
+        />
+        <h1>Login with your EasyGrowth account</h1>
+        <form id="login-form" action="/login" method="POST">
           <div class="form-group">
             <label for="email">Email</label>
             <input

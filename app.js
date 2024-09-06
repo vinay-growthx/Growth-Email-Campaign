@@ -242,11 +242,12 @@ app.post("/logout", function (req, res) {
 });
 
 app.post("/login", async (req, res) => {
-  const { email, password, "user-id": userId } = req.body;
-  console.log(
-    "Login Attempt ---->",
-    `Email: ${email}, Password: ${password}, User ID: ${userId}`
-  );
+  const {
+    email,
+    password,
+    // "user-id": userId
+  } = req.body;
+  console.log("Login Attempt ---->", `Email: ${email}, Password: ${password}`);
 
   try {
     // Perform authentication logic here
@@ -254,8 +255,9 @@ app.post("/login", async (req, res) => {
     // the password is "john@octosp", and the user ID is "12345"
     if (
       email === "john@octosp.com" &&
-      password === "john@octosp" &&
-      userId === "858"
+      password === "john@octosp"
+      // &&
+      // userId === "858"
     ) {
       req.session.isAuthenticated = true;
       req.session.save((err) => {
