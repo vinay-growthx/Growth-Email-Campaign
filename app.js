@@ -695,36 +695,38 @@ app.post("/create-persona", async (req, res) => {
     const reqIdData = await requestIdRepository.findOne({
       reqId: reqUUID,
     });
-    console.log("req id data --->", reqIdData);
-    const projectData = await createJDProject(
-      411,
-      `Job Title:   ${
-        reqIdData?.convertJobObject?.title || ""
-      } Automated Project Created by AI Outbound Tool`
-    ); // You might want to generate this UUID dynamically
-    const csvWriter = csv({
-      path: "people_data.csv",
-      header: [
-        { id: "name", title: "name" },
-        { id: "email", title: "email" },
-        { id: "linkedInProfileUrl", title: "linkedInProfileUrl" },
-      ],
-    });
-    const people = await apolloPersonaRepository.find({
-      id: { $in: reqIdData.personaIds },
-    });
-    console.log("people ----->", people[0]);
-    await csvWriter.writeRecords(
-      people.map((person) => ({
-        name: `${person.first_name} ${person.last_name}`, // Combine firstName and lastName
-        email: person.email,
-        linkedInProfileUrl: person.linkedin_url,
-        organization: person.Organization?.name || person.organization?.name, // Get the name from Organization or organization field
-      }))
-    );
-    console.log("project data =-==>", projectData.data._id);
-    // Upload CSV to EasyGrowth
-    await uploadBulkData(projectData.data._id);
+    if (reqIdData?.syncWithEasyGrowth) {
+      console.log("req id data --->", reqIdData);
+      const projectData = await createJDProject(
+        411,
+        `Job Title:   ${
+          reqIdData?.convertJobObject?.title || ""
+        } Automated Project Created by AI Outbound Tool`
+      ); // You might want to generate this UUID dynamically
+      const csvWriter = csv({
+        path: "people_data.csv",
+        header: [
+          { id: "name", title: "name" },
+          { id: "email", title: "email" },
+          { id: "linkedInProfileUrl", title: "linkedInProfileUrl" },
+        ],
+      });
+      const people = await apolloPersonaRepository.find({
+        id: { $in: reqIdData.personaIds },
+      });
+      console.log("people ----->", people[0]);
+      await csvWriter.writeRecords(
+        people.map((person) => ({
+          name: `${person.first_name} ${person.last_name}`, // Combine firstName and lastName
+          email: person.email,
+          linkedInProfileUrl: person.linkedin_url,
+          organization: person.Organization?.name || person.organization?.name, // Get the name from Organization or organization field
+        }))
+      );
+      console.log("project data =-==>", projectData.data._id);
+      // Upload CSV to EasyGrowth
+      await uploadBulkData(projectData.data._id);
+    }
     await fs.unlink(csvFilePath);
     if (!flag) res.redirect(`/persona-reachout/${reqUUID}`);
   } catch (error) {
