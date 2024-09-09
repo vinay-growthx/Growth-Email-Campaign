@@ -698,7 +698,9 @@ app.post("/create-persona", async (req, res) => {
     console.log("req id data --->", reqIdData);
     const projectData = await createJDProject(
       411,
-      `Job Title:   ${reqIdData.convertJobObject.title} Automated Project Created by AI Outbound Tool`
+      `Job Title:   ${
+        reqIdData?.convertJobObject?.title || ""
+      } Automated Project Created by AI Outbound Tool`
     ); // You might want to generate this UUID dynamically
     const csvWriter = csv({
       path: "people_data.csv",
@@ -708,12 +710,18 @@ app.post("/create-persona", async (req, res) => {
         { id: "linkedInProfileUrl", title: "linkedInProfileUrl" },
       ],
     });
-    console.log("people of 0", people[0]);
+    const people = await apolloPersonaRepository.find({
+      id: { $in: reqIdData.personaIds },
+    });
+    console.log("people ----->", people[0]);
     await csvWriter.writeRecords(
       people.map((person) => ({
-        name: person.name, // Combine firstName and lastName
+        name: `${person.first_name} ${person.last_name}`, // Combine firstName and lastName
         email: person.email,
-        linkedInProfileUrl: person.linkedInProfileUrl,
+        linkedInProfileUrl: person.linkedin_url,
+        companylocation: `${person.city}, ${person.state}, ${person.country}`,
+        organization: person.Organization?.name || person.organization?.name, // Get the name from Organization or organization field
+        industry: person.industry,
       }))
     );
     console.log("project data =-==>", projectData.data._id);
