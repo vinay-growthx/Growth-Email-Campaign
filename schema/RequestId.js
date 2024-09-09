@@ -11,6 +11,7 @@ const RequestIdSchema = new Schema(
     jobProcessCompleted: { type: Boolean, default: false },
     notify: { type: Boolean, default: false },
     email: { type: String },
+    syncWithEasyGrowth: { type: Boolean, default: false },
   },
   {
     timestamps: true,

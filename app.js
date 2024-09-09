@@ -495,40 +495,44 @@ app.post("/sync-with-easygrowth", async (req, res) => {
     // Create JD Project
     const { people, reqId } = req.body;
 
-    const reqIdData = await requestIdRepository.findOne({
-      reqId: reqId,
-    });
-    console.log("req id data --->", reqIdData);
-    console.log("people ----->", people[0]);
-    const csvFilePath = "people_data.csv";
-    const projectData = await createJDProject(
-      858,
-      `Job Title:   ${reqIdData.convertJobObject.title} Automated Project Created by AI Outbound Tool`
-    ); // You might want to generate this UUID dynamically
-
-    // Here you would typically process the people data and add them to the project
-    // For now, we'll just return the project data
-
-    const csvWriter = csv({
-      path: "people_data.csv",
-      header: [
-        { id: "name", title: "name" },
-        { id: "email", title: "email" },
-        { id: "linkedInProfileUrl", title: "linkedInProfileUrl" },
-      ],
-    });
-    console.log("people of 0", people[0]);
-    await csvWriter.writeRecords(
-      people.map((person) => ({
-        name: person.name, // Combine firstName and lastName
-        email: person.email,
-        linkedInProfileUrl: person.linkedInProfileUrl,
-      }))
+    const reqIdData = await requestIdRepository.update(
+      {
+        reqId: reqId,
+      },
+      {
+        $set: { syncWithEasyGrowth: true },
+      }
     );
-    console.log("project data =-==>", projectData.data._id);
-    // Upload CSV to EasyGrowth
-    await uploadBulkData(projectData.data._id);
-    await fs.unlink(csvFilePath);
+    console.log("req id data --->", reqIdData);
+    const csvFilePath = "people_data.csv";
+    // const projectData = await createJDProject(
+    //   411,
+    //   `Job Title:   ${reqIdData.convertJobObject.title} Automated Project Created by AI Outbound Tool`
+    // ); // You might want to generate this UUID dynamically
+
+    // // Here you would typically process the people data and add them to the project
+    // // For now, we'll just return the project data
+
+    // const csvWriter = csv({
+    //   path: "people_data.csv",
+    //   header: [
+    //     { id: "name", title: "name" },
+    //     { id: "email", title: "email" },
+    //     { id: "linkedInProfileUrl", title: "linkedInProfileUrl" },
+    //   ],
+    // });
+    // console.log("people of 0", people[0]);
+    // await csvWriter.writeRecords(
+    //   people.map((person) => ({
+    //     name: person.name, // Combine firstName and lastName
+    //     email: person.email,
+    //     linkedInProfileUrl: person.linkedInProfileUrl,
+    //   }))
+    // );
+    // console.log("project data =-==>", projectData.data._id);
+    // // Upload CSV to EasyGrowth
+    // await uploadBulkData(projectData.data._id);
+    // await fs.unlink(csvFilePath);
 
     res.json({
       message: "Sync successful",
