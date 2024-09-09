@@ -785,7 +785,7 @@ app.post("/search-jobs", async (req, res) => {
       const fields = [
         { key: "job_title", label: "Search performed on job title" },
         { key: "location", label: "Location" },
-        { key: "num_jobs", label: "Number of Jobs" },
+        { key: "num_jobs", label: "Maximum Number of Jobs" },
         { key: "job_function", label: "Job Functions" },
         { key: "industry", label: "Industry" },
       ];
