@@ -1467,7 +1467,7 @@
       function syncWithEasyGrowth() {
         const syncButton = document.querySelector(".sync-btn");
         syncButton.disabled = true;
-        syncButton.textContent = "Syncing...";
+        syncButton.textContent = "Generating an automated sync system...";
 
         const reqId = document.body.getAttribute("data-req-id");
 
@@ -1515,8 +1515,10 @@
           .then((response) => response.json())
           .then((data) => {
             console.log("Sync successful:", data);
-            alert("Synchronization with EasyGrowth was successful!");
-            syncButton.textContent = "Synced";
+            alert(
+              "You will be notified over email of EasyGrowth sync completion when all personas have been added"
+            );
+            syncButton.textContent = "Will be synced automatically";
           })
           .catch((error) => {
             console.error("Error syncing with EasyGrowth:", error);
