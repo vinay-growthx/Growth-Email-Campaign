@@ -494,7 +494,15 @@ app.post("/sync-with-easygrowth", async (req, res) => {
   try {
     // Create JD Project
     const { people, reqId } = req.body;
-
+    const reqIdDataUpdate = await requestIdRepository.update(
+      {
+        reqId: reqId,
+      },
+      {
+        $set: { syncWithEasyGrowth: true },
+      }
+    );
+    console.log("req id data update ---->", reqIdDataUpdate);
     res.json({
       message: "Sync successful",
     });
@@ -684,21 +692,14 @@ app.post("/create-persona", async (req, res) => {
       smtpTransport.sendMail(mailOptions);
     }
     const csvFilePath = "people_data.csv";
-    const reqIdDataUpdate = await requestIdRepository.update(
-      {
-        reqId: reqUUID,
-      },
-      {
-        $set: { syncWithEasyGrowth: true },
-      }
-    );
+
     const reqIdData = await requestIdRepository.findOne({
       reqId: reqUUID,
     });
     if (reqIdData?.syncWithEasyGrowth) {
       console.log("req id data --->", reqIdData);
       const projectData = await createJDProject(
-        858,
+        411,
         `Job Title:   ${
           reqIdData?.convertJobObject?.title || ""
         } Automated Project Created by AI Outbound Tool`
