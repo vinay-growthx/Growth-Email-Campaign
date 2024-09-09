@@ -46,6 +46,7 @@ const {
   isRoleFunctionEmptyOrFalsy,
   createJDProject,
   uploadBulkData,
+  manuallyAddNewJobs,
 } = require("./services/util");
 const {
   jobFunctionArr,
@@ -836,7 +837,7 @@ app.post("/search-jobs", async (req, res) => {
     // const roleFunction = isRoleFunctionEmptyOrFalsy(role_function);
     const reqUUID = uuidv4();
 
-    await fetchAllJobs(
+    const totalCount = await fetchAllJobs(
       job_title,
       role_function,
       num_jobs,
@@ -849,7 +850,9 @@ app.post("/search-jobs", async (req, res) => {
       job_role,
       reqUUID
     );
-
+    if (num_jobs > 500 && totalCount < 500) {
+      manuallyAddNewJobs(job_title);
+    }
     // if (role_function) {
     //   job_title = jobRoles[role_function];
     // }

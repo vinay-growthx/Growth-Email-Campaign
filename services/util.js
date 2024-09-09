@@ -1292,7 +1292,7 @@ async function fetchAllJobs(
     convertJobObject: convertedObject,
   });
 
-  return { totalCount };
+  return totalCount;
 }
 function isRoleFunctionEmptyOrFalsy(role_function) {
   return !role_function || role_function.trim() === "";
@@ -1374,6 +1374,7 @@ async function uploadBulkData(projectId) {
     throw error;
   }
 }
+async function manuallyAddNewJobs(job_titles) {}
 module.exports = {
   convertData,
   findAllJobs,
@@ -1403,4 +1404,5 @@ module.exports = {
   createJDProject,
   uploadBulkData,
   isRoleFunctionEmptyOrFalsy,
+  manuallyAddNewJobs,
 };
