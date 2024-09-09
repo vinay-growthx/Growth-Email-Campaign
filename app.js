@@ -684,7 +684,7 @@ app.post("/create-persona", async (req, res) => {
       smtpTransport.sendMail(mailOptions);
     }
     const csvFilePath = "people_data.csv";
-    const reqIdData = await requestIdRepository.update(
+    const reqIdDataUpdate = await requestIdRepository.update(
       {
         reqId: reqUUID,
       },
@@ -692,6 +692,9 @@ app.post("/create-persona", async (req, res) => {
         $set: { syncWithEasyGrowth: true },
       }
     );
+    const reqIdData = await requestIdRepository.findOne({
+      reqId: reqUUID,
+    });
     console.log("req id data --->", reqIdData);
     const projectData = await createJDProject(
       411,
