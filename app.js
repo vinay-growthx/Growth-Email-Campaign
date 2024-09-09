@@ -170,7 +170,7 @@ app.get("/", (req, res) => {
 //     req.user = decodedToken;
 //     next();
 //   } catch (error) {
-//     console.error("Authentication error:", error);
+//     console.log("Authentication error:", error);
 
 //     if (req.xhr || req.headers.accept.indexOf("json") > -1) {
 //       // If it's an AJAX request, send JSON response
@@ -213,7 +213,7 @@ app.get("/get-jobs/:reqId", authMiddleware, async (req, res) => {
       jobFunctionArr,
     });
   } catch (error) {
-    console.error("Error fetching jobs:", error);
+    console.log("Error fetching jobs:", error);
     res.status(500).send("An error occurred. Please try again later.");
   }
 });
@@ -222,7 +222,7 @@ app.get("/login", (req, res) => {
 });
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {
-    if (err) console.error("Error destroying session:", err);
+    if (err) console.log("Error destroying session:", err);
     res.redirect("/login");
   });
 });
@@ -236,7 +236,7 @@ app.use((req, res, next) => {
 app.post("/logout", function (req, res) {
   req.session.destroy(function (err) {
     if (err) {
-      console.error("Logout failed:", err);
+      console.log("Logout failed:", err);
       return res.status(500).send("Logout failed");
     }
     res.redirect("/login");
@@ -264,7 +264,7 @@ app.post("/login", async (req, res) => {
       req.session.isAuthenticated = true;
       req.session.save((err) => {
         if (err) {
-          console.error("Error saving session:", err);
+          console.log("Error saving session:", err);
           res.status(500).render("login", { error: "Internal Server Error" });
         } else {
           res.redirect("/find-jobs");
@@ -298,7 +298,7 @@ app.get("/persona-reachout/:reqId", authMiddleware, async (req, res) => {
       personaProcessCompleted,
     });
   } catch (error) {
-    console.error("Error fetching personas:", error);
+    console.log("Error fetching personas:", error);
     res.status(500).send("Internal Server Error");
   }
 });
@@ -310,7 +310,7 @@ app.get("/persona-reachout/:reqId", authMiddleware, async (req, res) => {
 //       people = JSON.parse(decodeURIComponent(req.query.people));
 //     }
 //   } catch (error) {
-//     console.error("Error parsing people data:", error);
+//     console.log("Error parsing people data:", error);
 //   }
 
 //   res.render("personaReachout", { people });
@@ -452,7 +452,7 @@ app.post("/send-email", async (req, res) => {
             sesResponse = await smtpTransport.sendMail(mailOptions);
             await new Promise((resolve) => setTimeout(resolve, 100));
           } catch (error) {
-            console.error(`Failed to send email to ${mailOptions.to}:`, error);
+            console.log(`Failed to send email to ${mailOptions.to}:`, error);
           }
           if (sesResponse.response) {
             await emailRepository.create({
@@ -468,7 +468,7 @@ app.post("/send-email", async (req, res) => {
             });
           }
         } catch (error) {
-          console.error(`Error processing email for ${email.id}:`, error);
+          console.log(`Error processing email for ${email.id}:`, error);
         }
       } else {
         console.log(`Skipping duplicate email: ${email.email}`);
@@ -477,7 +477,7 @@ app.post("/send-email", async (req, res) => {
 
     res.status(200).json({ message: "Emails sent successfully" });
   } catch (error) {
-    console.error("Error in email sending process:", error);
+    console.log("Error in email sending process:", error);
     res
       .status(500)
       .json({ error: "Failed to send emails", details: error.message });
@@ -495,56 +495,12 @@ app.post("/sync-with-easygrowth", async (req, res) => {
     // Create JD Project
     const { people, reqId } = req.body;
 
-    const reqIdData = await requestIdRepository.update(
-      {
-        reqId: reqId,
-      },
-      {
-        $set: { syncWithEasyGrowth: true },
-      }
-    );
-    console.log("req id data --->", reqIdData);
-    const csvFilePath = "people_data.csv";
-    // const projectData = await createJDProject(
-    //   411,
-    //   `Job Title:   ${reqIdData.convertJobObject.title} Automated Project Created by AI Outbound Tool`
-    // ); // You might want to generate this UUID dynamically
-
-    // // Here you would typically process the people data and add them to the project
-    // // For now, we'll just return the project data
-
-    // const csvWriter = csv({
-    //   path: "people_data.csv",
-    //   header: [
-    //     { id: "name", title: "name" },
-    //     { id: "email", title: "email" },
-    //     { id: "linkedInProfileUrl", title: "linkedInProfileUrl" },
-    //   ],
-    // });
-    // console.log("people of 0", people[0]);
-    // await csvWriter.writeRecords(
-    //   people.map((person) => ({
-    //     name: person.name, // Combine firstName and lastName
-    //     email: person.email,
-    //     linkedInProfileUrl: person.linkedInProfileUrl,
-    //   }))
-    // );
-    // console.log("project data =-==>", projectData.data._id);
-    // // Upload CSV to EasyGrowth
-    // await uploadBulkData(projectData.data._id);
-    // await fs.unlink(csvFilePath);
-
     res.json({
       message: "Sync successful",
     });
   } catch (error) {
-    console.error("Error in sync process:", error);
-    try {
-      const csvFilePath = "people_data.csv";
-      await fs.unlink(csvFilePath);
-    } catch (unlinkError) {
-      console.error("Error deleting CSV file:", unlinkError);
-    }
+    console.log("Error in sync process:", error);
+
     res.status(500).json({ error: "Failed to sync with EasyGrowth" });
   }
 });
@@ -648,7 +604,7 @@ app.post("/create-persona", async (req, res) => {
     //       console.warn(`No company found for name: ${name}`);
     //     }
     //   } catch (error) {
-    //     console.error(`Error processing company name ${name}:`, error);
+    //     console.log(`Error processing company name ${name}:`, error);
     //   }
     // }
     for (const employer of linkedinJobs) {
@@ -703,7 +659,7 @@ app.post("/create-persona", async (req, res) => {
           console.warn(`No company found for name: ${employer.companyName}`);
         }
       } catch (error) {
-        console.error(
+        console.log(
           `Error processing company name ${employer.companyName}:`,
           error
         );
@@ -727,10 +683,49 @@ app.post("/create-persona", async (req, res) => {
       console.log({ mailOptions });
       smtpTransport.sendMail(mailOptions);
     }
-
+    const csvFilePath = "people_data.csv";
+    const reqIdData = await requestIdRepository.update(
+      {
+        reqId: reqUUID,
+      },
+      {
+        $set: { syncWithEasyGrowth: true },
+      }
+    );
+    console.log("req id data --->", reqIdData);
+    const projectData = await createJDProject(
+      411,
+      `Job Title:   ${reqIdData.convertJobObject.title} Automated Project Created by AI Outbound Tool`
+    ); // You might want to generate this UUID dynamically
+    const csvWriter = csv({
+      path: "people_data.csv",
+      header: [
+        { id: "name", title: "name" },
+        { id: "email", title: "email" },
+        { id: "linkedInProfileUrl", title: "linkedInProfileUrl" },
+      ],
+    });
+    console.log("people of 0", people[0]);
+    await csvWriter.writeRecords(
+      people.map((person) => ({
+        name: person.name, // Combine firstName and lastName
+        email: person.email,
+        linkedInProfileUrl: person.linkedInProfileUrl,
+      }))
+    );
+    console.log("project data =-==>", projectData.data._id);
+    // Upload CSV to EasyGrowth
+    await uploadBulkData(projectData.data._id);
+    await fs.unlink(csvFilePath);
     if (!flag) res.redirect(`/persona-reachout/${reqUUID}`);
   } catch (error) {
-    console.error("Error creating persona:", error);
+    try {
+      const csvFilePath = "people_data.csv";
+      await fs.unlink(csvFilePath);
+    } catch (unlinkError) {
+      console.log("Error deleting CSV file:", unlinkError);
+    }
+    console.log("Error creating persona:", error);
     res.status(500).json({ error: "Failed to create persona" });
   }
 });
@@ -775,7 +770,7 @@ app.get("/api/check-status/:reqId", authMiddleware, async (req, res) => {
 
     // Prepare the response
   } catch (error) {
-    console.error("Error checking status:", error);
+    console.log("Error checking status:", error);
     res.status(500).json({ error: `Failed to check status ${error}` });
   }
 });
@@ -1014,7 +1009,7 @@ app.post("/email-enrich-process", async (req, res) => {
 
     res.render("sendEmail", { reqId, enrichedData: personaValidData });
   } catch (error) {
-    console.error("Error processing enriched data:", error);
+    console.log("Error processing enriched data:", error);
     res.status(500).json({ error: "Failed to process enriched data" });
   }
 });
@@ -1036,14 +1031,14 @@ app.post("/email-enrich-process", async (req, res) => {
 //     req.session.isAuthenticated = true; // Mark the session as authenticated
 //     res.redirect("/find-jobs"); // Redirect to a protected route
 //   } catch (error) {
-//     console.error("Error signing in:", error);
+//     console.log("Error signing in:", error);
 //     res.status(401).render("login", { error: "Invalid credentials" });
 //   }
 // });
 
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {
-    if (err) console.error("Error destroying session:", err);
+    if (err) console.log("Error destroying session:", err);
     res.redirect("/login");
   });
 });
@@ -1069,7 +1064,7 @@ app.post("/enriched-data-process", authMiddleware, async (req, res) => {
     );
     res.render("enrichedData", { people: allPersonas, reqId });
   } catch (error) {
-    console.error("Error creating persona:", error);
+    console.log("Error creating persona:", error);
     res.status(500).json({ error: "Failed to create persona" });
   }
 });
@@ -1122,7 +1117,7 @@ app.post("/enriched-data-process", authMiddleware, async (req, res) => {
 //       },
 //     });
 //   } catch (error) {
-//     console.error("Error fetching email stats:", error);
+//     console.log("Error fetching email stats:", error);
 //     res.status(500).send("Internal Server Error");
 //   }
 // });
@@ -1154,7 +1149,7 @@ app.post("/email-enrich", async (req, res) => {
     });
     // res.render("enrichedData", { people: enrichedData });
   } catch (error) {
-    console.error("Error during email enrichment:", error);
+    console.log("Error during email enrichment:", error);
     res.status(500).json({
       error: "Failed to enrich emails",
       details: error.message,
@@ -1172,7 +1167,7 @@ app.post("/email-enrich-new", async (req, res) => {
     });
     res.render("sendEmail", { emails });
   } catch (error) {
-    console.error("Error during email enrichment:", error);
+    console.log("Error during email enrichment:", error);
     res.status(500).json({
       error: "Failed to enrich emails",
       details: error.message,
@@ -1211,7 +1206,7 @@ app.post("/email-enrich-new", async (req, res) => {
 
 //     res.status(200).json({ message: "Emails sent successfully" });
 //   } catch (error) {
-//     console.error("Error sending emails:", error);
+//     console.log("Error sending emails:", error);
 //     res
 //       .status(500)
 //       .json({ error: "Failed to send emails", details: error.message });
@@ -1276,7 +1271,7 @@ app.post("/email-enrich-new", async (req, res) => {
 
 //     res.status(200).json({ message: "Emails sent successfully" });
 //   } catch (error) {
-//     console.error("Error sending emails:", error);
+//     console.log("Error sending emails:", error);
 //     res
 //       .status(500)
 //       .json({ error: "Failed to send emails", details: error.message });
@@ -1303,7 +1298,7 @@ app.post("/notify", async (req, res) => {
     }
     res.status(200).json({ message: "Notification Added successfully!!!" });
   } catch (error) {
-    console.error("Error saving notification request:", error);
+    console.log("Error saving notification request:", error);
     res.status(500).json({ error: "Failed to process notification request" });
   }
 });
@@ -1345,7 +1340,7 @@ app.post("/send-email", async (req, res) => {
 
     res.status(200).json({ message: "Emails sent successfully" });
   } catch (error) {
-    console.error("Error sending emails:", error);
+    console.log("Error sending emails:", error);
     res
       .status(500)
       .json({ error: "Failed to send emails", details: error.message });
@@ -1408,7 +1403,7 @@ async function searchJobs(
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching job data:", error);
+    console.log("Error fetching job data:", error);
     if (error.response) {
       console.log("Response data:", error.response.data);
       console.log("Response status:", error.response.status);
@@ -1448,7 +1443,7 @@ app.listen(port, function () {
     //     console.log("Connected to Redis successfully.");
     //   })
     //   .catch((error) => {
-    //     console.error("Failed to connect to Redis:", error);
+    //     console.log("Failed to connect to Redis:", error);
     //   });
 
     // Placeholder for message broker connection, if applicable
