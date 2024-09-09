@@ -719,9 +719,7 @@ app.post("/create-persona", async (req, res) => {
         name: `${person.first_name} ${person.last_name}`, // Combine firstName and lastName
         email: person.email,
         linkedInProfileUrl: person.linkedin_url,
-        companylocation: `${person.city}, ${person.state}, ${person.country}`,
         organization: person.Organization?.name || person.organization?.name, // Get the name from Organization or organization field
-        industry: person.industry,
       }))
     );
     console.log("project data =-==>", projectData.data._id);
