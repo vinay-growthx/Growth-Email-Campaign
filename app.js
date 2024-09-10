@@ -1334,7 +1334,7 @@ app.post("/send-email", async (req, res) => {
       const mailOptions = {
         from: process.env.EMAIL_USER,
         // to: person.email,
-        to: "vinay.prajapait@hirequotient.com",
+        to: "vinay.prajapati@hirequotient.com",
         subject: emailSubject,
         text: emailTemplate
           .replace("{{name}}", person.name)
