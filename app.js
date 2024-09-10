@@ -107,7 +107,26 @@ app.use(function (req, res, next) {
   next();
 });
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours
+    },
+  })
+);
+const attachUserEmail = (req, res, next) => {
+  if (req.session.isAuthenticated) {
+    req.userEmail = req.session.email; // Attach the email to the request object
+  }
+  next();
+};
+
 app.use(cors());
+app.use(attachUserEmail);
 app.use((req, res, next) => {
   console.log(`Received request for ${req.method} ${req.url}`);
   if (process.env.ENV === "production") {
@@ -122,17 +141,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "your-secret-key",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 1000 * 60 * 60 * 24, // 24 hours
-    },
-  })
-);
 /**
  * Routers Setup
  */
@@ -143,6 +151,7 @@ const authMiddleware = (req, res, next) => {
     res.redirect("/login");
   }
 };
+
 app.use("/", healthRouter);
 
 app.get("/", (req, res) => {
@@ -185,6 +194,7 @@ app.get("/", (req, res) => {
 //   }
 // });
 app.get("/find-jobs", authMiddleware, (req, res) => {
+  console.log("User email:", req.userEmail); // Access the email from the request
   res.render("findJob", {
     title: "Find the Best LinkedIn Jobs Available",
     jobFunctionArr: jobFunctionArr,
@@ -193,6 +203,7 @@ app.get("/find-jobs", authMiddleware, (req, res) => {
   });
 });
 app.get("/get-jobs/:reqId", authMiddleware, async (req, res) => {
+  console.log("User email:", req.userEmail); // Access the email from the request
   const reqId = req.params.reqId;
 
   const page = parseInt(req.query.page) || 1;
@@ -247,24 +258,14 @@ app.post("/logout", function (req, res) {
 });
 
 app.post("/login", async (req, res) => {
-  const {
-    email,
-    password,
-    // "user-id": userId
-  } = req.body;
+  const { email, password } = req.body;
   console.log("Login Attempt ---->", `Email: ${email}, Password: ${password}`);
 
   try {
     // Perform authentication logic here
-    // For simplicity, let's assume the authentication is successful if the email is "john@octosp.com",
-    // the password is "john@octosp", and the user ID is "12345"
-    if (
-      email === "john@octosp.com" &&
-      password === "john@octosp"
-      // &&
-      // userId === "858"
-    ) {
+    if (email === "john@octosp.com" && password === "john@octosp") {
       req.session.isAuthenticated = true;
+      req.session.email = email; // Save the email in the session
       req.session.save((err) => {
         if (err) {
           console.log("Error saving session:", err);
@@ -283,6 +284,7 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/persona-reachout/:reqId", authMiddleware, async (req, res) => {
+  console.log("User email:", req.userEmail); // Access the email from the request
   const reqId = req.params.reqId;
   const page = parseInt(req.query.page) || 1;
   const limit = 1000;
@@ -305,20 +307,8 @@ app.get("/persona-reachout/:reqId", authMiddleware, async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-// app.get("/persona-reachout", (req, res) => {
-//   let people = [];
-
-//   try {
-//     if (req.query.people) {
-//       people = JSON.parse(decodeURIComponent(req.query.people));
-//     }
-//   } catch (error) {
-//     console.log("Error parsing people data:", error);
-//   }
-
-//   res.render("personaReachout", { people });
-// });
 app.get("/send-email", authMiddleware, (req, res) => {
+  console.log("User email:", req.userEmail); // Access the email from the request
   console.log("req query data ====>", req.query);
 
   const enrichedData = JSON.parse(req.query.enrichedId);
@@ -365,10 +355,6 @@ app.post("/send-email", async (req, res) => {
     const jobIds = jobIdReq?.jobIds;
     let jobData = [];
     if (jobIds && jobIds.length) {
-      // jobData = await linkedinJobRepository.find(
-      //   { job_id: { $in: jobIds } }
-      //   // "job_title job_posted_at_datetime_utc job_city job_state job_country employer_name"
-      // );
       jobData = await jobsRepository.find(
         { job_id: { $in: jobIds } },
         "title listedAt formattedLocation companyName"
@@ -564,60 +550,6 @@ app.post("/create-persona", async (req, res) => {
     const allPeople = [];
     convertedObj.title = personaDesignation;
     let flag = false;
-    // for (const name of employerNames) {
-    //   try {
-    //     convertedObj.currentCompany = name;
-    //     // console.log("converted obj ===>", convertedObj);
-    //     const salesNavUrl = await generateSalesNavUrl(convertedObj);
-    //     // console.log("sales nav url", salesNavUrl);
-    //     const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
-    //     for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
-    //       let personaLen = await requestIdRepository.findOne({
-    //         reqId: reqUUID,
-    //       });
-    //       personaLen = personaLen.personaIds.length;
-    //       console.log("persona len", personaLen);
-    //       if (personaLen > 2) {
-    //         if (!flag) {
-    //           flag = true;
-    //           res.redirect(`/persona-reachout/${reqUUID}`);
-    //         }
-    //         console.log("continue persona getting");
-    //       }
-    //       if (i == 0) {
-    //         console.log(
-    //           "search people lix ====>",
-    //           JSON.stringify(searchPeopleLixData.people[0].salesNavId)
-    //         );
-    //       }
-    //       const personData = await getLinkedInData(
-    //         searchPeopleLixData.people[i]?.salesNavId
-    //       );
-    //       convertToApolloPersona(personData, reqUUID);
-    //     }
-    //     const company = await searchCompanyApollo(name);
-    //     let orgId = company?.accounts?.[0]?.organization_id;
-    //     if (company) {
-    //       saveOrganizationData([company]);
-    //       const people = await searchPeople(
-    //         jobLocations,
-    //         orgId,
-    //         personaDesignation,
-    //         employeeSize,
-    //         seniorityLevel
-    //       );
-    //       if (people?.people) {
-    //         allPeople.push(...people.people);
-    //         await savePersonaData(allPeople);
-    //       }
-    //       updateRequestWithPersonaIds(reqUUID, allPeople);
-    //     } else {
-    //       console.warn(`No company found for name: ${name}`);
-    //     }
-    //   } catch (error) {
-    //     console.log(`Error processing company name ${name}:`, error);
-    //   }
-    // }
     for (const employer of linkedinJobs) {
       try {
         convertedObj.location = [employer.formattedLocation];
@@ -732,7 +664,11 @@ app.post("/create-persona", async (req, res) => {
       // Upload CSV to EasyGrowth
       await uploadBulkData(projectData.data._id);
     }
-    await fs.unlink(csvFilePath);
+    try {
+      await fs.unlink(csvFilePath);
+    } catch (err) {
+      console.log("Error deleting CSV file", err);
+    }
     if (!flag) res.redirect(`/persona-reachout/${reqUUID}`);
   } catch (error) {
     try {
@@ -742,11 +678,13 @@ app.post("/create-persona", async (req, res) => {
       console.log("Error deleting CSV file:", unlinkError);
     }
     console.log("Error creating persona:", error);
+
     res.status(500).json({ error: "Failed to create persona" });
   }
 });
 
 app.get("/api/check-status/:reqId", authMiddleware, async (req, res) => {
+  console.log("User email:", req.userEmail); // Access the email from the request
   try {
     if (!req.session.isAuthenticated) {
       return res.redirect("/login");
@@ -868,88 +806,6 @@ app.post("/search-jobs", async (req, res) => {
     if (num_jobs > 500 && totalCount < 500) {
       manuallyAddNewJobs(job_title);
     }
-    // if (role_function) {
-    //   job_title = jobRoles[role_function];
-    // }
-    // console.log("job title ===>", job_title);
-    // let locationObj = JSON.parse(location_hidden);
-    // let location = locationObj?.label || "USA";
-    // let remainingPages = num_pages;
-    // if (num_pages > 3) {
-    //   num_pages = 3;
-    // }
-    // const results = await searchLinkedInJobsMultipleTitles(
-    //   job_title,
-    //   location,
-    //   1,
-    //   num_pages
-    // );
-
-    // const results = await searchJobs(
-    //   query,
-    //   page,
-    //   num_pages,
-    //   date_posted,
-    //   remote_jobs_only,
-    //   employment_types,
-    //   job_requirements,
-    //   job_titles,
-    //   company_types,
-    //   employer,
-    //   actively_hiring,
-    //   radius,
-    //   exclude_job_publishers
-    // );
-    // results.data.forEach((job) => {
-    //   let salaryRange = "N/A";
-    //   if (job.job_min_salary && job.job_max_salary) {
-    //     salaryRange = `$${job.job_min_salary} - $${job.job_max_salary}`;
-    //   } else if (job.job_min_salary) {
-    //     salaryRange = `$${job.job_min_salary}`;
-    //   } else if (job.job_max_salary) {
-    //     salaryRange = `$${job.job_max_salary}`;
-    //   } else if (job.job_description.includes("Annual Salary Range:")) {
-    //     const salaryMatch = job.job_description.match(
-    //       /Annual Salary Range:\$\s*([\d,]+)\s*-\s*\$\s*([\d,]+)/
-    //     );
-    //     if (salaryMatch) {
-    //       salaryRange = `${salaryMatch[1]} - ${salaryMatch[2]}`;
-    //     }
-    //   }
-    //   job.salaryRange = salaryRange;
-    // });
-    // if (results?.length) {
-    //   const jobDataSave = await saveJobData(results);
-    //   await updateRequestWithJobIds(reqUUID, jobDataSave, convertedObject);
-    // } else {
-    //   const APIData = await fetchJobListings({
-    //     query,
-    //     page,
-    //     num_pages,
-    //     date_posted,
-    //     remote_jobs_only,
-    //     employment_types,
-    //     job_requirements,
-    //     job_title,
-    //     company_types,
-    //     employer,
-    //     actively_hiring,
-    //     radius,
-    //     exclude_job_publishers,
-    //   });
-    //   const jobDataSave = await saveJobDataJobListing(APIData);
-    //   updateRequestWithJobIds(reqUUID, jobDataSave);
-    // }
-    // if (remainingPages > 3) {
-    //   syncLinkedInJobs(
-    //     job_title,
-    //     location,
-    //     3,
-    //     remainingPages,
-    //     reqUUID,
-    //     convertedObject
-    //   );
-    // }
 
     res.redirect(`/get-jobs/${reqUUID}`);
   } catch (error) {
@@ -959,6 +815,7 @@ app.post("/search-jobs", async (req, res) => {
 });
 
 app.get("/enriched-data", authMiddleware, (req, res) => {
+  console.log("User email:", req.userEmail); // Access the email from the request
   const people = JSON.parse(req.query.data);
   res.render("enrichedData", { people });
 });
@@ -1029,29 +886,6 @@ app.post("/email-enrich-process", async (req, res) => {
     res.status(500).json({ error: "Failed to process enriched data" });
   }
 });
-// app.post("/login", async (req, res) => {
-//   const { email, password } = req.body; // Assuming you handle password verification
-//   try {
-//     const userRecord = await admin.auth().getUserByEmail(email);
-//     // Initialize the session user object if it doesn't exist
-//     if (!req.session.user) {
-//       req.session.user = {}; // Always initialize an object
-//     }
-
-//     // Set user details and token in the session
-//     req.session.user.uid = userRecord.uid;
-//     req.session.user.token = await admin
-//       .auth()
-//       .createCustomToken(userRecord.uid);
-
-//     req.session.isAuthenticated = true; // Mark the session as authenticated
-//     res.redirect("/find-jobs"); // Redirect to a protected route
-//   } catch (error) {
-//     console.log("Error signing in:", error);
-//     res.status(401).render("login", { error: "Invalid credentials" });
-//   }
-// });
-
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) console.log("Error destroying session:", err);
@@ -1060,6 +894,7 @@ app.get("/logout", (req, res) => {
 });
 
 app.post("/enriched-data-process", authMiddleware, async (req, res) => {
+  console.log("User email:", req.userEmail); // Access the email from the request
   try {
     if (!req.session.isAuthenticated) {
       return res.redirect("/login");
@@ -1084,59 +919,6 @@ app.post("/enriched-data-process", authMiddleware, async (req, res) => {
     res.status(500).json({ error: "Failed to create persona" });
   }
 });
-// app.get("/email-stats/:reqId", async (req, res) => {
-//   try {
-//     const reqId = req.params.reqId;
-
-//     // Fetch email stats from the database based on reqId
-//     const emailStats = await emailRepository.aggregate([
-//       { $match: { reqId: reqId } },
-//       {
-//         $group: {
-//           _id: null,
-//           totalEmails: { $sum: 1 },
-//           successfulEmails: {
-//             $sum: { $cond: [{ $eq: ["$status", "delivered"] }, 1, 0] },
-//           },
-//           failedEmails: {
-//             $sum: { $cond: [{ $eq: ["$status", "failed"] }, 1, 0] },
-//           },
-//           blockedEmails: {
-//             $sum: { $cond: [{ $eq: ["$status", "blocked"] }, 1, 0] },
-//           },
-//           skippedEmails: {
-//             $sum: { $cond: [{ $eq: ["$status", "skipped"] }, 1, 0] },
-//           },
-//         },
-//       },
-//     ]);
-
-//     const stats = emailStats[0] || {};
-//     const totalEmails = stats.totalEmails || 0;
-//     const successfulEmails = stats.successfulEmails || 0;
-//     const failedEmails = stats.failedEmails || 0;
-//     const blockedEmails = stats.blockedEmails || 0;
-//     const skippedEmails = stats.skippedEmails || 0;
-
-//     // Calculate open rate and click rate (assuming you have the necessary data)
-//     const openRate = (stats.openedEmails / totalEmails) * 100 || 0;
-//     const clickRate = (stats.clickedEmails / totalEmails) * 100 || 0;
-
-//     res.render("emailStats", {
-//       stats: {
-//         openRate: openRate.toFixed(2),
-//         clickRate: clickRate.toFixed(2),
-//         successfulEmails,
-//         failedEmails,
-//         blockedEmails,
-//         skippedEmails,
-//       },
-//     });
-//   } catch (error) {
-//     console.log("Error fetching email stats:", error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// });
 app.post("/email-enrich", async (req, res) => {
   try {
     if (!req.session.isAuthenticated) {
@@ -1190,109 +972,6 @@ app.post("/email-enrich-new", async (req, res) => {
     });
   }
 });
-// app.post("/send-email", async (req, res) => {
-//   const { enrichedData, emailTemplate } = req.body;
-
-//   if (!enrichedData || !emailTemplate) {
-//     return res
-//       .status(400)
-//       .json({ error: "Enriched data and email template are required" });
-//   }
-
-//   try {
-//     const sendEmailPromises = enrichedData.map((person) => {
-//       const mailOptions = {
-//         to: person.email,
-//         from: "EasySource <no-reply@hirequotient.com>",
-//         bcc: "easysource-support@hirequotient.com",
-//         subject: subject,
-//         html: emailTemplate
-//           .replace("{{name}}", person.name)
-//           .replace("{{title}}", person.employment_history[0].title)
-//           .replace(
-//             "{{companyName}}",
-//             person.employment_history[0].organization_name
-//           ),
-//       };
-
-//       return smtpTransport.sendMail(mailOptions);
-//     });
-
-//     await Promise.all(sendEmailPromises);
-
-//     res.status(200).json({ message: "Emails sent successfully" });
-//   } catch (error) {
-//     console.log("Error sending emails:", error);
-//     res
-//       .status(500)
-//       .json({ error: "Failed to send emails", details: error.message });
-//   }
-// });
-// app.get("/", authMiddleware, (req, res) => {
-//   res.render("findJob", {
-//     title: "Find the Best LinkedIn Jobs Available",
-//     jobFunctionArr: jobFunctionArr,
-//     industryArr: industryArr,
-//     locationArr: locationArr,
-//   });
-// });
-// app.get("/", (req, res) => {
-//   if (req.session.views) {
-//     req.session.views++;
-//     res.setHeader("Content-Type", "text/html");
-//     res.write("<p>views: " + req.session.views + "</p>");
-//     res.write("<p>expires in: " + req.session.cookie.maxAge / 1000 + "s</p>");
-//     res.end();
-//   } else {
-//     req.session.views = 1;
-//     res.end("welcome to the session demo. refresh!");
-//   }
-// });
-// app.post("/send-email", async (req, res) => {
-//   const { enrichedData, emailTemplate } = req.body;
-
-//   if (!enrichedData || !emailTemplate) {
-//     return res
-//       .status(400)
-//       .json({ error: "Enriched data and email template are required" });
-//   }
-
-//   try {
-//     // Create a transporter object using the default SMTP transport
-//     const transporter = nodemailer.createTransport({
-//       service: "gmail",
-//       auth: {
-//         user: process.env.EMAIL_USER, // Your email address
-//         pass: process.env.EMAIL_PASS, // Your email password or app password
-//       },
-//     });
-
-//     // Send an email to each enriched data entry
-//     const sendEmailPromises = enrichedData.map((person) => {
-//       const latestJob = person.employment_history[0];
-//       const mailOptions = {
-//         from: process.env.EMAIL_USER,
-//         to: person.email,
-//         subject: "Collaboration Opportunity",
-//         text: emailTemplate
-//           .replace("{{name}}", person.name)
-//           .replace("{{title}}", latestJob.title)
-//           .replace("{{companyName}}", latestJob.organization_name),
-//       };
-
-//       return transporter.sendMail(mailOptions);
-//     });
-
-//     await Promise.all(sendEmailPromises);
-
-//     res.status(200).json({ message: "Emails sent successfully" });
-//   } catch (error) {
-//     console.log("Error sending emails:", error);
-//     res
-//       .status(500)
-//       .json({ error: "Failed to send emails", details: error.message });
-//   }
-// });
 app.post("/notify", async (req, res) => {
   const { email, reqId } = req.body;
 
