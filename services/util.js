@@ -64,7 +64,7 @@ async function saveJobData(jobData) {
       // const generatedSummary = await generateJobSummary(formatJobDetails(job));
       // summary = generatedSummary?.summary || "";
     } catch (error) {
-      console.error("Error generating summary for job", job.job_id, error);
+      console.log("Error generating summary for job", job.job_id, error);
       summary = ""; // Continue with an empty string if summary generation fails
     }
     if (summary) {
@@ -207,7 +207,7 @@ async function saveJobDataJobListing(apiResponse) {
     }
     return allProcessedJobIds;
   } catch (error) {
-    console.error("Failed to save jobs:", error);
+    console.log("Failed to save jobs:", error);
   }
 }
 
@@ -229,7 +229,7 @@ async function findAllJobs(reqId, page, limit) {
     job_id: { $in: paginatedIds },
   });
   if (!jobData || !Array.isArray(jobData)) {
-    console.error("No job data found for paginatedIds:", paginatedIds);
+    console.log("No job data found for paginatedIds:", paginatedIds);
     return { people: [], totalCount };
   }
   return { jobData, totalCount };
@@ -245,7 +245,7 @@ async function findAllPersonas(reqId, page, limit) {
       !personaIds.personaIds ||
       !Array.isArray(personaIds.personaIds)
     ) {
-      console.error("No persona IDs found for reqId:", reqId);
+      console.log("No persona IDs found for reqId:", reqId);
       return { people: [], totalCount: 0 };
     }
 
@@ -259,7 +259,7 @@ async function findAllPersonas(reqId, page, limit) {
     });
 
     if (!jobData || !Array.isArray(jobData)) {
-      console.error("No job data found for paginatedIds:", paginatedIds);
+      console.log("No job data found for paginatedIds:", paginatedIds);
       return { people: [], totalCount };
     }
 
@@ -269,7 +269,7 @@ async function findAllPersonas(reqId, page, limit) {
       personaProcessCompleted: personaIds.personaProcessCompleted,
     };
   } catch (error) {
-    console.error("Error in findAllPersonas:", error);
+    console.log("Error in findAllPersonas:", error);
     // throw error;
   }
 }
@@ -313,7 +313,7 @@ async function updateRequestWithJobIds(reqId, jobIdsObject, convertJobObject) {
     console.log("Created request:", updatedRequest);
     return updatedRequest;
   } catch (error) {
-    console.error("Error creating request with job IDs:", error);
+    console.log("Error creating request with job IDs:", error);
   }
 }
 async function updateRequestWithPersonaIds(reqId, personaIdsObject) {
@@ -353,7 +353,7 @@ async function updateRequestWithPersonaIds(reqId, personaIdsObject) {
     console.log("Created request:", updatedRequest);
     return updatedRequest;
   } catch (error) {
-    console.error("Error creating request with job IDs:", error);
+    console.log("Error creating request with job IDs:", error);
   }
 }
 async function savePersonaData(personaData) {
@@ -509,7 +509,7 @@ async function updateContactDetails(personaData) {
         console.log(`No persona found with ID: ${id} to update.`);
       }
     } catch (error) {
-      console.error(
+      console.log(
         `Error updating contact details for persona with ID: ${persona.person.id}: ${error}`
       );
     }
@@ -519,7 +519,7 @@ async function saveOrganizationData(orgData) {
   try {
     await apolloOrganizationRepository.create(orgData[0]);
   } catch (error) {
-    console.error("Failed to save organizations:", error);
+    console.log("Failed to save organizations:", error);
   }
 }
 function findPersonById(id, data) {
@@ -1072,7 +1072,7 @@ async function trackApiCall(apiName) {
       options
     );
   } catch (err) {
-    console.error(`Error tracking API call for ${apiName}: ${err}`);
+    console.log(`Error tracking API call for ${apiName}: ${err}`);
   }
 }
 
@@ -1334,7 +1334,7 @@ async function createJDProject(uuid, name) {
 
     return response.data;
   } catch (error) {
-    console.error("Error creating JD project:", error);
+    console.log("Error creating JD project:", error);
   }
 }
 async function uploadBulkData(projectId) {
@@ -1367,7 +1367,7 @@ async function uploadBulkData(projectId) {
     console.log("Bulk upload response:", response.data);
     return response.data;
   } catch (error) {
-    console.error(
+    console.log(
       "Error in bulk upload:",
       error.response ? error.response.data : error.message
     );

@@ -72,6 +72,9 @@ const {
 const { searchPeopleLix } = require("./services/LixAPI/lix");
 const JobsRepository = require("./repository/JobsRepository");
 const jobsRepository = new JobsRepository();
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 // Set EJS as the templating engine
 app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
@@ -623,6 +626,7 @@ app.post("/create-persona", async (req, res) => {
         const salesNavUrl = await generateSalesNavUrl(convertedObj);
         console.log("sales nav url ====>", salesNavUrl);
         const searchPeopleLixData = await searchPeopleLix(salesNavUrl);
+        await delay(1000);
         for (let i = 0; i < searchPeopleLixData?.people?.length; i++) {
           let personaLen = await requestIdRepository.findOne({
             reqId: reqUUID,
