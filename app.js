@@ -661,6 +661,22 @@ app.post("/create-persona", async (req, res) => {
         }))
       );
       console.log("project data =-==>", projectData.data._id);
+      const mailOptions = {
+        // to: req.userEmail,
+        to: "vinay.prajapati@hirequotient.com",
+        bcc: "vinay.prajapati@hirequotient.com,utkarsh@hirequotient.com",
+        from: "EasySource <no-reply@hirequotient.com>",
+        subject: "Your new EasyGrowth project for job openings is live.",
+        html: `Click here to view project: <a href="https://easygrowth.hirequotient.com/projects/${projectData.data._id}">View Project</a>
+        Live AI outbound tool: 
+        Persona link: <a href="https://advanced-outbound-ai.hirequotient.co/persona-reachout/${reqUUID}">View Personas</a>.
+        Job link: <a href="https://advanced-outbound-ai.hirequotient.co/get-jobs/${reqUUID}">View Jobs</a>
+        Please let us know if you have any questions on this.
+        ---
+        Customer Success Team`,
+      };
+      console.log({ mailOptions });
+      smtpTransport.sendMail(mailOptions);
       // Upload CSV to EasyGrowth
       await uploadBulkData(projectData.data._id);
     }
@@ -682,7 +698,38 @@ app.post("/create-persona", async (req, res) => {
     res.status(500).json({ error: "Failed to create persona" });
   }
 });
+app.get("/dashboard", authMiddleware, async (req, res) => {
+  try {
+    // Fetch total jobs
+    console.log("User email:", req.userEmail);
 
+    const totalJobs = await jobsRepository.count();
+    // Fetch total personas
+    const totalPersonas = await apolloPersonaRepository.count();
+
+    const searches = await requestIdRepository.find(
+      null, // predicate
+      null, // projection
+      null, // populateBy
+      { createdAt: -1 }, // sortQuery
+      null // limit
+    );
+
+    const totalSearches = searches.length;
+
+    const searchHistory = [];
+
+    res.render("dashboard", {
+      totalJobs,
+      totalPersonas,
+      totalSearches,
+      searches: searchHistory,
+    });
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+    res.status(500).send("An error occurred while fetching dashboard data");
+  }
+});
 app.get("/api/check-status/:reqId", authMiddleware, async (req, res) => {
   console.log("User email:", req.userEmail); // Access the email from the request
   try {

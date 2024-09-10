@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advanced Outreach AI Dashboard</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #2196f3;
+        --primary-light: #bbdefb;
+        --primary-dark: #1976d2;
+        --secondary-color: #ffc107;
+        --text-color: #333333;
+        --background-color: #f5f7fa;
+        --card-background: #ffffff;
+        --success-color: #4caf50;
+        --error-color: #f44336;
+        --border-radius: 12px;
+        --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+
+      body,
+      html {
+        font-family: "Poppins", Arial, sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+      }
+
+      .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      h1,
+      h2 {
+        color: var(--primary-dark);
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 2.5em;
+        margin-bottom: 30px;
+      }
+
+      h2 {
+        font-size: 2em;
+        margin-top: 40px;
+      }
+
+      .summary-cards {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 40px;
+      }
+
+      .summary-card {
+        background-color: var(--card-background);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 20px;
+        flex: 1;
+        margin: 0 10px;
+        text-align: center;
+        transition: var(--transition);
+      }
+
+      .summary-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .summary-card h3 {
+        color: var(--primary-color);
+        font-size: 1.2em;
+        margin-bottom: 10px;
+      }
+
+      .summary-card p {
+        font-size: 2em;
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .search-history {
+        background-color: var(--card-background);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 20px;
+      }
+
+      .search-item {
+        border-bottom: 1px solid var(--primary-light);
+        padding: 15px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .search-item:last-child {
+        border-bottom: none;
+      }
+
+      .search-details {
+        flex: 1;
+      }
+
+      .search-title {
+        font-weight: bold;
+        color: var(--primary-dark);
+      }
+
+      .search-date {
+        color: var(--text-color);
+        font-size: 0.9em;
+      }
+
+      .search-links {
+        display: flex;
+        gap: 10px;
+      }
+
+      .search-link {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: var(--transition);
+        font-size: 0.9em;
+      }
+
+      .search-link:hover {
+        background-color: var(--primary-dark);
+      }
+
+      .search-link.jobs {
+        background-color: var(--success-color);
+      }
+
+      .search-link.jobs:hover {
+        background-color: #45a049;
+      }
+
+      .search-link.personas {
+        background-color: var(--secondary-color);
+        color: var(--text-color);
+      }
+
+      .search-link.personas:hover {
+        background-color: #e0a800;
+      }
+
+      @media (max-width: 768px) {
+        .summary-cards {
+          flex-direction: column;
+        }
+
+        .summary-card {
+          margin: 10px 0;
+        }
+
+        .search-item {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .search-links {
+          margin-top: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <h1>Advanced Outreach AI Dashboard</h1>
+
+      <div class="summary-cards">
+        <div class="summary-card">
+          <h3>Total Jobs</h3>
+          <p><%= totalJobs %></p>
+        </div>
+        <div class="summary-card">
+          <h3>Total Personas</h3>
+          <p><%= totalPersonas %></p>
+        </div>
+        <div class="summary-card">
+          <h3>Total Searches</h3>
+          <p><%= totalSearches %></p>
+        </div>
+      </div>
+
+      <h2>Search History</h2>
+      <div class="search-history">
+        <% searches.forEach(function(search) { %>
+        <div class="search-item">
+          <div class="search-details">
+            <div class="search-title"><%= search.title %></div>
+            <div class="search-date"><%= search.date %></div>
+          </div>
+          <div class="search-links">
+            <a href="/get-jobs/<%= search.reqId %>" class="search-link jobs"
+              >View Jobs</a
+            >
+            <a
+              href="/persona-reachout/<%= search.reqId %>"
+              class="search-link personas"
+              >View Personas</a
+            >
+          </div>
+        </div>
+        <% }); %>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Add any necessary JavaScript for interactivity
+      });
+    </script>
+  </body>
+</html>
