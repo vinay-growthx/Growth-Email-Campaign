@@ -1308,7 +1308,7 @@ function convertDateFormat(dateString) {
 
 async function createJDProject(uuid, name) {
   const url =
-    "https://easysource-stag2.hirequotient.com/api/v2/project/create-jd-project";
+    "https://easygrowth.hirequotient.com/api/v2/project/create-jd-project";
   const projectData = {
     name: name,
     bdrRegions: "AMER",
@@ -1338,8 +1338,7 @@ async function createJDProject(uuid, name) {
   }
 }
 async function uploadBulkData(projectId) {
-  const url =
-    "https://easysource-stag2.hirequotient.com/api/v2/project/bulk-upload";
+  const url = "https://easygrowth.hirequotient.com/api/v2/project/bulk-upload";
 
   const formData = new FormData();
 
