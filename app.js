@@ -668,7 +668,7 @@ app.post("/create-persona", async (req, res) => {
         from: "EasySource <no-reply@hirequotient.com>",
         subject: "Your new EasyGrowth project for job openings is live.",
         html: `Click here to view project: <a href="https://easygrowth.hirequotient.com/projects/${projectData.data._id}">View Project</a>
-        Live AI outbound tool: 
+        Live AI outbound tool: <br>
         Persona link: <a href="https://advanced-outbound-ai.hirequotient.co/persona-reachout/${reqUUID}">View Personas</a>.<br>
         Job link: <a href="https://advanced-outbound-ai.hirequotient.co/get-jobs/${reqUUID}">View Jobs</a><br>
         Please let us know if you have any questions on this.
