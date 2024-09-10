@@ -662,8 +662,8 @@ app.post("/create-persona", async (req, res) => {
       );
       console.log("project data =-==>", projectData.data._id);
       const mailOptions = {
-        // to: req.userEmail,
-        to: "vinay.prajapati@hirequotient.com",
+        to: req.userEmail,
+        // to: "vinay.prajapati@hirequotient.com",
         bcc: "vinay.prajapati@hirequotient.com,utkarsh@hirequotient.com",
         from: "EasySource <no-reply@hirequotient.com>",
         subject: "Your new EasyGrowth project for job openings is live.",
