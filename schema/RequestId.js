@@ -12,6 +12,7 @@ const RequestIdSchema = new Schema(
     notify: { type: Boolean, default: false },
     email: { type: String },
     syncWithEasyGrowth: { type: Boolean, default: false },
+    userEmail: { type: String },
   },
   {
     timestamps: true,

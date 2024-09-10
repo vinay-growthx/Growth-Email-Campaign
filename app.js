@@ -635,7 +635,7 @@ app.post("/create-persona", async (req, res) => {
     if (reqIdData?.syncWithEasyGrowth) {
       console.log("req id data --->", reqIdData);
       const projectData = await createJDProject(
-        411,
+        858,
         `Job Title:   ${
           reqIdData?.convertJobObject?.title || ""
         } Automated Project Created by AI Outbound Tool`
