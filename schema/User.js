@@ -448,17 +448,13 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    easyGrowthId: {
+      type: String,
+    },
   },
+
   { timestamps: true }
 );
 
-UserSchema.plugin(autoIncrement, {
-  model: "User",
-  startAt: 1,
-});
-UserSchema.index({ referralCode: 1 });
-UserSchema.index({ uuid: 1 });
-UserSchema.index({ linkedInId: 1 });
-UserSchema.index({ "userLiProfile.profileUrl": 1 });
 const user = mongoose.model("User", UserSchema);
 module.exports = user;

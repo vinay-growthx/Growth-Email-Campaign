@@ -62,6 +62,8 @@ const ApolloPersonaRepository = require("./repository/ApolloPersonaRepository");
 const apolloPersonaRepository = new ApolloPersonaRepository();
 const EmailRepository = require("./repository/EmailRepository");
 const emailRepository = new EmailRepository();
+const UserRepository = require("./repository/UserRepository");
+const userRepository = new UserRepository();
 const RequestIdRepository = require("./repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
 const { generateProfessionalSubject } = require("./services/chatgpt");
@@ -259,27 +261,28 @@ app.post("/logout", function (req, res) {
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  console.log("Login Attempt ---->", `Email: ${email}, Password: ${password}`);
 
   try {
-    // Perform authentication logic here
-    if (email === "john@octosp.com" && password === "john@octosp") {
-      req.session.isAuthenticated = true;
-      req.session.email = email; // Save the email in the session
-      req.session.save((err) => {
-        if (err) {
-          console.log("Error saving session:", err);
-          res.status(500).render("login", { error: "Internal Server Error" });
-        } else {
-          res.redirect("/dashboard"); // Redirect to dashboard instead of find-jobs
-        }
-      });
-    } else {
-      res.status(401).render("login", { error: "Invalid credentials" });
+    const user = await userRepository.findOne(
+      { email },
+      { email: 1, userPassword: 1 }
+    );
+    console.log("user ====>", user);
+    if (!user || user.email != email || user.userPassword != password) {
+      return res.status(401).render("login", { error: "Invalid credentials" });
     }
+
+    req.session.isAuthenticated = true;
+    req.session.email = user.email;
+    req.session.save((err) => {
+      if (err) {
+        res.status(500).render("login", { error: "Internal Server Error" });
+      } else {
+        res.redirect("/dashboard");
+      }
+    });
   } catch (error) {
-    console.log("Error signing in:", error);
-    res.status(500).render("login", { error: "Invalid credentials" });
+    res.status(500).render("login", { error: "Internal Server Error" });
   }
 });
 app.get("/persona-reachout/:reqId", authMiddleware, async (req, res) => {
