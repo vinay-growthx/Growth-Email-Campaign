@@ -73,6 +73,8 @@ const {
 } = require("./services/salesNav/salesNavConversation");
 const { searchPeopleLix } = require("./services/LixAPI/lix");
 const JobsRepository = require("./repository/JobsRepository");
+const CreditsRepository = require("./repository/CreditRepository");
+const creditsRepository = new CreditsRepository();
 const jobsRepository = new JobsRepository();
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -331,6 +333,37 @@ function findJobPostByEmployerName(arr, employerName) {
   });
 }
 
+// app.get("/credits", authMiddleware, async (req, res) => {
+//   try {
+//     // Fetch the credit record for the authenticated user
+//     const creditRecord = await creditsRepository.findOne({
+//       userEmail: req.userEmail,
+//     });
+
+//     if (!creditRecord) {
+//       // If no credit record exists, you might want to create one or handle this case
+//       return res.status(404).send("No credit record found for this user");
+//     }
+
+//     const categories = ["persona", "job", "email_enrich", "email_send"];
+//     const categorizedHistory = {};
+//     categories.forEach((category) => {
+//       categorizedHistory[category] = creditRecord.creditHistory.filter(
+//         (entry) => entry.category === category
+//       );
+//     });
+
+//     res.render("credits", {
+//       credits: creditRecord.availableCredits,
+//       totalCreditsUsed: creditRecord.usedCredits,
+//       creditHistory: creditRecord.creditHistory,
+//       categorizedHistory: categorizedHistory,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching credit data:", error);
+//     res.status(500).send("An error occurred while fetching credit data");
+//   }
+// });
 app.post("/send-email", async (req, res) => {
   const { subject, body, emails } = req.body;
 

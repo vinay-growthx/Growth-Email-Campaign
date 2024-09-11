@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Credits - Advanced Outreach AI</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #2196f3;
+        --primary-light: #bbdefb;
+        --primary-dark: #1976d2;
+        --secondary-color: #ffc107;
+        --text-color: #333333;
+        --background-color: #f5f7fa;
+        --card-background: #ffffff;
+        --success-color: #4caf50;
+        --error-color: #f44336;
+        --border-radius: 12px;
+        --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+
+      body,
+      html {
+        font-family: "Poppins", Arial, sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      h1,
+      h2 {
+        color: var(--primary-dark);
+        text-align: center;
+      }
+
+      .credit-summary {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 40px;
+      }
+
+      .credit-card {
+        background-color: var(--card-background);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 20px;
+        flex: 1;
+        margin: 0 10px;
+        text-align: center;
+        transition: var(--transition);
+      }
+
+      .credit-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .credit-card h3 {
+        color: var(--primary-color);
+        font-size: 1.2em;
+        margin-bottom: 10px;
+      }
+
+      .credit-card p {
+        font-size: 2em;
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .credit-history {
+        background-color: var(--card-background);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 20px;
+      }
+
+      .credit-entry {
+        border-bottom: 1px solid var(--primary-light);
+        padding: 15px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .credit-entry:last-child {
+        border-bottom: none;
+      }
+
+      .credit-action {
+        font-weight: bold;
+        color: var(--primary-dark);
+      }
+
+      .credit-date {
+        color: var(--text-color);
+        font-size: 0.9em;
+      }
+
+      .credit-amount {
+        font-weight: bold;
+      }
+
+      .btn {
+        display: inline-block;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: var(--transition);
+        font-size: 1em;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+      }
+
+      .btn:hover {
+        background-color: var(--primary-dark);
+      }
+
+      .btn-purchase {
+        display: block;
+        width: 200px;
+        margin: 40px auto;
+      }
+
+      @media (max-width: 768px) {
+        .credit-summary {
+          flex-direction: column;
+        }
+
+        .credit-card {
+          margin: 10px 0;
+        }
+      }
+
+      .credit-category {
+        background-color: var(--card-background);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .credit-category h3 {
+        color: var(--primary-color);
+        font-size: 1.2em;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .credit-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .credit-table th,
+      .credit-table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--primary-light);
+      }
+
+      .credit-table th {
+        background-color: var(--primary-light);
+        color: var(--primary-dark);
+        font-weight: 600;
+      }
+
+      .credit-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .credit-table .credit-amount {
+        text-align: right;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Credit Dashboard</h1>
+
+      <div class="credit-summary">
+        <div class="credit-card">
+          <h3>Available Credits</h3>
+          <p><%= credits %></p>
+        </div>
+        <div class="credit-card">
+          <h3>Total Credits Used</h3>
+          <p><%= totalCreditsUsed %></p>
+        </div>
+      </div>
+
+      <h2>Credit Usage Details</h2>
+
+      <div class="credit-category">
+        <h3>Persona Credits</h3>
+        <table class="credit-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Action</th>
+              <th>Credits Used</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% creditHistory.filter(entry => entry.category ===
+            'persona').forEach(function(entry) { %>
+            <tr>
+              <td><%= entry.date.toLocaleDateString() %></td>
+              <td><%= entry.action %></td>
+              <td class="credit-amount">-<%= entry.amount %></td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="credit-category">
+        <h3>Job Search Credits</h3>
+        <table class="credit-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Action</th>
+              <th>Credits Used</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% creditHistory.filter(entry => entry.category ===
+            'job').forEach(function(entry) { %>
+            <tr>
+              <td><%= entry.date.toLocaleDateString() %></td>
+              <td><%= entry.action %></td>
+              <td class="credit-amount">-<%= entry.amount %></td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="credit-category">
+        <h3>Email Enrichment Credits</h3>
+        <table class="credit-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Action</th>
+              <th>Credits Used</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% creditHistory.filter(entry => entry.category ===
+            'email_enrich').forEach(function(entry) { %>
+            <tr>
+              <td><%= entry.date.toLocaleDateString() %></td>
+              <td><%= entry.action %></td>
+              <td class="credit-amount">-<%= entry.amount %></td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="credit-category">
+        <h3>Email Sending Credits</h3>
+        <table class="credit-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Action</th>
+              <th>Credits Used</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% creditHistory.filter(entry => entry.category ===
+            'email_send').forEach(function(entry) { %>
+            <tr>
+              <td><%= entry.date.toLocaleDateString() %></td>
+              <td><%= entry.action %></td>
+              <td class="credit-amount"><%= entry.amount %></td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- <a href="/purchase-credits" class="btn btn-purchase">Purchase Credits</a> -->
+    </div>
+
+    <script>
+      // You can add any necessary JavaScript here
+    </script>
+  </body>
+</html>
