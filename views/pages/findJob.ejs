@@ -213,6 +213,39 @@
           font-size: 1em;
         }
       }
+      #dashboardButton {
+        display: inline-block;
+        padding: 12px 25px;
+        background: linear-gradient(45deg, #34495e, #2c3e50);
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        transition: var(--transition);
+        text-align: center;
+        font-size: 1.1em;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        width: 100%;
+      }
+
+      #dashboardButton:hover {
+        background: linear-gradient(45deg, #2c3e50, #34495e);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+      #submitButton {
+        margin-bottom: 15px;
+      }
+      .button-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
     </style>
   </head>
   <body>
@@ -1327,6 +1360,8 @@
             <!-- Industry tag container -->
           </div>
           <button type="submit" id="submitButton">Search Jobs</button>
+          <button type="button" id="dashboardButton">Go to Dashboard</button>
+
           <!-- <button
             type="button"
             class="logout-button"
@@ -85805,6 +85840,12 @@
 
         industrySelect.addEventListener("change", updateIndustryTags); // Update tags on change
       });
+      document
+        .getElementById("dashboardButton")
+        .addEventListener("click", function () {
+          console.log("Dashboard button clicked");
+          window.location.href = "/dashboard";
+        });
     </script>
   </body>
 </html>
