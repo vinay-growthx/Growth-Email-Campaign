@@ -271,7 +271,7 @@ app.post("/login", async (req, res) => {
           console.log("Error saving session:", err);
           res.status(500).render("login", { error: "Internal Server Error" });
         } else {
-          res.redirect("/find-jobs");
+          res.redirect("/dashboard"); // Redirect to dashboard instead of find-jobs
         }
       });
     } else {
@@ -282,7 +282,6 @@ app.post("/login", async (req, res) => {
     res.status(500).render("login", { error: "Invalid credentials" });
   }
 });
-
 app.get("/persona-reachout/:reqId", authMiddleware, async (req, res) => {
   console.log("User email:", req.userEmail); // Access the email from the request
   const reqId = req.params.reqId;
@@ -734,6 +733,7 @@ app.get("/dashboard", authMiddleware, async (req, res) => {
       totalPersonas,
       totalSearches,
       searches: searchHistory,
+      showNewSearchOption: true, // Add this flag to show the new search option
     });
   } catch (error) {
     console.error("Error fetching dashboard data:", error);

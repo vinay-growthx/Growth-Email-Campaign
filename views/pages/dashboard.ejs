@@ -176,6 +176,150 @@
           margin-top: 10px;
         }
       }
+      .dashboard-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        flex: 1 1 calc(33.333% - 1rem);
+        margin-right: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .stat-card:last-of-type {
+        margin-right: 0;
+      }
+
+      .stat-card h2 {
+        color: #6495ed;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-card p {
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .new-search-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #6495ed;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 14px;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        margin-left: auto;
+      }
+
+      .new-search-btn:hover {
+        background-color: #5a85d8;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      @media (max-width: 768px) {
+        .dashboard-stats {
+          flex-direction: column;
+        }
+
+        .stat-card {
+          width: 100%;
+          margin-right: 0;
+        }
+
+        .new-search-btn {
+          margin-top: 1rem;
+          align-self: flex-start;
+        }
+      }
+      .dashboard-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: stretch;
+        gap: 20px;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card,
+      .new-search-btn {
+        background-color: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .stat-card h2 {
+        color: #6495ed;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-card p {
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .new-search-btn {
+        background-color: #6495ed;
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 1rem;
+        border: none;
+        transition: background-color 0.3s ease;
+        text-align: center;
+        flex: 0 0 auto;
+        width: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 1.5rem 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .new-search-btn:hover {
+        background-color: #5a85d8;
+      }
+      .search-icon {
+        width: 18px;
+        height: 18px;
+      }
+      @media (max-width: 768px) {
+        .dashboard-stats {
+          flex-wrap: wrap;
+        }
+
+        .stat-card,
+        .new-search-btn {
+          flex: 1 1 calc(50% - 10px);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .stat-card,
+        .new-search-btn {
+          flex: 1 1 100%;
+        }
+      }
     </style>
   </head>
   <body>
@@ -195,6 +339,9 @@
           <h3>Total Searches</h3>
           <p><%= totalSearches %></p>
         </div>
+        <% if (showNewSearchOption) { %>
+        <a href="/find-jobs" class="new-search-btn">New Search</a>
+        <% } %>
       </div>
 
       <h2>Search History</h2>
