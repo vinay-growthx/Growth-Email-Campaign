@@ -858,7 +858,8 @@ app.post("/search-jobs", async (req, res) => {
       industry,
       location,
       job_role,
-      reqUUID
+      reqUUID,
+      req.userEmail
     );
     if (num_jobs > 500 && totalCount < 500) {
       manuallyAddNewJobs(job_title);

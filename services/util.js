@@ -1170,7 +1170,8 @@ async function fetchAllJobs(
   industry,
   location,
   job_function,
-  reqUUID
+  reqUUID,
+  userEmail
 ) {
   console.log({
     job_title,
@@ -1290,6 +1291,7 @@ async function fetchAllJobs(
     reqId: reqUUID,
     jobIds: allJobsArr,
     convertJobObject: convertedObject,
+    userEmail: userEmail,
   });
 
   return totalCount;
