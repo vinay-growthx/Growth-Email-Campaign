@@ -1800,7 +1800,45 @@
     width: 100%;
     max-width: 250px;
   }
-}
+}  .select-all-container {
+        display: flex;
+        align-items: center;
+      }
+
+      .select-all-container input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 25px;
+        height: 25px;
+        border: 2px solid #3498db;
+        border-radius: 5px;
+        outline: none;
+        transition: all 0.3s;
+        position: relative;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+
+      .select-all-container input[type="checkbox"]:checked {
+        background-color: #3498db;
+        animation: pulse 0.5s;
+      }
+
+      .select-all-container input[type="checkbox"]:checked::before {
+        content: "✔";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 16px;
+      }
+
+      .select-all-label {
+        font-size: 1.1em;
+        color: #2c3e50;
+        margin-right: 20px;
+      }
 
     </style>
   </head>
@@ -1821,7 +1859,9 @@
           <div class="select-all-container">
             <input type="checkbox" id="selectAll" />
             <label for="selectAll" class="select-all-label">Select all</label>
-          </div>    
+            <input type="checkbox" id="selectAllPages" />
+            <label for="selectAllPages" class="select-all-label">Select from all pages</label>
+          </div>  
           <div class="filter-container">
             <div class="company-filter">
               <div class="filter-header">
@@ -2341,6 +2381,8 @@
       document.addEventListener("DOMContentLoaded", function () {
         const params = new URLSearchParams(window.location.search);
   const fromBack = params.get('fromBack');
+  const selectAllPagesCheckbox = document.getElementById("selectAllPages");
+
         const selectAllCheckbox = document.getElementById("selectAll");
         const jobCheckboxes = document.querySelectorAll(
           'input[name="jobSelect"]'
@@ -2378,18 +2420,56 @@
         hiddenInput.type = "hidden";
         hiddenInput.name = "personaDesignations";
         form.appendChild(hiddenInput);
+        selectAllPagesCheckbox.addEventListener("change", function() {
+    if (this.checked) {
+      selectAllCheckbox.checked = true;
+      selectAllCheckbox.disabled = true;
+      jobCheckboxes.forEach(checkbox => {
+        checkbox.checked = true;
+        checkbox.disabled = true;
+      });
+    } else {
+      selectAllCheckbox.disabled = false;
+      jobCheckboxes.forEach(checkbox => {
+        checkbox.disabled = false;
+      });
+      // Trigger the selectAll change event to update checkboxes
+      selectAllCheckbox.dispatchEvent(new Event('change'));
+    }
+    updateSelectedCount();
+  });
 
-        function updateSelectedCount() {
-          const selectedCount = document.querySelectorAll(
-            'input[name="jobSelect"]:checked'
-          ).length;
-          selectedCountElement.textContent = `${selectedCount} Job${
-            selectedCount !== 1 ? "s" : ""
-          } Selected`;
-          selectedCountElement.classList.add("party");
-          setTimeout(() => selectedCountElement.classList.remove("party"), 500);
-        }
+  function updateSelectedCount() {
+  let selectedCount;
+  if (selectAllPagesCheckbox.checked) {
+    selectedCount = <%= totalCount %>; // Use the actual total number of jobs across all pages
+  } else {
+    selectedCount = document.querySelectorAll('input[name="jobSelect"]:checked').length;
+  }
+  selectedCountElement.textContent = `${selectedCount} Job${selectedCount !== 1 ? "s" : ""} Selected`;
+  selectedCountElement.classList.add("party");
+  setTimeout(() => selectedCountElement.classList.remove("party"), 500);
+}
 
+// Make sure to call this function when the "Select from all pages" checkbox changes
+selectAllPagesCheckbox.addEventListener("change", function() {
+  if (this.checked) {
+    selectAllCheckbox.checked = true;
+    selectAllCheckbox.disabled = true;
+    jobCheckboxes.forEach(checkbox => {
+      checkbox.checked = true;
+      checkbox.disabled = true;
+    });
+  } else {
+    selectAllCheckbox.disabled = false;
+    jobCheckboxes.forEach(checkbox => {
+      checkbox.disabled = false;
+    });
+    // Trigger the selectAll change event to update checkboxes
+    selectAllCheckbox.dispatchEvent(new Event('change'));
+  }
+  updateSelectedCount();
+});
         function updateInput() {
           input.value = designations.join(", ");
           hiddenInput.value = designations.join(", ");
@@ -2837,65 +2917,72 @@ function getDetailValue(details, label) {
 
         // Update form submission to include all selections with label and value
         form.addEventListener("submit", function (event) {
-          const selectedJobs = document.querySelectorAll(
-            'input[name="jobSelect"]:checked'
-          );
-          updateInput();
+  const selectedJobs = document.querySelectorAll(
+    'input[name="jobSelect"]:checked'
+  );
+  updateInput();
 
-          if (selectedJobs.length === 0) {
-            event.preventDefault();
-            alert("Please select at least one job before creating a persona.");
-          } else if (designations.length === 0) {
-            event.preventDefault();
-            alert("Please enter at least one Persona Designation.");
-          } else {
-            const selectedSizes = Array.from(employeeSizeCheckboxes)
-              .filter((checkbox) => checkbox.checked)
-              .map((checkbox) => checkbox.value);
+  if (selectedJobs.length === 0 && !selectAllPagesCheckbox.checked) {
+    event.preventDefault();
+    alert("Please select at least one job or 'Select from all pages' before creating a persona.");
+  } else if (designations.length === 0) {
+    event.preventDefault();
+    alert("Please enter at least one Persona Designation.");
+  } else {
+    const selectedSizes = Array.from(employeeSizeCheckboxes)
+      .filter((checkbox) => checkbox.checked)
+      .map((checkbox) => checkbox.value);
 
-            const selectedSeniorityLevels = Array.from(seniorityLevelCheckboxes)
-              .filter((checkbox) => checkbox.checked)
-              .map((checkbox) => checkbox.value);
+    const selectedSeniorityLevels = Array.from(seniorityLevelCheckboxes)
+      .filter((checkbox) => checkbox.checked)
+      .map((checkbox) => checkbox.value);
 
-            const selectedJobFunctions = Array.from(jobFunctionCheckboxes)
-              .filter((checkbox) => checkbox.checked)
-              .map((checkbox) => {
-                return {
-                  label: checkbox.parentNode.textContent.trim(),
-                  value: checkbox.value,
-                };
-              });
+    const selectedJobFunctions = Array.from(jobFunctionCheckboxes)
+      .filter((checkbox) => checkbox.checked)
+      .map((checkbox) => {
+        return {
+          label: checkbox.parentNode.textContent.trim(),
+          value: checkbox.value,
+        };
+      });
 
-            const selectedIndustries = Array.from(industryCheckboxes)
-              .filter((checkbox) => checkbox.checked)
-              .map((checkbox) => {
-                return {
-                  label: checkbox.parentNode.textContent.trim(),
-                  value: checkbox.value,
-                };
-              });
+    const selectedIndustries = Array.from(industryCheckboxes)
+      .filter((checkbox) => checkbox.checked)
+      .map((checkbox) => {
+        return {
+          label: checkbox.parentNode.textContent.trim(),
+          value: checkbox.value,
+        };
+      });
 
-            const hiddenInput = document.createElement("input");
-            hiddenInput.type = "hidden";
-            hiddenInput.name = "personaAttributes";
-            hiddenInput.value = JSON.stringify({
-              employeeSizes: selectedSizes,
-              seniorityLevels: selectedSeniorityLevels,
-              jobFunctions: selectedJobFunctions,
-              industries: selectedIndustries,
-            });
-            this.appendChild(hiddenInput);
+    const hiddenInput = document.createElement("input");
+    hiddenInput.type = "hidden";
+    hiddenInput.name = "personaAttributes";
+    hiddenInput.value = JSON.stringify({
+      employeeSizes: selectedSizes,
+      seniorityLevels: selectedSeniorityLevels,
+      jobFunctions: selectedJobFunctions,
+      industries: selectedIndustries,
+    });
+    this.appendChild(hiddenInput);
 
-            createPersonaBtn.disabled = true;
-            createPersonaBtn.textContent = "Creating Persona...";
-            setTimeout(function () {
-              createPersonaBtn.disabled = false;
-              createPersonaBtn.textContent = "Create Persona";
-            }, 85000);
-          }
-        });
+    // Add selectAll parameter if "Select from all pages" is checked
+    if (selectAllPagesCheckbox.checked) {
+      const selectAllInput = document.createElement("input");
+      selectAllInput.type = "hidden";
+      selectAllInput.name = "selectAll";
+      selectAllInput.value = "true";
+      this.appendChild(selectAllInput);
+    }
 
-        // Initialize visibility and pagination
+    createPersonaBtn.disabled = true;
+    createPersonaBtn.textContent = "Creating Persona...";
+    setTimeout(function () {
+      createPersonaBtn.disabled = false;
+      createPersonaBtn.textContent = "Create Persona";
+    }, 85000);
+  }
+});    // Initialize visibility and pagination
         updateJobVisibility();
 
         // Floating scroll button functionality

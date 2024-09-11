@@ -541,6 +541,7 @@ app.post("/create-persona", async (req, res) => {
     if (!req.session.isAuthenticated) {
       return res.redirect("/login");
     }
+    console.log("req body ----->", req);
     let seniorityLevel = req?.body?.seniorityLevel;
     if (req?.body?.seniorityLevel?.length) {
       const allItems = seniorityLevel.flatMap((str) => str.split(","));
