@@ -700,24 +700,34 @@ app.post("/create-persona", async (req, res) => {
 });
 app.get("/dashboard", authMiddleware, async (req, res) => {
   try {
-    // Fetch total jobs
     console.log("User email:", req.userEmail);
 
-    const totalJobs = await jobsRepository.count();
-    // Fetch total personas
-    const totalPersonas = await apolloPersonaRepository.count();
-
     const searches = await requestIdRepository.find(
-      null, // predicate
-      null, // projection
-      null, // populateBy
-      { createdAt: -1 }, // sortQuery
-      null // limit
+      { userEmail: req.userEmail },
+      null,
+      null,
+      { createdAt: -1 },
+      null
     );
 
     const totalSearches = searches.length;
+    console.log("total searches =====>", totalSearches);
+    console.log("searches ====>", searches);
 
+    let totalJobs = 0;
+    let totalPersonas = 0;
     const searchHistory = [];
+
+    searches.forEach((search) => {
+      totalJobs += search.jobIds.length;
+      totalPersonas += search.personaIds.length;
+
+      searchHistory.push({
+        title: search.convertJobObject.title,
+        date: search.createdAt.toLocaleDateString(),
+        reqId: search.reqId,
+      });
+    });
 
     res.render("dashboard", {
       totalJobs,
