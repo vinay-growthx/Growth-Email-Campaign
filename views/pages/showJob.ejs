@@ -3169,6 +3169,17 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initial update of the button status
   updateScrollButton();
 });
+document.getElementById('jobForm').addEventListener('submit', function(event) {
+    const selectAllPagesCheckbox = document.getElementById('selectAllPages');
+    if (selectAllPagesCheckbox.checked) {
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'selectAll';
+        hiddenInput.value = 'true';
+        this.appendChild(hiddenInput);
+    }
+});
+
 </script>
   </body>
 </html>

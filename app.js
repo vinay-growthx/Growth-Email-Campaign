@@ -36,7 +36,6 @@ const {
   findAllPersonas,
   findPersonById,
   addJobLocation,
-
   convertToApolloPersona,
   removeEmojiFromName,
   removeDoubleQuotes,
@@ -541,7 +540,7 @@ app.post("/create-persona", async (req, res) => {
     if (!req.session.isAuthenticated) {
       return res.redirect("/login");
     }
-    console.log("req body ----->", req);
+    console.log("req body ----->", req.body);
     let seniorityLevel = req?.body?.seniorityLevel;
     if (req?.body?.seniorityLevel?.length) {
       const allItems = seniorityLevel.flatMap((str) => str.split(","));
@@ -551,25 +550,42 @@ app.post("/create-persona", async (req, res) => {
     console.log("seniority level", seniorityLevel);
     const { jobSelect } = req.body;
     const employeeSize = req?.body?.employeeSize;
-    const selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
+    let selectedIds = [];
+    let convertedObj = await requestIdRepository.findOne({
+      reqId: req.body.reqId,
+    });
+    if (req?.body?.selectAll) {
+      selectedIds = convertedObj.jobIds;
+    } else {
+      selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
+    }
+    console.log("selected ids ====>", selectedIds);
     const reqUUID = req.body.reqId || uuidv4();
     await requestIdRepository.updateOne(
       { reqId: reqUUID },
       { $set: { personaProcessCompleted: false } }
     );
-    let convertedObj = await requestIdRepository.findOne({
-      reqId: req.body.reqId,
-    });
+
     console.log("converted obj ===>", convertedObj);
     convertedObj = convertedObj.convertJobObject;
     // console.log("selected ids --->", selectedIds);
     const objectIds = selectedIds.map((id) => new ObjectId(id));
-    let linkedinJobs = await jobsRepository.find(
-      {
-        _id: objectIds,
-      },
-      "companyName title formattedIndustries jobDescription formattedLocation comapnyURL2"
-    );
+    let linkedinJobs = [];
+    if (req?.body?.selectAll) {
+      linkedinJobs = await jobsRepository.find(
+        {
+          job_id: selectedIds,
+        },
+        "companyName title formattedIndustries jobDescription formattedLocation comapnyURL2"
+      );
+    } else {
+      linkedinJobs = await jobsRepository.find(
+        {
+          _id: objectIds,
+        },
+        "companyName title formattedIndustries jobDescription formattedLocation comapnyURL2"
+      );
+    }
 
     // console.log("linkedin jobs ===>", linkedinJobs);
     linkedinJobs.forEach((job) => {
@@ -747,8 +763,8 @@ app.get("/dashboard", authMiddleware, async (req, res) => {
     );
 
     const totalSearches = searches.length;
-    console.log("total searches =====>", totalSearches);
-    console.log("searches ====>", searches);
+    // console.log("total searches =====>", totalSearches);
+    // console.log("searches ====>", searches);
 
     let totalJobs = 0;
     let totalPersonas = 0;
