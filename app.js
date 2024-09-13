@@ -22,6 +22,7 @@ const { getEmailByLinkedInUrl } = require("./services/ApolloAPI/emailEnrich");
 const axios = require("axios");
 const app = express();
 const { smtpTransport } = require("./services/ses");
+const { searchLinkedInJobs } = require("./services/searchLiJob");
 const { searchCompanyApollo } = require("./services/ApolloAPI/orgSearch");
 const { excludeEmail } = require("./excludeEmail");
 const {
@@ -915,7 +916,8 @@ app.post("/search-jobs", async (req, res) => {
       req.userEmail
     );
     if (num_jobs > 500 && totalCount < 500) {
-      manuallyAddNewJobs(job_title);
+      const searchJobs = await searchLinkedInJobs(job_title);
+      console.log("search jobs ====>", searchJobs);
     }
 
     res.redirect(`/get-jobs/${reqUUID}`);
