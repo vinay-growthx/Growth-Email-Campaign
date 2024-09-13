@@ -997,6 +997,51 @@ app.post("/email-enrich-process", async (req, res) => {
     res.status(500).json({ error: "Failed to process enriched data" });
   }
 });
+
+// app.get("/email-stats", authMiddleware, (req, res) => {
+//   // Dummy data for overall stats
+//   const overallStats = {
+//     totalSent: 1000,
+//     opened: 750,
+//     clicked: 500,
+//     delivered: 980,
+//     bounced: 20,
+//   };
+
+//   // Dummy data for stats by search
+//   const searchStats = [
+//     {
+//       _id: "search123",
+//       totalSent: 200,
+//       opened: 150,
+//       clicked: 100,
+//       delivered: 195,
+//       bounced: 5,
+//     },
+//     {
+//       _id: "search456",
+//       totalSent: 300,
+//       opened: 225,
+//       clicked: 150,
+//       delivered: 290,
+//       bounced: 10,
+//     },
+//     {
+//       _id: "search789",
+//       totalSent: 500,
+//       opened: 375,
+//       clicked: 250,
+//       delivered: 495,
+//       bounced: 5,
+//     },
+//   ];
+
+//   res.render("emailStats", {
+//     overallStats: overallStats,
+//     searchStats: searchStats,
+//   });
+// });
+
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) console.log("Error destroying session:", err);
