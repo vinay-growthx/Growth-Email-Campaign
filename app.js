@@ -559,7 +559,6 @@ app.post("/create-persona", async (req, res) => {
     } else {
       selectedIds = Array.isArray(jobSelect) ? jobSelect : [jobSelect];
     }
-    console.log("selected ids ====>", selectedIds);
     const reqUUID = req.body.reqId || uuidv4();
     await requestIdRepository.updateOne(
       { reqId: reqUUID },
