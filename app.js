@@ -568,7 +568,7 @@ app.post("/create-persona", async (req, res) => {
     console.log("converted obj ===>", convertedObj);
     convertedObj = convertedObj.convertJobObject;
     // console.log("selected ids --->", selectedIds);
-    const objectIds = selectedIds.map((id) => new ObjectId(id));
+    let objectIds = [];
     let linkedinJobs = [];
     if (req?.body?.selectAll) {
       linkedinJobs = await jobsRepository.find(
@@ -578,6 +578,7 @@ app.post("/create-persona", async (req, res) => {
         "companyName title formattedIndustries jobDescription formattedLocation comapnyURL2"
       );
     } else {
+      objectIds = selectedIds.map((id) => new ObjectId(id));
       linkedinJobs = await jobsRepository.find(
         {
           _id: objectIds,
@@ -585,7 +586,7 @@ app.post("/create-persona", async (req, res) => {
         "companyName title formattedIndustries jobDescription formattedLocation comapnyURL2"
       );
     }
-
+    console.log("linkedin jobs ====>", linkedinJobs);
     // console.log("linkedin jobs ===>", linkedinJobs);
     linkedinJobs.forEach((job) => {
       if (job.comapnyURL2) {
