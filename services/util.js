@@ -1287,7 +1287,7 @@ async function fetchAllJobs(
   };
   const allJobsArr = allJobs.map((job) => job.job_id);
 
-  const createdObj = await requestIdRepository.create({
+  await requestIdRepository.create({
     reqId: reqUUID,
     jobIds: allJobsArr,
     convertJobObject: convertedObject,

@@ -915,9 +915,16 @@ app.post("/search-jobs", async (req, res) => {
       reqUUID,
       req.userEmail
     );
+    console.log("num jobs -->", num_jobs, "total count -->", totalCount);
     if (num_jobs > 500 && totalCount < 500) {
-      const searchJobs = await searchLinkedInJobs(job_title);
-      console.log("search jobs ====>", searchJobs);
+      let totalPages = Math.min(Math.ceil(num_jobs / 10), 40);
+      const searchJobs = await searchLinkedInJobs(
+        job_title,
+        totalPages,
+        92000000,
+        "mostRecent"
+      );
+      console.log("search jobs ---->", searchJobs);
     }
 
     res.redirect(`/get-jobs/${reqUUID}`);
