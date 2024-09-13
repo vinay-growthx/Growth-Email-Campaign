@@ -930,7 +930,7 @@ app.get("/enriched-data", authMiddleware, (req, res) => {
   const people = JSON.parse(req.query.data);
   res.render("enrichedData", { people });
 });
-app.post("/email-enrich-process", async (req, res) => {
+app.post("/email-enrich-process", authMiddleware, async (req, res) => {
   try {
     if (!req.session.isAuthenticated) {
       return res.redirect("/login");
@@ -997,7 +997,52 @@ app.post("/email-enrich-process", async (req, res) => {
     res.status(500).json({ error: "Failed to process enriched data" });
   }
 });
+// app.get("/autopilot", authMiddleware, async (req, res) => {
+//   try {
+//     // Generate a dummy reqId
+//     const reqId = "dummy-req-id-" + Date.now();
 
+//     // Simulate a delay to mimic an asynchronous operation
+//     await new Promise((resolve) => setTimeout(resolve, 1000));
+
+//     // Create a dummy data object
+//     const dummyData = {
+//       reqId,
+//       jobIds: ["dummy-job-1", "dummy-job-2", "dummy-job-3"],
+//       personaIds: ["dummy-persona-1", "dummy-persona-2", "dummy-persona-3"],
+//     };
+
+//     res.render("autopilot", { data: dummyData });
+//   } catch (error) {
+//     console.error("Error in autopilot process:", error);
+//     res.status(500).send("An error occurred. Please try again.");
+//   }
+// });
+// app.post("/autopilot", async (req, res) => {
+//   try {
+//     const { scheduleTime, jobTitle, searchLimit, designations } = req.body;
+
+//     // Implement your autopilot logic here
+//     // This should include job search, persona creation, and email preparation
+
+//     // Generate a unique reqId for this autopilot process
+//     const reqId = generateUniqueId();
+
+//     // Start the autopilot process (this could be an asynchronous operation)
+//     startAutopilotProcess(
+//       reqId,
+//       scheduleTime,
+//       jobTitle,
+//       searchLimit,
+//       designations
+//     );
+
+//     res.json({ success: true, reqId });
+//   } catch (error) {
+//     console.error("Error in autopilot process:", error);
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// });
 // app.get("/email-stats", authMiddleware, (req, res) => {
 //   // Dummy data for overall stats
 //   const overallStats = {

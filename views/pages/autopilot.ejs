@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Autopilot Job Search and Persona Creation</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #2196f3;
+        --primary-light: #bbdefb;
+        --primary-dark: #1976d2;
+        --secondary-color: #ffc107;
+        --text-color: #333333;
+        --background-color: #f5f7fa;
+        --card-background: #ffffff;
+        --success-color: #4caf50;
+        --error-color: #f44336;
+        --border-radius: 12px;
+        --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+
+      body,
+      html {
+        font-family: "Poppins", Arial, sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 40px;
+        background-color: var(--card-background);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+      }
+
+      h1 {
+        font-size: 2.5em;
+        text-align: center;
+        color: var(--primary-dark);
+        margin-bottom: 40px;
+        position: relative;
+        padding-bottom: 15px;
+      }
+
+      h1::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        background-color: var(--secondary-color);
+      }
+
+      .input-group {
+        margin-bottom: 25px;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+
+      .input-group input,
+      .input-group select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid var(--primary-light);
+        border-radius: var(--border-radius);
+        font-size: 16px;
+        transition: var(--transition);
+      }
+
+      .input-group input:focus,
+      .input-group select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px var(--primary-light);
+      }
+
+      .designation-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .designation-tag {
+        background-color: var(--primary-light);
+        color: var(--primary-dark);
+        padding: 8px 15px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        font-weight: 500;
+        transition: var(--transition);
+      }
+
+      .designation-tag:hover {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      .designation-tag .remove {
+        margin-left: 8px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 12px 25px;
+        background: linear-gradient(
+          45deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        transition: var(--transition);
+        text-align: center;
+        font-size: 1.1em;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        margin-top: 20px;
+      }
+
+      .btn:hover {
+        background: linear-gradient(
+          45deg,
+          var(--primary-dark),
+          var(--primary-color)
+        );
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      #status {
+        margin-top: 30px;
+        padding: 15px;
+        border-radius: var(--border-radius);
+        background-color: var(--primary-light);
+        color: var(--primary-dark);
+        font-weight: 500;
+        text-align: center;
+      }
+
+      .progress-bar {
+        margin-top: 20px;
+        width: 100%;
+        background-color: var(--primary-light);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .progress {
+        width: 0%;
+        height: 10px;
+        background: linear-gradient(
+          45deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
+        transition: width 0.5s ease;
+      }
+
+      @media screen and (max-width: 768px) {
+        .container {
+          padding: 20px;
+          margin: 20px;
+        }
+
+        h1 {
+          font-size: 2em;
+        }
+
+        .btn {
+          padding: 10px 20px;
+          font-size: 1em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Autopilot Job Search and Persona Creation</h1>
+      <form id="autopilotForm">
+        <div class="input-group">
+          <label for="scheduleTime">Schedule Time:</label>
+          <input
+            type="datetime-local"
+            id="scheduleTime"
+            name="scheduleTime"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <label for="jobTitle">Job Title Search:</label>
+          <input type="text" id="jobTitle" name="jobTitle" required />
+        </div>
+        <div class="input-group">
+          <label for="searchLimit">Search Limit:</label>
+          <input
+            type="number"
+            id="searchLimit"
+            name="searchLimit"
+            min="1"
+            max="1000"
+            value="100"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <label for="personaDesignations">Persona Designations:</label>
+          <input
+            type="text"
+            id="personaDesignations"
+            name="personaDesignations"
+            placeholder="Type and press Enter to add"
+          />
+          <div id="designationTags" class="designation-tags"></div>
+        </div>
+        <button id="startAutopilot" class="btn" type="submit">
+          Start Autopilot
+        </button>
+      </form>
+      <div id="status">Ready to start...</div>
+      <div class="progress-bar">
+        <span class="progress" id="progressBar"></span>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById("autopilotForm");
+      const startButton = document.getElementById("startAutopilot");
+      const statusDiv = document.getElementById("status");
+      const progressBar = document.getElementById("progressBar");
+      const personaDesignationsInput = document.getElementById(
+        "personaDesignations"
+      );
+      const designationTagsContainer =
+        document.getElementById("designationTags");
+
+      let designations = [];
+
+      personaDesignationsInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === ",") {
+          e.preventDefault();
+          addDesignation(this.value.trim());
+          this.value = "";
+        }
+      });
+
+      function addDesignation(designation) {
+        if (designation && !designations.includes(designation)) {
+          designations.push(designation);
+          renderDesignationTags();
+        }
+      }
+
+      function removeDesignation(designation) {
+        designations = designations.filter((d) => d !== designation);
+        renderDesignationTags();
+      }
+
+      function renderDesignationTags() {
+        designationTagsContainer.innerHTML = "";
+        designations.forEach((designation) => {
+          const tag = document.createElement("span");
+          tag.classList.add("designation-tag");
+          tag.innerHTML = `
+                    ${designation}
+                    <span class="remove" onclick="removeDesignation('${designation}')">&times;</span>
+                `;
+          designationTagsContainer.appendChild(tag);
+        });
+      }
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        startButton.disabled = true;
+        updateStatus("Starting autopilot process...");
+        updateProgress(10);
+
+        const formData = new FormData(form);
+        formData.append("designations", JSON.stringify(designations));
+
+        try {
+          // Step 1: Initiate job search
+          const searchResponse = await fetch("/api/autopilot-search", {
+            method: "POST",
+            body: formData,
+          });
+          const searchResult = await searchResponse.json();
+          updateStatus("Job search completed. Creating personas...");
+          updateProgress(40);
+
+          // Step 2: Create personas
+          const personaResponse = await fetch("/api/create-personas", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              jobIds: searchResult.jobIds,
+              designations: designations,
+            }),
+          });
+          const personaResult = await personaResponse.json();
+          updateStatus("Personas created. Preparing emails...");
+          updateProgress(70);
+
+          // Step 3: Prepare emails
+          const emailResponse = await fetch("/api/prepare-emails", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ personaIds: personaResult.personaIds }),
+          });
+          const emailResult = await emailResponse.json();
+          updateStatus("Emails prepared. Process completed!");
+          updateProgress(100);
+
+          // Redirect to results page or display completion message
+          alert("Autopilot process completed successfully!");
+        } catch (error) {
+          console.error("Error during autopilot process:", error);
+          updateStatus("An error occurred. Please try again.");
+        } finally {
+          startButton.disabled = false;
+        }
+      });
+
+      function updateStatus(message) {
+        statusDiv.textContent = message;
+      }
+
+      function updateProgress(percentage) {
+        progressBar.style.width = `${percentage}%`;
+      }
+    </script>
+  </body>
+</html>
