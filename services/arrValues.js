@@ -1,1835 +1,599 @@
+// const jobFunctionArr = [
+//   {
+//     label: "Accounting",
+//     value: "1",
+//   },
+//   {
+//     label: "Administrative",
+//     value: "2",
+//   },
+//   {
+//     label: "Arts and Design",
+//     value: "3",
+//   },
+//   {
+//     label: "Business Development",
+//     value: "4",
+//   },
+//   {
+//     label: "Community and Social Services",
+//     value: "5",
+//   },
+//   {
+//     label: "Consulting",
+//     value: "6",
+//   },
+//   {
+//     label: "Customer Success and Support",
+//     value: "26",
+//   },
+//   {
+//     label: "Education",
+//     value: "7",
+//   },
+//   {
+//     label: "Engineering",
+//     value: "8",
+//   },
+//   {
+//     label: "Entrepreneurship",
+//     value: "9",
+//   },
+//   {
+//     label: "Finance",
+//     value: "10",
+//   },
+//   {
+//     label: "Healthcare Services",
+//     value: "11",
+//   },
+//   {
+//     label: "Human Resources",
+//     value: "12",
+//   },
+//   {
+//     label: "Information Technology",
+//     value: "13",
+//   },
+//   {
+//     label: "Legal",
+//     value: "14",
+//   },
+//   {
+//     label: "Marketing",
+//     value: "15",
+//   },
+//   {
+//     label: "Media and Communication",
+//     value: "16",
+//   },
+//   {
+//     label: "Military and Protective Services",
+//     value: "17",
+//   },
+//   {
+//     label: "Operations",
+//     value: "18",
+//   },
+//   {
+//     label: "Product Management",
+//     value: "19",
+//   },
+//   {
+//     label: "Program and Project Management",
+//     value: "20",
+//   },
+//   {
+//     label: "Purchasing",
+//     value: "21",
+//   },
+//   {
+//     label: "Quality Assurance",
+//     value: "22",
+//   },
+//   {
+//     label: "Real Estate",
+//     value: "23",
+//   },
+//   {
+//     label: "Research",
+//     value: "24",
+//   },
+//   {
+//     label: "Sales",
+//     value: "25",
+//   },
+// ];
+
 const jobFunctionArr = [
-  {
-    label: "Accounting",
-    value: "1",
-  },
-  {
-    label: "Administrative",
-    value: "2",
-  },
-  {
-    label: "Arts and Design",
-    value: "3",
-  },
-  {
-    label: "Business Development",
-    value: "4",
-  },
-  {
-    label: "Community and Social Services",
-    value: "5",
-  },
-  {
-    label: "Consulting",
-    value: "6",
-  },
-  {
-    label: "Customer Success and Support",
-    value: "26",
-  },
-  {
-    label: "Education",
-    value: "7",
-  },
-  {
-    label: "Engineering",
-    value: "8",
-  },
-  {
-    label: "Entrepreneurship",
-    value: "9",
-  },
-  {
-    label: "Finance",
-    value: "10",
-  },
-  {
-    label: "Healthcare Services",
-    value: "11",
-  },
-  {
-    label: "Human Resources",
-    value: "12",
-  },
-  {
-    label: "Information Technology",
-    value: "13",
-  },
-  {
-    label: "Legal",
-    value: "14",
-  },
-  {
-    label: "Marketing",
-    value: "15",
-  },
-  {
-    label: "Media and Communication",
-    value: "16",
-  },
-  {
-    label: "Military and Protective Services",
-    value: "17",
-  },
-  {
-    label: "Operations",
-    value: "18",
-  },
-  {
-    label: "Product Management",
-    value: "19",
-  },
-  {
-    label: "Program and Project Management",
-    value: "20",
-  },
-  {
-    label: "Purchasing",
-    value: "21",
-  },
-  {
-    label: "Quality Assurance",
-    value: "22",
-  },
-  {
-    label: "Real Estate",
-    value: "23",
-  },
-  {
-    label: "Research",
-    value: "24",
-  },
-  {
-    label: "Sales",
-    value: "25",
-  },
+  { value: "acct", label: "Accounting / Auditing" },
+  { value: "adm", label: "Administrative" },
+  { value: "advr", label: "Advertising" },
+  { value: "anls", label: "Analyst" },
+  { value: "art", label: "Art / Creative" },
+  { value: "bd", label: "Business Development" },
+  { value: "cnsl", label: "Consulting" },
+  { value: "cust", label: "Customer Service" },
+  { value: "dist", label: "Distribution" },
+  { value: "dsgn", label: "Design" },
+  { value: "edu", label: "Education" },
+  { value: "eng", label: "Engineering" },
+  { value: "fin", label: "Finance" },
+  { value: "genb", label: "General Business" },
+  { value: "hcpr", label: "HealthCare Provider" },
+  { value: "hr", label: "Human Resources" },
+  { value: "it", label: "Information Technology" },
+  { value: "lgl", label: "Legal" },
+  { value: "mgmt", label: "Management" },
+  { value: "mnfc", label: "Manufacturing" },
+  { value: "mrkt", label: "Marketing" },
+  { value: "othr", label: "Other" },
+  { value: "pr", label: "Public Relations" },
+  { value: "prch", label: "Purchasing" },
+  { value: "prdm", label: "Product Management" },
+  { value: "prjm", label: "Project Management" },
+  { value: "prod", label: "Production" },
+  { value: "qa", label: "Quality Assurance" },
+  { value: "rsch", label: "Research" },
+  { value: "sale", label: "Sales" },
+  { value: "sci", label: "Science" },
+  { value: "stra", label: "Strategy / Planning" },
+  { value: "supl", label: "Supply Chain" },
+  { value: "trng", label: "Training" },
+  { value: "wrt", label: "Writing / Editing" },
 ];
+
 const industryArr = [
-  {
-    label: "Abrasives and Nonmetallic Minerals Manufacturing",
-    value: "799",
-  },
-  {
-    label: "Accommodation and Food Services",
-    value: "2190",
-  },
-  {
-    label: "Accounting",
-    value: "47",
-  },
-  {
-    label: "Administration of Justice",
-    value: "73",
-  },
-  {
-    label: "Administrative and Support Services",
-    value: "1912",
-  },
-  {
-    label: "Advertising Services",
-    value: "80",
-  },
-  {
-    label: "Agriculture, Construction, Mining Machinery Manufacturing",
-    value: "901",
-  },
-  {
-    label: "Agricultural Chemical Manufacturing",
-    value: "709",
-  },
-  {
-    label: "Air, Water, and Waste Program Management",
-    value: "2366",
-  },
-  {
-    label: "Airlines and Aviation",
-    value: "94",
-  },
-  {
-    label: "Alternative Dispute Resolution",
-    value: "120",
-  },
-  {
-    label: "Alternative Fuel Vehicle Manufacturing",
-    value: "3253",
-  },
-  {
-    label: "Alternative Medicine",
-    value: "125",
-  },
-  {
-    label: "Ambulance Services",
-    value: "2077",
-  },
-  {
-    label: "Amusement Parks and Arcades",
-    value: "2167",
-  },
-  {
-    label: "Animal Feed Manufacturing",
-    value: "481",
-  },
-  {
-    label: "Animation and Post-production",
-    value: "127",
-  },
-  {
-    label: "Apparel Manufacturing",
-    value: "598",
-  },
-  {
-    label: "Appliances, Electrical, and Electronics Manufacturing",
-    value: "112",
-  },
-  {
-    label: "Architecture and Planning",
-    value: "50",
-  },
-  {
-    label: "Architectural and Structural Metal Manufacturing",
-    value: "852",
-  },
-  {
-    label: "Armed Forces",
-    value: "71",
-  },
-  {
-    label: "Artists and Writers",
-    value: "38",
-  },
-  {
-    label: "Artificial Rubber and Synthetic Fiber Manufacturing",
-    value: "703",
-  },
-  {
-    label: "Audio and Video Equipment Manufacturing",
-    value: "973",
-  },
-  {
-    label: "Automation Machinery Manufacturing",
-    value: "147",
-  },
-  {
-    label: "Automotive",
-    value: "53",
-  },
-  {
-    label: "Aviation and Aerospace Component Manufacturing",
-    value: "52",
-  },
-  {
-    label: "Baked Goods Manufacturing",
-    value: "529",
-  },
-  {
-    label: "Banking",
-    value: "41",
-  },
-  {
-    label: "Bars, Taverns, and Nightclubs",
-    value: "2217",
-  },
-  {
-    label: "Bed-and-Breakfasts, Hostels, Homestays",
-    value: "2197",
-  },
-  {
-    label: "Beverage Manufacturing",
-    value: "142",
-  },
-  {
-    label: "Biomass Electric Power Generation",
-    value: "390",
-  },
-  {
-    label: "Biotechnology Research",
-    value: "12",
-  },
-  {
-    label: "Blockchain Services",
-    value: "3134",
-  },
-  {
-    label: "Blogs",
-    value: "3125",
-  },
-  {
-    label: "Boilers, Tanks, and Shipping Container Manufacturing",
-    value: "861",
-  },
-  {
-    label: "Book and Periodical Publishing",
-    value: "82",
-  },
-  {
-    label: "Book Publishing",
-    value: "1602",
-  },
-  {
-    label: "Breweries",
-    value: "562",
-  },
-  {
-    label: "Broadcast Media Production and Distribution",
-    value: "36",
-  },
-  {
-    label: "Building Construction",
-    value: "406",
-  },
-  {
-    label: "Building Equipment Contractors",
-    value: "453",
-  },
-  {
-    label: "Building Finishing Contractors",
-    value: "460",
-  },
-  {
-    label: "Building Structure and Exterior Contractors",
-    value: "436",
-  },
-  {
-    label: "Business Consulting and Services",
-    value: "11",
-  },
-  {
-    label: "Business Content",
-    value: "3129",
-  },
-  {
-    label: "Business Intelligence Platforms",
-    value: "3128",
-  },
-  {
-    label: "Cable and Satellite Programming",
-    value: "1641",
-  },
-  {
-    label: "Capital Markets",
-    value: "129",
-  },
-  {
-    label: "Caterers",
-    value: "2212",
-  },
-  {
-    label: "Chemical Manufacturing",
-    value: "54",
-  },
-  {
-    label: "Chemical Raw Materials Manufacturing",
-    value: "690",
-  },
-  {
-    label: "Child Day Care Services",
-    value: "2128",
-  },
-  {
-    label: "Chiropractors",
-    value: "2048",
-  },
-  {
-    label: "Circuses and Magic Shows",
-    value: "2139",
-  },
-  {
-    label: "Civic and Social Organizations",
-    value: "90",
-  },
-  {
-    label: "Civil Engineering",
-    value: "51",
-  },
-  {
-    label: "Claims Adjusting, Actuarial Services",
-    value: "1738",
-  },
-  {
-    label: "Clay and Refractory Products Manufacturing",
-    value: "773",
-  },
-  {
-    label: "Climate Data and Analytics",
-    value: "3252",
-  },
-  {
-    label: "Climate Technology Product Manufacturing",
-    value: "3251",
-  },
-  {
-    label: "Coal Mining",
-    value: "341",
-  },
-  {
-    label: "Collection Agencies",
-    value: "1938",
-  },
-  {
-    label: "Commercial and Industrial Equipment Rental",
-    value: "1798",
-  },
-  {
-    label: "Commercial and Industrial Machinery Maintenance",
-    value: "2247",
-  },
-  {
-    label: "Commercial and Service Industry Machinery Manufacturing",
-    value: "918",
-  },
-  {
-    label: "Communications Equipment Manufacturing",
-    value: "964",
-  },
-  {
-    label: "Community Development and Urban Planning",
-    value: "2374",
-  },
-  {
-    label: "Community Services",
-    value: "2115",
-  },
-  {
-    label: "Computer and Network Security",
-    value: "118",
-  },
-  {
-    label: "Computer Games",
-    value: "109",
-  },
-  {
-    label: "Computer Hardware Manufacturing",
-    value: "3",
-  },
-  {
-    label: "Computer Networking Products",
-    value: "5",
-  },
-  {
-    label: "Computers and Electronics Manufacturing",
-    value: "24",
-  },
-  {
-    label: "Conservation Programs",
-    value: "2368",
-  },
-  {
-    label: "Construction",
-    value: "48",
-  },
-  {
-    label: "Construction Hardware Manufacturing",
-    value: "871",
-  },
-  {
-    label: "Consumer Goods Rental",
-    value: "1786",
-  },
-  {
-    label: "Consumer Services",
-    value: "91",
-  },
-  {
-    label: "Correctional Institutions",
-    value: "3068",
-  },
-  {
-    label: "Cosmetology and Barber Schools",
-    value: "2019",
-  },
-  {
-    label: "Courts of Law",
-    value: "3065",
-  },
-  {
-    label: "Credit Intermediation",
-    value: "1673",
-  },
-  {
-    label: "Cutlery and Handtool Manufacturing",
-    value: "849",
-  },
-  {
-    label: "Dairy Product Manufacturing",
-    value: "65",
-  },
-  {
-    label: "Dance Companies",
-    value: "2135",
-  },
-  {
-    label: "Data Infrastructure and Analytics",
-    value: "2458",
-  },
-  {
-    label: "Data Security Software Products",
-    value: "3130",
-  },
-  {
-    label: "Defense and Space Manufacturing",
-    value: "1",
-  },
-  {
-    label: "Dentists",
-    value: "2045",
-  },
-  {
-    label: "Design Services",
-    value: "99",
-  },
-  {
-    label: "Desktop Computing Software Products",
-    value: "3101",
-  },
-  {
-    label: "Digital Accessibility Services",
-    value: "3244",
-  },
-  {
-    label: "Distilleries",
-    value: "564",
-  },
-  {
-    label: "E-Learning Providers",
-    value: "132",
-  },
-  {
-    label: "Economic Programs",
-    value: "2375",
-  },
-  {
-    label: "Education",
-    value: "1999",
-  },
-  {
-    label: "Education Administration Programs",
-    value: "69",
-  },
-  {
-    label: "Electric Lighting Equipment Manufacturing",
-    value: "998",
-  },
-  {
-    label: "Electric Power Generation",
-    value: "383",
-  },
-  {
-    label: "Electric Power Transmission, Control, and Distribution",
-    value: "382",
-  },
-  {
-    label: "Electrical Equipment Manufacturing",
-    value: "2468",
-  },
-  {
-    label: "Electronic and Precision Equipment Maintenance",
-    value: "2240",
-  },
-  {
-    label: "Embedded Software Products",
-    value: "3099",
-  },
-  {
-    label: "Emergency and Relief Services",
-    value: "2122",
-  },
-  {
-    label: "Engines and Power Transmission Equipment Manufacturing",
-    value: "935",
-  },
-  {
-    label: "Engineering Services",
-    value: "3242",
-  },
-  {
-    label: "Entertainment Providers",
-    value: "28",
-  },
-  {
-    label: "Environmental Quality Programs",
-    value: "388",
-  },
-  {
-    label: "Environmental Services",
-    value: "86",
-  },
-  {
-    label: "Equipment Rental Services",
-    value: "1779",
-  },
-  {
-    label: "Events Services",
-    value: "110",
-  },
-  {
-    label: "Executive Offices",
-    value: "76",
-  },
-  {
-    label: "Executive Search Services",
-    value: "1923",
-  },
-  {
-    label: "Fabricated Metal Products",
-    value: "840",
-  },
-  {
-    label: "Facilities Services",
-    value: "122",
-  },
-  {
-    label: "Family Planning Centers",
-    value: "2060",
-  },
-  {
-    label: "Farming",
-    value: "63",
-  },
-  {
-    label: "Farming, Ranching, Forestry",
-    value: "201",
-  },
-  {
-    label: "Fashion Accessories Manufacturing",
-    value: "615",
-  },
-  {
-    label: "Financial Services",
-    value: "43",
-  },
-  {
-    label: "Fine Arts Schools",
-    value: "2025",
-  },
-  {
-    label: "Fire Protection",
-    value: "3070",
-  },
-  {
-    label: "Fisheries",
-    value: "66",
-  },
-  {
-    label: "Flight Training",
-    value: "2020",
-  },
-  {
-    label: "Food and Beverage Manufacturing",
-    value: "23",
-  },
-  {
-    label: "Food and Beverage Retail",
-    value: "1339",
-  },
-  {
-    label: "Food and Beverage Services",
-    value: "34",
-  },
-  {
-    label: "Footwear and Leather Goods Repair",
-    value: "2255",
-  },
-  {
-    label: "Footwear Manufacturing",
-    value: "622",
-  },
-  {
-    label: "Forestry and Logging",
-    value: "298",
-  },
-  {
-    label: "Fossil Fuel Electric Power Generation",
-    value: "385",
-  },
-  {
-    label: "Freight and Package Transportation",
-    value: "87",
-  },
-  {
-    label: "Fruit and Vegetable Preserves Manufacturing",
-    value: "504",
-  },
-  {
-    label: "Fuel Cell Manufacturing",
-    value: "3255",
-  },
-  {
-    label: "Fundraising",
-    value: "101",
-  },
-  {
-    label: "Funds and Trusts",
-    value: "1742",
-  },
-  {
-    label: "Furniture and Home Furnishings Manufacturing",
-    value: "26",
-  },
-  {
-    label: "Gambling Facilities and Casinos",
-    value: "29",
-  },
-  {
-    label: "Geothermal Electric Power Generation",
-    value: "389",
-  },
-  {
-    label: "Glass Product Manufacturing",
-    value: "779",
-  },
-  {
-    label: "Glass, Ceramics and Concrete Manufacturing",
-    value: "145",
-  },
-  {
-    label: "Golf Courses and Country Clubs",
-    value: "2179",
-  },
-  {
-    label: "Government Administration",
-    value: "75",
-  },
-  {
-    label: "Government Relations Services",
-    value: "148",
-  },
-  {
-    label: "Graphic Design",
-    value: "140",
-  },
-  {
-    label: "Ground Passenger Transportation",
-    value: "1495",
-  },
-  {
-    label: "Health and Human Services",
-    value: "2353",
-  },
-  {
-    label: "Higher Education",
-    value: "68",
-  },
-  {
-    label: "Highway, Street, and Bridge Construction",
-    value: "431",
-  },
-  {
-    label: "Historical Sites",
-    value: "2161",
-  },
-  {
-    label: "Holding Companies",
-    value: "1905",
-  },
-  {
-    label: "Home Health Care Services",
-    value: "2074",
-  },
-  {
-    label: "Hospitals",
-    value: "2081",
-  },
-  {
-    label: "Hospitals and Health Care",
-    value: "14",
-  },
-  {
-    label: "Hospitality",
-    value: "31",
-  },
-  {
-    label: "Hotels and Motels",
-    value: "2194",
-  },
-  {
-    label: "Household and Institutional Furniture Manufacturing",
-    value: "1080",
-  },
-  {
-    label: "Household Appliance Manufacturing",
-    value: "1005",
-  },
-  {
-    label: "Household Services",
-    value: "2318",
-  },
-  {
-    label: "Housing and Community Development",
-    value: "2369",
-  },
-  {
-    label: "Housing Programs",
-    value: "3081",
-  },
-  {
-    label: "Human Resources Services",
-    value: "137",
-  },
-  {
-    label: "HVAC and Refrigeration Equipment Manufacturing",
-    value: "923",
-  },
-  {
-    label: "Hydroelectric Power Generation",
-    value: "384",
-  },
-  {
-    label: "Individual and Family Services",
-    value: "88",
-  },
-  {
-    label: "Industrial Machinery Manufacturing",
-    value: "135",
-  },
-  {
-    label: "Industry Associations",
-    value: "1909",
-  },
-  {
-    label: "Information Services",
-    value: "84",
-  },
-  {
-    label: "Insurance",
-    value: "42",
-  },
-  {
-    label: "Insurance Agencies and Brokerages",
-    value: "1737",
-  },
-  {
-    label: "Insurance and Employee Benefit Funds",
-    value: "1743",
-  },
-  {
-    label: "Insurance Carriers",
-    value: "1725",
-  },
-  {
-    label: "Interior Design",
-    value: "3126",
-  },
-  {
-    label: "International Affairs",
-    value: "74",
-  },
-  {
-    label: "International Trade and Development",
-    value: "141",
-  },
-  {
-    label: "Internet Marketplace Platforms",
-    value: "1285",
-  },
-  {
-    label: "Internet News",
-    value: "3124",
-  },
-  {
-    label: "Internet Publishing",
-    value: "3132",
-  },
-  {
-    label: "Interurban and Rural Bus Services",
-    value: "1504",
-  },
-  {
-    label: "Investment Advice",
-    value: "1720",
-  },
-  {
-    label: "Investment Banking",
-    value: "45",
-  },
-  {
-    label: "Investment Management",
-    value: "46",
-  },
-  {
-    label: "IT Services and IT Consulting",
-    value: "96",
-  },
-  {
-    label: "IT System Custom Software Development",
-    value: "3102",
-  },
-  {
-    label: "IT System Data Services",
-    value: "3106",
-  },
-  {
-    label: "IT System Design Services",
-    value: "1855",
-  },
-  {
-    label: "IT System Installation and Disposal",
-    value: "3104",
-  },
-  {
-    label: "IT System Operations and Maintenance",
-    value: "3103",
-  },
-  {
-    label: "IT System Testing and Evaluation",
-    value: "3107",
-  },
-  {
-    label: "IT System Training and Support",
-    value: "3105",
-  },
-  {
-    label: "Janitorial Services",
-    value: "1965",
-  },
-  {
-    label: "Language Schools",
-    value: "2029",
-  },
-  {
-    label: "Landscaping Services",
-    value: "2934",
-  },
-  {
-    label: "Laundry and Drycleaning Services",
-    value: "2272",
-  },
-  {
-    label: "Law Enforcement",
-    value: "77",
-  },
-  {
-    label: "Law Practice",
-    value: "9",
-  },
-  {
-    label: "Leasing Non-residential Real Estate",
-    value: "128",
-  },
-  {
-    label: "Leasing Residential Real Estate",
-    value: "1759",
-  },
-  {
-    label: "Leather Product Manufacturing",
-    value: "616",
-  },
-  {
-    label: "Legal Services",
-    value: "10",
-  },
-  {
-    label: "Legislative Offices",
-    value: "72",
-  },
-  {
-    label: "Libraries",
-    value: "85",
-  },
-  {
-    label: "Lime and Gypsum Products Manufacturing",
-    value: "794",
-  },
-  {
-    label: "Loan Brokers",
-    value: "1696",
-  },
-  {
-    label: "Machinery Manufacturing",
-    value: "55",
-  },
-  {
-    label: "Magnetic and Optical Media Manufacturing",
-    value: "994",
-  },
-  {
-    label: "Manufacturing",
-    value: "25",
-  },
-  {
-    label: "Maritime Transportation",
-    value: "95",
-  },
-  {
-    label: "Market Research",
-    value: "97",
-  },
-  {
-    label: "Marketing Services",
-    value: "1862",
-  },
-  {
-    label: "Mattress and Blinds Manufacturing",
-    value: "1095",
-  },
-  {
-    label: "Measuring and Control Instrument Manufacturing",
-    value: "983",
-  },
-  {
-    label: "Meat Products Manufacturing",
-    value: "521",
-  },
-  {
-    label: "Media and Telecommunications",
-    value: "3133",
-  },
-  {
-    label: "Media Production",
-    value: "126",
-  },
-  {
-    label: "Medical and Diagnostic Laboratories",
-    value: "2069",
-  },
-  {
-    label: "Medical Equipment Manufacturing",
-    value: "17",
-  },
-  {
-    label: "Medical Practices",
-    value: "13",
-  },
-  {
-    label: "Mental Health Care",
-    value: "139",
-  },
-  {
-    label: "Metal Ore Mining",
-    value: "345",
-  },
-  {
-    label: "Metal Treatments",
-    value: "883",
-  },
-  {
-    label: "Metal Valve, Ball, and Roller Manufacturing",
-    value: "887",
-  },
-  {
-    label: "Metalworking Machinery Manufacturing",
-    value: "928",
-  },
-  {
-    label: "Military and International Affairs",
-    value: "2391",
-  },
-  {
-    label: "Mining",
-    value: "56",
-  },
-  {
-    label: "Mobile Computing Software Products",
-    value: "3100",
-  },
-  {
-    label: "Mobile Food Services",
-    value: "2214",
-  },
-  {
-    label: "Mobile Gaming Apps",
-    value: "3131",
-  },
-  {
-    label: "Motor Vehicle Manufacturing",
-    value: "53",
-  },
-  {
-    label: "Motor Vehicle Parts Manufacturing",
-    value: "1042",
-  },
-  {
-    label: "Movies and Sound Recording",
-    value: "1611",
-  },
-  {
-    label: "Movies, Videos, and Sound",
-    value: "35",
-  },
-  {
-    label: "Museums",
-    value: "2159",
-  },
-  {
-    label: "Museums, Historical Sites, and Zoos",
-    value: "37",
-  },
-  {
-    label: "Musicians",
-    value: "115",
-  },
-  {
-    label: "Nanotechnology Research",
-    value: "114",
-  },
-  {
-    label: "Natural Gas Distribution",
-    value: "397",
-  },
-  {
-    label: "Natural Gas Extraction",
-    value: "3096",
-  },
-  {
-    label: "Newspaper Publishing",
-    value: "81",
-  },
-  {
-    label: "Non-profit Organizations",
-    value: "100",
-  },
-  {
-    label: "Nonmetallic Mineral Mining",
-    value: "356",
-  },
-  {
-    label: "Nonresidential Building Construction",
-    value: "413",
-  },
-  {
-    label: "Nuclear Electric Power Generation",
-    value: "386",
-  },
-  {
-    label: "Nursing Homes and Residential Care Facilities",
-    value: "2091",
-  },
-  {
-    label: "Office Administration",
-    value: "1916",
-  },
-  {
-    label: "Office Furniture and Fixtures Manufacturing",
-    value: "1090",
-  },
-  {
-    label: "Oil and Coal Product Manufacturing",
-    value: "679",
-  },
-  {
-    label: "Oil and Gas",
-    value: "57",
-  },
-  {
-    label: "Oil Extraction",
-    value: "3095",
-  },
-  {
-    label: "Online and Mail Order Retail",
-    value: "1445",
-  },
-  {
-    label: "Online Audio and Video Media",
-    value: "113",
-  },
-  {
-    label: "Operations Consulting",
-    value: "2401",
-  },
-  {
-    label: "Optometrists",
-    value: "2050",
-  },
-  {
-    label: "Outpatient Care Centers",
-    value: "2063",
-  },
-  {
-    label: "Outsourcing and Offshoring Consulting",
-    value: "123",
-  },
-  {
-    label: "Packaging and Containers Manufacturing",
-    value: "146",
-  },
-  {
-    label: "Paint, Coating, and Adhesive Manufacturing",
-    value: "722",
-  },
-  {
-    label: "Paper and Forest Product Manufacturing",
-    value: "61",
-  },
-  {
-    label: "Pension Funds",
-    value: "1745",
-  },
-  {
-    label: "Performing Arts",
-    value: "39",
-  },
-  {
-    label: "Performing Arts and Spectator Sports",
-    value: "2130",
-  },
-  {
-    label: "Periodical Publishing",
-    value: "1600",
-  },
-  {
-    label: "Personal and Laundry Services",
-    value: "2258",
-  },
-  {
-    label: "Personal Care Product Manufacturing",
-    value: "18",
-  },
-  {
-    label: "Personal Care Services",
-    value: "2259",
-  },
-  {
-    label: "Pet Services",
-    value: "2282",
-  },
-  {
-    label: "Pharmaceutical Manufacturing",
-    value: "15",
-  },
-  {
-    label: "Philanthropic Fundraising Services",
-    value: "131",
-  },
-  {
-    label: "Photography",
-    value: "136",
-  },
-  {
-    label: "Physical, Occupational and Speech Therapists",
-    value: "2054",
-  },
-  {
-    label: "Physicians",
-    value: "2040",
-  },
-  {
-    label: "Pipeline Transportation",
-    value: "1520",
-  },
-  {
-    label: "Plastics and Rubber Product Manufacturing",
-    value: "743",
-  },
-  {
-    label: "Plastics Manufacturing",
-    value: "117",
-  },
-  {
-    label: "Political Organizations",
-    value: "107",
-  },
-  {
-    label: "Postal Services",
-    value: "1573",
-  },
-  {
-    label: "Primary and Secondary Education",
-    value: "67",
-  },
-  {
-    label: "Primary Metal Manufacturing",
-    value: "807",
-  },
-  {
-    label: "Printing Services",
-    value: "83",
-  },
-  {
-    label: "Professional Organizations",
-    value: "1911",
-  },
-  {
-    label: "Professional Services",
-    value: "1810",
-  },
-  {
-    label: "Professional Training and Coaching",
-    value: "105",
-  },
-  {
-    label: "Public Assistance Programs",
-    value: "2360",
-  },
-  {
-    label: "Public Health",
-    value: "2358",
-  },
-  {
-    label: "Public Policy Offices",
-    value: "79",
-  },
-  {
-    label: "Public Relations and Communications Services",
-    value: "98",
-  },
-  {
-    label: "Public Safety",
-    value: "78",
-  },
-  {
-    label: "Racetracks",
-    value: "2143",
-  },
-  {
-    label: "Radio and Television Broadcasting",
-    value: "1633",
-  },
-  {
-    label: "Rail Transportation",
-    value: "1481",
-  },
-  {
-    label: "Railroad Equipment Manufacturing",
-    value: "62",
-  },
-  {
-    label: "Ranching",
-    value: "64",
-  },
-  {
-    label: "Ranching and Fisheries",
-    value: "256",
-  },
-  {
-    label: "Real Estate",
-    value: "44",
-  },
-  {
-    label: "Real Estate Agents and Brokers",
-    value: "1770",
-  },
-  {
-    label: "Real Estate and Equipment Rental Services",
-    value: "1757",
-  },
-  {
-    label: "Recreational Facilities",
-    value: "40",
-  },
-  {
-    label: "Regenerative Design",
-    value: "3256",
-  },
-  {
-    label: "Religious Institutions",
-    value: "89",
-  },
-  {
-    label: "Renewable Energy Equipment Manufacturing",
-    value: "3241",
-  },
-  {
-    label: "Renewable Energy Power Generation",
-    value: "3240",
-  },
-  {
-    label: "Renewable Energy Semiconductor Manufacturing",
-    value: "144",
-  },
-  {
-    label: "Repair and Maintenance",
-    value: "2225",
-  },
-  {
-    label: "Research Services",
-    value: "70",
-  },
-  {
-    label: "Residential Building Construction",
-    value: "408",
-  },
-  {
-    label: "Restaurants",
-    value: "32",
-  },
-  {
-    label: "Retail",
-    value: "27",
-  },
-  {
-    label: "Retail Apparel and Fashion",
-    value: "19",
-  },
-  {
-    label: "Retail Appliances, Electrical, and Electronic Equipment",
-    value: "1319",
-  },
-  {
-    label: "Retail Art Dealers",
-    value: "3186",
-  },
-  {
-    label: "Retail Art Supplies",
-    value: "111",
-  },
-  {
-    label: "Retail Books and Printed News",
-    value: "1409",
-  },
-  {
-    label: "Retail Building Materials and Garden Equipment",
-    value: "1324",
-  },
-  {
-    label: "Retail Florists",
-    value: "1423",
-  },
-  {
-    label: "Retail Furniture and Home Furnishings",
-    value: "1309",
-  },
-  {
-    label: "Retail Gasoline",
-    value: "1370",
-  },
-  {
-    label: "Retail Groceries",
-    value: "22",
-  },
-  {
-    label: "Retail Health and Personal Care Products",
-    value: "1359",
-  },
-  {
-    label: "Retail Luxury Goods and Jewelry",
-    value: "143",
-  },
-  {
-    label: "Retail Motor Vehicles",
-    value: "1292",
-  },
-  {
-    label: "Retail Musical Instruments",
-    value: "1407",
-  },
-  {
-    label: "Retail Office Equipment",
-    value: "138",
-  },
-  {
-    label: "Retail Office Supplies and Gifts",
-    value: "1424",
-  },
-  {
-    label: "Retail Pharmacies",
-    value: "3250",
-  },
-  {
-    label: "Retail Recyclable Materials & Used Merchandise",
-    value: "1431",
-  },
-  {
-    label: "Reupholstery and Furniture Repair",
-    value: "2253",
-  },
-  {
-    label: "Robot Manufacturing",
-    value: "3247",
-  },
-  {
-    label: "Robotics Engineering",
-    value: "3248",
-  },
-  {
-    label: "Rubber Products Manufacturing",
-    value: "763",
-  },
-  {
-    label: "Satellite Telecommunications",
-    value: "1649",
-  },
-  {
-    label: "Savings Institutions",
-    value: "1678",
-  },
-  {
-    label: "School and Employee Bus Services",
-    value: "1512",
-  },
-  {
-    label: "Seafood Product Manufacturing",
-    value: "528",
-  },
-  {
-    label: "Secretarial Schools",
-    value: "2012",
-  },
-  {
-    label: "Securities and Commodity Exchanges",
-    value: "1713",
-  },
-  {
-    label: "Security and Investigations",
-    value: "121",
-  },
-  {
-    label: "Security Guards and Patrol Services",
-    value: "1956",
-  },
-  {
-    label: "Security Systems Services",
-    value: "1958",
-  },
-  {
-    label: "Semiconductor Manufacturing",
-    value: "7",
-  },
-  {
-    label: "Services for Renewable Energy",
-    value: "3243",
-  },
-  {
-    label: "Services for the Elderly and Disabled",
-    value: "2112",
-  },
-  {
-    label: "Sheet Music Publishing",
-    value: "1625",
-  },
-  {
-    label: "Shipbuilding",
-    value: "58",
-  },
-  {
-    label: "Shuttles and Special Needs Transportation Services",
-    value: "1517",
-  },
-  {
-    label: "Sightseeing Transportation",
-    value: "1532",
-  },
-  {
-    label: "Skiing Facilities",
-    value: "2181",
-  },
-  {
-    label: "Smart Meter Manufacturing",
-    value: "3254",
-  },
-  {
-    label: "Soap and Cleaning Product Manufacturing",
-    value: "727",
-  },
-  {
-    label: "Social Networking Platforms",
-    value: "3127",
-  },
-  {
-    label: "Software Development",
-    value: "4",
-  },
-  {
-    label: "Solar Electric Power Generation",
-    value: "387",
-  },
-  {
-    label: "Sound Recording",
-    value: "1623",
-  },
-  {
-    label: "Space Research and Technology",
-    value: "3089",
-  },
-  {
-    label: "Specialty Trade Contractors",
-    value: "435",
-  },
-  {
-    label: "Spectator Sports",
-    value: "33",
-  },
-  {
-    label: "Sports and Recreation Instruction",
-    value: "2027",
-  },
-  {
-    label: "Sports Teams and Clubs",
-    value: "2142",
-  },
-  {
-    label: "Sporting Goods Manufacturing",
-    value: "20",
-  },
-  {
-    label: "Spring and Wire Product Manufacturing",
-    value: "873",
-  },
-  {
-    label: "Staffing and Recruiting",
-    value: "104",
-  },
-  {
-    label: "Steam and Air-Conditioning Supply",
-    value: "404",
-  },
-  {
-    label: "Strategic Management Services",
-    value: "102",
-  },
-  {
-    label: "Subdivision of Land",
-    value: "428",
-  },
-  {
-    label: "Sugar and Confectionery Product Manufacturing",
-    value: "495",
-  },
-  {
-    label: "Surveying and Mapping Services",
-    value: "3249",
-  },
-  {
-    label: "Taxi and Limousine Services",
-    value: "1505",
-  },
-  {
-    label: "Technical and Vocational Training",
-    value: "2018",
-  },
-  {
-    label: "Technology, Information and Internet",
-    value: "6",
-  },
-  {
-    label: "Technology, Information and Media",
-    value: "1594",
-  },
-  {
-    label: "Telecommunications",
-    value: "8",
-  },
-  {
-    label: "Telecommunications Carriers",
-    value: "1644",
-  },
-  {
-    label: "Telephone Call Centers",
-    value: "1931",
-  },
-  {
-    label: "Temporary Help Services",
-    value: "1925",
-  },
-  {
-    label: "Textile Manufacturing",
-    value: "60",
-  },
-  {
-    label: "Theater Companies",
-    value: "2133",
-  },
-  {
-    label: "Think Tanks",
-    value: "130",
-  },
-  {
-    label: "Tobacco Manufacturing",
-    value: "21",
-  },
-  {
-    label: "Translation and Localization",
-    value: "108",
-  },
-  {
-    label: "Transportation Equipment Manufacturing",
-    value: "1029",
-  },
-  {
-    label: "Transportation Programs",
-    value: "3085",
-  },
-  {
-    label: "Transportation, Logistics, Supply Chain and Storage",
-    value: "116",
-  },
-  {
-    label: "Travel Arrangements",
-    value: "30",
-  },
-  {
-    label: "Truck Transportation",
-    value: "92",
-  },
-  {
-    label: "Trusts and Estates",
-    value: "1750",
-  },
-  {
-    label: "Turned Products and Fastener Manufacturing",
-    value: "876",
-  },
-  {
-    label: "Urban Transit Services",
-    value: "1497",
-  },
-  {
-    label: "Utilities",
-    value: "59",
-  },
-  {
-    label: "Utilities Administration",
-    value: "3086",
-  },
-  {
-    label: "Utility System Construction",
-    value: "419",
-  },
-  {
-    label: "Vehicle Repair and Maintenance",
-    value: "2226",
-  },
-  {
-    label: "Venture Capital and Private Equity Principals",
-    value: "106",
-  },
-  {
-    label: "Veterinary Services",
-    value: "16",
-  },
-  {
-    label: "Vocational Rehabilitation Services",
-    value: "2125",
-  },
-  {
-    label: "Warehousing and Storage",
-    value: "93",
-  },
-  {
-    label: "Waste Collection",
-    value: "1981",
-  },
-  {
-    label: "Waste Treatment and Disposal",
-    value: "1986",
-  },
-  {
-    label: "Water Supply and Irrigation Systems",
-    value: "400",
-  },
-  {
-    label: "Water, Waste, Steam, and Air Conditioning Services",
-    value: "398",
-  },
-  {
-    label: "Wellness and Fitness Services",
-    value: "124",
-  },
-  {
-    label: "Wholesale",
-    value: "133",
-  },
-  {
-    label: "Wholesale Alcoholic Beverages",
-    value: "1267",
-  },
-  {
-    label: "Wholesale Apparel and Sewing Supplies",
-    value: "1222",
-  },
-  {
-    label: "Wholesale Appliances, Electrical, and Electronics",
-    value: "1171",
-  },
-  {
-    label: "Wholesale Building Materials",
-    value: "49",
-  },
-  {
-    label: "Wholesale Chemical and Allied Products",
-    value: "1257",
-  },
-  {
-    label: "Wholesale Computer Equipment",
-    value: "1157",
-  },
-  {
-    label: "Wholesale Drugs and Sundries",
-    value: "1221",
-  },
-  {
-    label: "Wholesale Food and Beverage",
-    value: "1231",
-  },
-  {
-    label: "Wholesale Footwear",
-    value: "1230",
-  },
-  {
-    label: "Wholesale Furniture and Home Furnishings",
-    value: "1137",
-  },
-  {
-    label: "Wholesale Hardware, Plumbing, Heating Equipment",
-    value: "1178",
-  },
-  {
-    label: "Wholesale Import and Export",
-    value: "134",
-  },
-  {
-    label: "Wholesale Luxury Goods and Jewelry",
-    value: "1208",
-  },
-  {
-    label: "Wholesale Machinery",
-    value: "1187",
-  },
-  {
-    label: "Wholesale Metals and Minerals",
-    value: "1166",
-  },
-  {
-    label: "Wholesale Motor Vehicles and Parts",
-    value: "1128",
-  },
-  {
-    label: "Wholesale Paper Products",
-    value: "1212",
-  },
-  {
-    label: "Wholesale Petroleum and Petroleum Products",
-    value: "1262",
-  },
-  {
-    label: "Wholesale Photography Equipment and Supplies",
-    value: "1153",
-  },
-  {
-    label: "Wholesale Raw Farm Products",
-    value: "1250",
-  },
-  {
-    label: "Wholesale Recyclable Materials",
-    value: "1206",
-  },
-  {
-    label: "Wind Electric Power Generation",
-    value: "2489",
-  },
-  {
-    label: "Wineries",
-    value: "2500",
-  },
-  {
-    label: "Wireless Services",
-    value: "119",
-  },
-  {
-    label: "Women's Handbag Manufacturing",
-    value: "625",
-  },
-  {
-    label: "Wood Product Manufacturing",
-    value: "784",
-  },
-  {
-    label: "Writing and Editing",
-    value: "103",
-  },
-  {
-    label: "Zoos and Botanical Gardens",
-    value: "2163",
-  },
+  "Abrasives and Nonmetallic Minerals Manufacturing",
+  "Accessible Architecture and Design",
+  "Accessible Hardware Manufacturing",
+  "Accommodation and Food Services",
+  "Accounting",
+  "Actuarial Services",
+  "Administration of Justice",
+  "Administrative and Support Services",
+  "Advertising Services",
+  "Agricultural Chemical Manufacturing",
+  "Agriculture",
+  "Air",
+  "Airlines and Aviation",
+  "Alternative Dispute Resolution",
+  "Alternative Fuel Vehicle Manufacturing",
+  "Alternative Medicine",
+  "Amusement Parks and Arcades",
+  "Animal Feed Manufacturing",
+  "Animation",
+  "Animation and Post-production",
+  "Apparel & Fashion",
+  "Apparel Manufacturing",
+  "Appliances",
+  "Architectural and Structural Metal Manufacturing",
+  "Architecture and Planning",
+  "Armed Forces",
+  "Artificial Rubber and Synthetic Fiber Manufacturing",
+  "Artists and Writers",
+  "Audio and Video Equipment Manufacturing",
+  "Automation Machinery Manufacturing",
+  "Automotive",
+  "Aviation & Aerospace",
+  "Aviation and Aerospace Component Manufacturing",
+  "Baked Goods Manufacturing",
+  "Ball",
+  "Banking",
+  "Bed-and-Breakfasts",
+  "Beverage Manufacturing",
+  "Biotechnology",
+  "Biotechnology Research",
+  "Boilers",
+  "Book Publishing",
+  "Book and Periodical Publishing",
+  "Broadcast Media Production and Distribution",
+  "Building Construction",
+  "Building Equipment Contractors",
+  "Building Finishing Contractors",
+  "Building Materials",
+  "Building Structure and Exterior Contractors",
+  "Business Consulting and Services",
+  "Business Content",
+  "Business Intelligence Platforms",
+  "Capital Markets",
+  "Caterers",
+  "Ceramics and Concrete Manufacturing",
+  "Chemical Manufacturing",
+  "Chemical Raw Materials Manufacturing",
+  "Child Day Care Services",
+  "Civic and Social Organizations",
+  "Civil Engineering",
+  "Claims Adjusting",
+  "Clay and Refractory Products Manufacturing",
+  "Climate Data and Analytics",
+  "Climate Technology Product Manufacturing",
+  "Coating",
+  "Collection Agencies",
+  "Commercial Real Estate",
+  "Commercial and Industrial Equipment Rental",
+  "Commercial and Industrial Machinery Maintenance",
+  "Commercial and Service Industry Machinery Manufacturing",
+  "Communications Equipment Manufacturing",
+  "Community Development and Urban Planning",
+  "Community Services",
+  "Computer Games",
+  "Computer Hardware",
+  "Computer Hardware Manufacturing",
+  "Computer Networking",
+  "Computer Networking Products",
+  "Computer and Network Security",
+  "Computers and Electronics Manufacturing",
+  "Conservation Programs",
+  "Construction",
+  "Construction Hardware Manufacturing",
+  "Consumer Electronics",
+  "Consumer Goods",
+  "Consumer Goods Rental",
+  "Consumer Services",
+  "Control",
+  "Correctional Institutions",
+  "Cosmetics",
+  "Courts of Law",
+  "Credit Intermediation",
+  "Dairy Product Manufacturing",
+  "Data Infrastructure and Analytics",
+  "Data Security Software Products",
+  "Defense & Space",
+  "Defense and Space Manufacturing",
+  "Dentists",
+  "Design",
+  "Design Services",
+  "Desktop Computing Software Products",
+  "Digital Accessibility Services",
+  "E-Learning Providers",
+  "E-learning",
+  "Economic Programs",
+  "Education",
+  "Education Administration Programs",
+  "Education Management",
+  "Electric Lighting Equipment Manufacturing",
+  "Electric Power Generation",
+  "Electric Power Transmission",
+  "Electrical",
+  "Electrical Equipment Manufacturing",
+  "Electronic and Precision Equipment Maintenance",
+  "Embedded Software Products",
+  "Engineering Services",
+  "Engines and Power Transmission Equipment Manufacturing",
+  "Entertainment",
+  "Entertainment Providers",
+  "Environmental Quality Programs",
+  "Environmental Services",
+  "Equipment Rental Services",
+  "Events Services",
+  "Executive Offices",
+  "Executive Search Services",
+  "Fabricated Metal Products",
+  "Facilities Services",
+  "Family Planning Centers",
+  "Farming",
+  "Fashion Accessories Manufacturing",
+  "Financial Services",
+  "Fine Art",
+  "Fine Arts Schools",
+  "Fire Protection",
+  "Fisheries",
+  "Food & Beverages",
+  "Food Production",
+  "Food and Beverage Manufacturing",
+  "Food and Beverage Retail",
+  "Food and Beverage Services",
+  "Footwear Manufacturing",
+  "Forestry",
+  "Forestry and Logging",
+  "Fossil Fuel Electric Power Generation",
+  "Freight and Package Transportation",
+  "Fruit and Vegetable Preserves Manufacturing",
+  "Fuel Cell Manufacturing",
+  "Fundraising",
+  "Funds and Trusts",
+  "Furniture",
+  "Furniture and Home Furnishings Manufacturing",
+  "Gambling Facilities and Casinos",
+  "Gas",
+  "Glass",
+  "Glass Product Manufacturing",
+  "Golf Courses and Country Clubs",
+  "Government Administration",
+  "Government Relations",
+  "Government Relations Services",
+  "Graphic Design",
+  "Ground Passenger Transportation",
+  "HVAC and Refrigeration Equipment Manufacturing",
+  "Health",
+  "Health and Human Services",
+  "Heating Equipment",
+  "Higher Education",
+  "Highway",
+  "Historical Sites",
+  "Holding Companies",
+  "Home Health Care Services",
+  "Homestays",
+  "Horticulture",
+  "Hospitality",
+  "Hospitals",
+  "Hospitals and Health Care",
+  "Hostels",
+  "Hotels and Motels",
+  "Household Appliance Manufacturing",
+  "Household Services",
+  "Housing Programs",
+  "Housing and Community Development",
+  "Human Resources",
+  "Human Resources Services",
+  "IT Services and IT Consulting",
+  "IT System Custom Software Development",
+  "IT System Data Services",
+  "IT System Design Services",
+  "IT System Installation and Disposal",
+  "IT System Operations and Maintenance",
+  "IT System Testing and Evaluation",
+  "IT System Training and Support",
+  "Individual and Family Services",
+  "Industrial Automation",
+  "Industrial Machinery Manufacturing",
+  "Industry Associations",
+  "Information Services",
+  "Information Technology & Services",
+  "Information and Internet",
+  "Information and Media",
+  "Insurance",
+  "Insurance Agencies and Brokerages",
+  "Insurance Carriers",
+  "Insurance and Employee Benefit Funds",
+  "Interior Design",
+  "International Affairs",
+  "International Trade and Development",
+  "Internet Marketplace Platforms",
+  "Internet News",
+  "Internet Publishing",
+  "Investment Advice",
+  "Investment Banking",
+  "Investment Management",
+  "Janitorial Services",
+  "Landscaping Services",
+  "Law Enforcement",
+  "Law Practice",
+  "Leasing Non-residential Real Estate",
+  "Leasing Residential Real Estate",
+  "Legal Services",
+  "Legislative Offices",
+  "Leisure",
+  "Libraries",
+  "Lime and Gypsum Products Manufacturing",
+  "Loan Brokers",
+  "Logistics",
+  "Luxury Goods & Jewelry",
+  "Machinery Manufacturing",
+  "Magnetic and Optical Media Manufacturing",
+  "Manufacturing",
+  "Maritime Transportation",
+  "Market Research",
+  "Marketing Services",
+  "Mattress and Blinds Manufacturing",
+  "Measuring and Control Instrument Manufacturing",
+  "Meat Products Manufacturing",
+  "Mechanical Or Industrial Engineering",
+  "Media Production",
+  "Media and Telecommunications",
+  "Medical Device",
+  "Medical Equipment Manufacturing",
+  "Medical Practices",
+  "Medical and Diagnostic Laboratories",
+  "Mental Health Care",
+  "Metal Ore Mining",
+  "Metal Treatments",
+  "Metal Valve",
+  "Metalworking Machinery Manufacturing",
+  "Military and International Affairs",
+  "Mining",
+  "Mining Machinery Manufacturing",
+  "Mobile Computing Software Products",
+  "Mobile Food Services",
+  "Motor Vehicle Manufacturing",
+  "Motor Vehicle Parts Manufacturing",
+  "Movies",
+  "Museums",
+  "Musicians",
+  "Nanotechnology Research",
+  "Natural Gas Distribution",
+  "Newspaper Publishing",
+  "Non-profit Organization Management",
+  "Non-profit Organizations",
+  "Nonresidential Building Construction",
+  "Nuclear Electric Power Generation",
+  "Nursing Homes and Residential Care Facilities",
+  "Occupational and Speech Therapists",
+  "Office Administration",
+  "Office Furniture and Fixtures Manufacturing",
+  "Oil",
+  "Oil and Coal Product Manufacturing",
+  "Oil and Gas",
+  "Online Audio and Video Media",
+  "Online Media",
+  "Online and Mail Order Retail",
+  "Operations Consulting",
+  "Optometrists",
+  "Outpatient Care Centers",
+  "Outsourcing and Offshoring Consulting",
+  "Outsourcing/Offshoring",
+  "Packaging & Containers",
+  "Packaging and Containers Manufacturing",
+  "Paint",
+  "Paper & Forest Products",
+  "Paper and Forest Product Manufacturing",
+  "Pension Funds",
+  "Performing Arts",
+  "Performing Arts and Spectator Sports",
+  "Personal Care Product Manufacturing",
+  "Personal and Laundry Services",
+  "Pet Services",
+  "Pharmaceutical Manufacturing",
+  "Philanthropic Fundraising Services",
+  "Photography",
+  "Physical",
+  "Physicians",
+  "Pipeline Transportation",
+  "Plastics Manufacturing",
+  "Plastics and Rubber Product Manufacturing",
+  "Plumbing",
+  "Political Organizations",
+  "Primary Metal Manufacturing",
+  "Primary and Secondary Education",
+  "Printing Services",
+  "Professional Organizations",
+  "Professional Services",
+  "Professional Training and Coaching",
+  "Program Development",
+  "Public Assistance Programs",
+  "Public Health",
+  "Public Policy",
+  "Public Policy Offices",
+  "Public Relations and Communications Services",
+  "Public Safety",
+  "Radio and Television Broadcasting",
+  "Rail Transportation",
+  "Railroad Equipment Manufacturing",
+  "Ranching",
+  "Ranching and Fisheries",
+  "Real Estate",
+  "Real Estate Agents and Brokers",
+  "Real Estate and Equipment Rental Services",
+  "Recreational Facilities",
+  "Religious Institutions",
+  "Renewable Energy Equipment Manufacturing",
+  "Renewable Energy Power Generation",
+  "Renewable Energy Semiconductor Manufacturing",
+  "Renewables & Environment",
+  "Repair and Maintenance",
+  "Research",
+  "Research Services",
+  "Residential Building Construction",
+  "Restaurants",
+  "Retail",
+  "Retail Apparel and Fashion",
+  "Retail Appliances",
+  "Retail Art Dealers",
+  "Retail Art Supplies",
+  "Retail Building Materials and Garden Equipment",
+  "Retail Furniture and Home Furnishings",
+  "Retail Gasoline",
+  "Retail Groceries",
+  "Retail Health and Personal Care Products",
+  "Retail Luxury Goods and Jewelry",
+  "Retail Motor Vehicles",
+  "Retail Musical Instruments",
+  "Retail Office Equipment",
+  "Retail Office Supplies and Gifts",
+  "Retail Pharmacies",
+  "Retail Recyclable Materials & Used Merchandise",
+  "Robot Manufacturing",
+  "Robotics Engineering",
+  "Rubber Products Manufacturing",
+  "School and Employee Bus Services",
+  "Securities and Commodity Exchanges",
+  "Security Guards and Patrol Services",
+  "Security Systems Services",
+  "Security and Investigations",
+  "Semiconductor Manufacturing",
+  "Semiconductors",
+  "Services for Renewable Energy",
+  "Services for the Elderly and Disabled",
+  "Shipbuilding",
+  "Shuttles and Special Needs Transportation Services",
+  "Sightseeing Transportation",
+  "Smart Meter Manufacturing",
+  "Soap and Cleaning Product Manufacturing",
+  "Social Networking Platforms",
+  "Software Development",
+  "Solar Electric Power Generation",
+  "Space Research and Technology",
+  "Specialty Trade Contractors",
+  "Spectator Sports",
+  "Sporting Goods",
+  "Sporting Goods Manufacturing",
+  "Sports Teams and Clubs",
+  "Sports and Recreation Instruction",
+  "Spring and Wire Product Manufacturing",
+  "Staffing and Recruiting",
+  "Stationery",
+  "Steel",
+  "Steel Product Manufacturing",
+  "Stock",
+  "Stock and Commodity Exchanges",
+  "Structural Steel and Precast Concrete Contractors",
+  "Sugar and Confectionery Products Manufacturing",
+  "Supermarkets",
+  "Supply Chain",
+  "Supply Chain and Logistics",
+  "Support Activities for Air Transportation",
+  "Support Activities for Water Transportation",
+  "Switchgear and Switchboard Apparatus Manufacturing",
+  "Telecommunications",
+  "Television Broadcasting",
+  "Textile",
+  "Textile Mills",
+  "Textile Product Mills",
+  "Third Party Administration of Insurance and Pension Funds",
+  "Thrift Stores",
+  "Tire Manufacturing",
+  "Tobacco Manufacturing",
+  "Tour Operators",
+  "Tourism",
+  "Trade Shows and Conferences",
+  "Translation and Interpretation Services",
+  "Transportation",
+  "Transportation and Warehousing",
+  "Travel Arrangement and Reservation Services",
+  "Travel Agencies",
+  "Trucking",
+  "Urban Transit Systems",
+  "Utilities",
+  "Vacation Rentals",
+  "Venture Capital",
+  "Veterinary Services",
+  "Video and Motion Picture Production",
+  "Video and Sound Equipment Manufacturing",
+  "Vocational Rehabilitation Services",
+  "Warehousing and Storage",
+  "Waste Management and Remediation Services",
+  "Waste Treatment and Disposal",
+  "Water Supply",
+  "Water Transportation",
+  "Water, Sewage and Other Systems",
+  "Web Hosting",
+  "Wholesale",
+  "Wholesale Building Materials",
+  "Wholesale Chemicals",
+  "Wholesale Electronics",
+  "Wholesale Food Products",
+  "Wholesale Hardware",
+  "Wholesale Machinery",
+  "Wholesale Metals and Minerals",
+  "Wholesale Office Equipment",
+  "Wholesale Pharmaceuticals",
+  "Wholesale Trade",
+  "Wind Electric Power Generation",
+  "Wine and Distilled Alcoholic Beverage Manufacturing",
+  "Wineries",
+  "Wireless Telecommunications",
+  "Wood Product Manufacturing",
+  "Wood and Paper Manufacturing",
+  "Woodworking Machinery Manufacturing",
+  "Wool Textile Manufacturing",
+  "Writing and Editing Services",
+  "Writing and Editing",
+  "Yoga Instruction",
+  "Youth Services",
+  "Zoos and Botanical Gardens",
 ];
+
 const locationArr = [
   {
     label: "Brooklyn, New York, United States",
