@@ -57,26 +57,49 @@ async function searchLinkedInJobs(query, maxPages, searchLocationId, sortBy) {
           },
         };
 
-        const response = await axios.request(options);
-        let i = 0;
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        response.data.response.jobs.forEach((job) => {
+        try {
+          const response = await axios.request(options);
+          await new Promise((resolve) => setTimeout(resolve, 800));
+
           if (
-            !combinedResults.some(
-              (existingJob) => existingJob.jobId === job.jobId
-            )
+            response.data &&
+            response.data.response &&
+            Array.isArray(response.data.response.jobs)
           ) {
-            console.log("i ======>", i);
-            i++;
-            combinedResults.push(job);
+            let i = 0;
+            response.data.response.jobs.forEach((job) => {
+              if (
+                !combinedResults.some(
+                  (existingJob) => existingJob.jobId === job.jobId
+                )
+              ) {
+                console.log("i ======>", i);
+                i++;
+                combinedResults.push(job);
+              }
+            });
+          } else {
+            console.log(
+              "No jobs found or invalid response structure for keyword:",
+              keyword
+            );
           }
-        });
+        } catch (error) {
+          console.error("Error fetching jobs for keyword:", keyword, error);
+        }
       }
     }
-    saveJobs(combinedResults);
+
+    if (combinedResults.length > 0) {
+      await saveJobs(combinedResults);
+    } else {
+      console.log("No jobs found to save.");
+    }
+
     return combinedResults;
   } catch (error) {
-    console.log(error);
+    console.error("Error in searchLinkedInJobs:", error);
+    return [];
   }
 }
 
