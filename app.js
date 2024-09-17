@@ -921,7 +921,7 @@ app.post("/search-jobs", async (req, res) => {
       const searchJobs = await searchLinkedInJobs(
         job_title,
         totalPages,
-        92000000,
+        location_hidden,
         "mostRecent"
       );
       console.log("search jobs ---->", searchJobs);

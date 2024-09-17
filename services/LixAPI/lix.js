@@ -19,6 +19,7 @@ async function searchPeopleLix(searchUrl) {
   try {
     const response = await axios.get(url, config);
     trackApiCall(`https://api.lix-it.com/v1/li/sales/search/people`);
+    console.log("response =----->", JSON.stringify(response.data));
     return response.data;
   } catch (error) {
     console.error("Error:", error.message);
