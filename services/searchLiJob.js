@@ -2,14 +2,21 @@ const axios = require("axios");
 
 async function searchLinkedInJobs(query, maxPages, searchLocationId, sortBy) {
   console.log("query ---->", query);
-  console.log("max pages ---->", maxPages);
-  console.log("search location id ---->", searchLocationId);
-  console.log("sort by ---->", sortBy);
-  console.log("query ===>", query);
-  const [andPart, orPart] = query.split(/\s+AND\s+/);
-  const orKeywords = orPart
-    ? orPart.replace(/[()]/g, "").split(/\s+OR\s+/)
-    : [];
+
+  let keywords = [query];
+  if (query.includes(" AND ")) {
+    const [andPart, orPart] = query.split(/\s+AND\s+/);
+    if (orPart && orPart.includes(" OR ")) {
+      keywords = orPart
+        .replace(/[()]/g, "")
+        .split(/\s+OR\s+/)
+        .map((keyword) => `${andPart.trim()} ${keyword.trim()}`);
+    } else {
+      keywords = [query];
+    }
+  } else if (query.includes(" OR ")) {
+    keywords = query.split(/\s+OR\s+/);
+  }
 
   const baseOptions = {
     method: "GET",
@@ -25,8 +32,8 @@ async function searchLinkedInJobs(query, maxPages, searchLocationId, sortBy) {
 
     for (let page = 1; page <= maxPages; page++) {
       console.log("page ====>", page);
-      console.log("or keywords", orKeywords);
-      for (const keyword of orKeywords) {
+      console.log("keywords", keywords);
+      for (const keyword of keywords) {
         const options = {
           ...baseOptions,
           params: {
@@ -34,7 +41,7 @@ async function searchLinkedInJobs(query, maxPages, searchLocationId, sortBy) {
             page,
             searchLocationId,
             sortBy,
-            query: `${andPart.trim()} ${keyword.trim()}`,
+            query: keyword.trim(),
           },
         };
 
