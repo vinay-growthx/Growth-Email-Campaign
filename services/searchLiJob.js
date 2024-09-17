@@ -2,6 +2,7 @@ const axios = require("axios");
 const LinkedinJobRepository = require("../repository/LinkedinJobRepository");
 const linkedinJobRepository = new LinkedinJobRepository();
 async function saveJobs(jobs) {
+  console.log("json jobs ===>", JSON.stringify(jobs));
   for (const job of jobs) {
     try {
       const result = await linkedinJobRepository.create(job);
@@ -72,6 +73,7 @@ async function searchLinkedInJobs(query, maxPages, searchLocationId, sortBy) {
         });
       }
     }
+    saveJobs(combinedResults);
     return combinedResults;
   } catch (error) {
     console.log(error);
