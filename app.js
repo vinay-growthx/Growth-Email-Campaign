@@ -845,43 +845,7 @@ app.post("/search-jobs", async (req, res) => {
       return res.redirect("/login");
     }
     console.log("req --->", req.body);
-    const generateEmailContent = (data) => {
-      const fields = [
-        { key: "job_title", label: "Search performed on job title" },
-        { key: "location", label: "Location" },
-        { key: "num_jobs", label: "Maximum Number of Jobs" },
-        { key: "job_function", label: "Job Functions" },
-        { key: "industry", label: "Industry" },
-      ];
 
-      const htmlContent = fields
-        .map(({ key, label }) => {
-          const value = data[key];
-          if (!value) return ""; // Skip falsy values
-
-          let displayValue = value;
-          if (Array.isArray(value)) {
-            displayValue = value.filter(Boolean).join(", "); // Filter out falsy values in arrays
-            if (!displayValue) return ""; // Skip if array is empty after filtering
-          }
-
-          return `${label}: ${displayValue}<br>`;
-        })
-        .filter(Boolean) // Remove empty strings
-        .join("\n      ");
-
-      return {
-        to: "vinay.prajapati@hirequotient.com,utkarsh@hirequotient.com",
-        from: "AI OutBound Tool <no-reply@hirequotient.com>",
-        subject: "AI Outbound search Notification: Search has performed!!!",
-        html: htmlContent,
-      };
-    };
-
-    // Usage
-    const mailOptions = generateEmailContent(req.body);
-    console.log({ mailOptions });
-    if (process.env.ENV === "production") smtpTransport.sendMail(mailOptions);
     let query = req.body.job_title.trim() + " in " + req.body.location.trim();
 
     query = query.toLowerCase();
@@ -915,6 +879,52 @@ app.post("/search-jobs", async (req, res) => {
       reqUUID,
       req.userEmail
     );
+    const generateEmailContent = (data) => {
+      const fields = [
+        { key: "job_title", label: "Search performed on job title" },
+        { key: "location", label: "Location" },
+        { key: "num_jobs", label: "Maximum Number of Jobs" },
+        { key: "job_function", label: "Job Functions" },
+        { key: "industry", label: "Industry" },
+        { key: "userEmail", label: "User Email" },
+        { key: "totalCount", label: "Total Jobs Found" },
+      ];
+
+      const htmlContent = fields
+        .map(({ key, label }) => {
+          let value =
+            key === "userEmail"
+              ? req.userEmail
+              : key === "totalCount"
+              ? totalCount
+              : data[key];
+          if (!value && value !== 0) return ""; // Skip falsy values except 0
+
+          let displayValue = value;
+          if (Array.isArray(value)) {
+            displayValue = value.filter(Boolean).join(", "); // Filter out falsy values in arrays
+            if (!displayValue) return ""; // Skip if array is empty after filtering
+          }
+
+          return `${label}: ${displayValue}<br>`;
+        })
+        .filter(Boolean) // Remove empty strings
+        .join("\n      ");
+
+      return {
+        to: "vinay.prajapati@hirequotient.com,utkarsh@hirequotient.com",
+        from: "AI OutBound Tool <no-reply@hirequotient.com>",
+        subject: "AI Outbound search Notification: Search has performed!!!",
+        html: htmlContent,
+      };
+    };
+
+    // Usage
+    const mailOptions = generateEmailContent(req.body);
+    console.log({ mailOptions });
+    if (process.env.ENV === "production") smtpTransport.sendMail(mailOptions);
+
+    console.log("total count ------>", totalCount);
     console.log("num jobs -->", num_jobs, "total count -->", totalCount);
     if (num_jobs > 500 && totalCount < 500) {
       let totalPages = Math.min(Math.ceil(num_jobs / 10), 40);
