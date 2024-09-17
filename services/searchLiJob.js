@@ -1,5 +1,16 @@
 const axios = require("axios");
-
+const LinkedinJobRepository = require("../repository/LinkedinJobRepository");
+const linkedinJobRepository = new LinkedinJobRepository();
+async function saveJobs(jobs) {
+  for (const job of jobs) {
+    try {
+      const result = await linkedinJobRepository.create(job);
+      console.log("Job saved successfully:", result);
+    } catch (error) {
+      console.error("Error saving job:", error);
+    }
+  }
+}
 async function searchLinkedInJobs(query, maxPages, searchLocationId, sortBy) {
   console.log("query ---->", query);
 
@@ -46,7 +57,6 @@ async function searchLinkedInJobs(query, maxPages, searchLocationId, sortBy) {
         };
 
         const response = await axios.request(options);
-        console.log("response data response ===>", response.data.response);
         let i = 0;
         await new Promise((resolve) => setTimeout(resolve, 800));
         response.data.response.jobs.forEach((job) => {
@@ -62,7 +72,6 @@ async function searchLinkedInJobs(query, maxPages, searchLocationId, sortBy) {
         });
       }
     }
-    console.log("combined results ====>", combinedResults);
     return combinedResults;
   } catch (error) {
     console.log(error);
