@@ -4,6 +4,8 @@ const linkedinJobRepository = new LinkedinJobRepository();
 const RequestIdRepository = require("../repository/RequestIdRepository");
 const requestIdRepository = new RequestIdRepository();
 const { transformData } = require("../services/util");
+const { smtpTransport } = require("../services/ses");
+
 async function saveJobs(jobs) {
   for (const job of jobs) {
     try {
