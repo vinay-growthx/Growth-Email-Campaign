@@ -50,7 +50,7 @@ async function searchLinkedInJobs(
 
   try {
     const combinedResults = [];
-    for (let page = 1; page <= 1; page++) {
+    for (let page = 1; page <= maxPages; page++) {
       console.log("page ====>", page);
       console.log("keywords", keywords);
       for (const keyword of keywords) {
@@ -111,12 +111,27 @@ async function searchLinkedInJobs(
     }
     if (combinedResults.length > 0) {
       const allJobIds = combinedResults.map((job) => job.jobId);
-      console.log("all job ids =======>", allJobIds);
-      await requestIdRepository.updateOne(
+      const updatedDoc = await requestIdRepository.findOneAndUpdate(
         { reqId: reqUUID },
         { $addToSet: { jobIds: { $each: allJobIds } } },
         { upsert: true }
       );
+      const uniqueJobIdsCount = updatedDoc.jobIds
+        ? updatedDoc.jobIds.length
+        : 0;
+      if (process.env.ENV == "production") {
+        const mailOptions = {
+          to: `vinay.prajapati@hirequotient.com,utkarsh@hirequotient.com`,
+          from: "EasySource <no-reply@hirequotient.com>",
+          subject: `AI Outbound search Notification: Data from live search`,
+          html: `Search performed on job title: ${query}<br>
+          Total unique jobs found from live search: ${uniqueJobIdsCount}<br>
+          `,
+        };
+        console.log({ mailOptions });
+        smtpTransport.sendMail(mailOptions);
+        console.log("Email sent");
+      }
       await saveJobs(combinedResults);
     } else {
       console.log("No jobs found to save.");
@@ -125,6 +140,7 @@ async function searchLinkedInJobs(
       { reqId: reqUUID },
       { $set: { jobProcessCompleted: true } }
     );
+
     return combinedResults;
   } catch (error) {
     console.error("Error in searchLinkedInJobs:", error);

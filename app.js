@@ -887,7 +887,7 @@ app.post("/search-jobs", async (req, res) => {
         { key: "job_function", label: "Job Functions" },
         { key: "industry", label: "Industry" },
         { key: "userEmail", label: "User Email" },
-        { key: "totalCount", label: "Total Jobs Found" },
+        { key: "totalCount", label: "Total Jobs Found from DB" },
       ];
 
       const htmlContent = fields
@@ -921,7 +921,6 @@ app.post("/search-jobs", async (req, res) => {
 
     // Usage
     const mailOptions = generateEmailContent(req.body);
-    console.log({ mailOptions });
     if (process.env.ENV === "production") smtpTransport.sendMail(mailOptions);
 
     console.log("total count ------>", totalCount);
