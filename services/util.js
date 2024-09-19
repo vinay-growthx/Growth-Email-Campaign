@@ -1173,19 +1173,6 @@ async function fetchAllJobs(
   reqUUID,
   userEmail
 ) {
-  console.log({
-    job_title,
-    role_function,
-    num_jobs,
-    job_listed_date,
-    job_listed_range,
-    location_hidden,
-    industry_hidden,
-    industry,
-    location,
-    job_function,
-    reqUUID,
-  });
   let offset = 0;
   const limit = num_jobs ? Math.min(500, num_jobs) : 500;
   let hasMore = true;
@@ -1260,7 +1247,7 @@ async function fetchAllJobs(
     const remainingJobs = num_jobs ? num_jobs - allJobs.length : limit;
     const currentLimit = Math.min(limit, remainingJobs);
     console.log("query ---->", query);
-    console.log("query =====>", JSON.stringify(query));
+    console.dir(query);
 
     const jobs = await jobsRepository.find(
       query,
@@ -1376,6 +1363,34 @@ async function uploadBulkData(projectId) {
   }
 }
 async function manuallyAddNewJobs(job_titles) {}
+
+function transformData(inputData) {
+  const item = inputData;
+  console.log("item =----->", item);
+  return {
+    title: item.title,
+    comapnyURL1: item.comapnyURL1,
+    comapnyURL2: item.comapnyURL2,
+    companyId: item.companyId,
+    companyUniversalName: item.companyUniversalName,
+    companyName: item.companyName,
+    salaryInsights: item.salaryInsights || "",
+    applicants: item.applicants || "",
+    formattedLocation: item.formattedLocation,
+    formattedEmploymentStatus: item.formattedEmploymentStatus,
+    formattedExperienceLevel: item.formattedExperienceLevel || "",
+    formattedIndustries: item.formattedIndustries,
+    jobDescription: item.jobDescription,
+    inferredBenefits: item.inferredBenefits || "",
+    jobFunctions: item.jobFunctions,
+    workplaceTypes: item.workplaceTypes,
+    company_data: item.company_data,
+    companyApplyUrl: item.companyApplyUrl,
+    jobPostingUrl: item.jobPostingUrl,
+    listedAt: item.listedAt,
+    job_id: item.jobPostingUrl.split("view/")[1].split("/?")[0],
+  };
+}
 module.exports = {
   convertData,
   findAllJobs,
@@ -1406,4 +1421,5 @@ module.exports = {
   uploadBulkData,
   isRoleFunctionEmptyOrFalsy,
   manuallyAddNewJobs,
+  transformData,
 };

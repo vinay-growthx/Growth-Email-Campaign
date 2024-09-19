@@ -246,6 +246,22 @@
         flex-direction: column;
         gap: 15px;
       }
+      input[type="datetime-local"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 1em;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--primary-light);
+        background-color: var(--card-background);
+        transition: var(--transition);
+        box-sizing: border-box;
+      }
+
+      input[type="datetime-local"]:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+      }
     </style>
   </head>
   <body>
@@ -308,7 +324,7 @@
               placeholder="Enter a number between 1 and 100,000"
             />
           </div>
-          <!-- <div class="form-group" style="animation-delay: 0.6s">
+          <div class="form-group" style="animation-delay: 0.6s">
             <label for="job_listed_date">Job Listed From:</label>
             <input
               type="datetime-local"
@@ -330,7 +346,7 @@
               <option value="week">Past week</option>
               <option value="month">Past month</option>
             </select>
-          </div> -->
+          </div>
           <div class="form-group" style="animation-delay: 0.3s">
             <label for="industry">Industries:</label>
             <select id="industry" name="industry" multiple>
@@ -358,167 +374,13 @@
       </div>
     </div>
     <script>
-            //      document.getElementById('logoutButton').addEventListener('click', function() {
-            //     window.location.href = '/logout'; // Update this URL if needed
-            // });
-            document.addEventListener("DOMContentLoaded", function () {
-        const jobFunctionSelect = document.getElementById("job_function");
-        const tagContainer = document.getElementById("tag-container");
-        const jobFunctionArr = <%- JSON.stringify(jobFunctionArr) %>;
-
-        function updateTags() {
-          tagContainer.innerHTML = ""; // Clear existing tags
-          const selectedOptions = Array.from(jobFunctionSelect.selectedOptions);
-          selectedOptions.forEach((option) => {
-            const tag = document.createElement("span");
-            tag.className = "tag";
-            tag.textContent = option.text;
-            tag.style =
-              "margin-right: 5px; padding: 5px; background-color: #3498db; color: white; border-radius: 5px; display: inline-block;";
-
-            const removeBtn = document.createElement("span");
-            removeBtn.textContent = " x";
-            removeBtn.style = "cursor: pointer; padding-left: 5px;";
-            removeBtn.onclick = function () {
-              option.selected = false;
-              updateTags();
-            };
-            tag.appendChild(removeBtn);
-
-            tagContainer.appendChild(tag);
-          });
-        }
-
-        jobFunctionSelect.addEventListener("change", updateTags);
-      });
-            document.addEventListener("DOMContentLoaded", function () {
-              const logoutButton = document.getElementById("logoutButton");
-
-              if (logoutButton) {
-                logoutButton.addEventListener("click", function () {
-                  console.log("Logout button clicked");
-                  window.location.href = "/logout"; // Update this URL if needed
-                });
-              } else {
-                console.log("Logout button not found");
-              }
-            });
-            document.addEventListener("DOMContentLoaded", function () {
-              const form = document.querySelector("form");
-              const submitButton = document.getElementById("submitButton");
-              const locationInput = document.getElementById("location");
-              const errorMessage = document.getElementById("error-message");
-              const jobTitleInput = document.getElementById("job_title");
-              const jobFunctionSelect = document.getElementById("role_function");
-              const industrySelect = document.getElementById("industry");
-              const jobListedDateInput = document.getElementById("job_listed_date");
-              const scrollButton = document.getElementById("scrollToBottomBtn");
-              const parallaxContainer = document.querySelector(".parallax-container");
-              const jobListedRangeSelect =
-                document.getElementById("job_listed_range");
-                const locationArr = <%- JSON.stringify(locationArr) %>;
-
-              function suggestOptions(input, optionsArr) {
-                const suggestions = optionsArr.filter((option) =>
-                  option.label.toLowerCase().startsWith(input.toLowerCase())
-                );
-                return suggestions.slice(0, 5); // Limit to 5 suggestions
-              }
-
-              function displaySuggestions(suggestions) {
-                const datalist = document.getElementById("location-suggestions");
-                datalist.innerHTML = "";
-                suggestions.forEach((suggestion) => {
-                  const option = document.createElement("option");
-                  option.value = suggestion.label;
-                  option.dataset.value = JSON.stringify(suggestion);
-                  datalist.appendChild(option);
-                });
-              }
-
-              function updateHiddenField(input, optionsArr) {
-                const matchedOption = optionsArr.find(
-                  (option) => option.label.toLowerCase() === input.value.toLowerCase()
-                );
-                if (matchedOption) {
-                  document.getElementById("location_hidden").value =
-                    matchedOption.value;
-                  errorMessage.style.display = "none";
-                } else {
-                  document.getElementById("location_hidden").value = "";
-                  errorMessage.textContent = `Please select a valid ${input.id} from the list.`;
-                  errorMessage.style.display = "block";
-                }
-              }
-              function handleInputChange(
-                input,
-                optionsArr,
-                suggestionsId,
-                hiddenFieldId
-              ) {
-                input.addEventListener("input", function () {
-                  const suggestions = suggestOptions(this.value, optionsArr);
-                  displaySuggestions(suggestions, suggestionsId);
-                  updateHiddenField(this, optionsArr, hiddenFieldId);
-                });
-
-                input.addEventListener("change", function () {
-                  updateHiddenField(this, optionsArr, hiddenFieldId);
-                });
-              }
-
-              handleInputChange(
-                locationInput,
-                locationArr,
-                "location-suggestions",
-                "location_hidden"
-              );
-
-              // Add event listeners for job listed date and range
-              jobListedDateInput.addEventListener("change", function () {
-                if (this.value) {
-                  jobListedRangeSelect.disabled = true;
-                } else {
-                  jobListedRangeSelect.disabled = false;
-                }
-              });
-
-              jobListedRangeSelect.addEventListener("change", function () {
-                if (this.value) {
-                  jobListedDateInput.disabled = true;
-                } else {
-                  jobListedDateInput.disabled = false;
-                }
-              });
-              form.addEventListener("submit", function (e) {
-                let isValid = true;
-                errorMessage.textContent = "";
-                updateHiddenField(locationInput, locationArr);
-
-                if (document.getElementById("location_hidden").value === "") {
-                  errorMessage.textContent +=
-                    "Please select a valid location from the list. ";
-                  isValid = false;
-                }
-
-                if (!isValid) {
-                  e.preventDefault();
-                  errorMessage.style.display = "block";
-                  return;
-                }
-
-                errorMessage.style.display = "none";
-                submitButton.disabled = true;
-                submitButton.textContent = "Searching...";
-                setTimeout(function () {
-                  submitButton.disabled = false;
-                  submitButton.textContent = "Search Jobs";
-                }, 20000);
-              });
-            });
-            document.addEventListener("DOMContentLoaded", function () {
+                  //      document.getElementById('logoutButton').addEventListener('click', function() {
+                  //     window.location.href = '/logout'; // Update this URL if needed
+                  // });
+                  document.addEventListener("DOMContentLoaded", function () {
               const jobFunctionSelect = document.getElementById("job_function");
               const tagContainer = document.getElementById("tag-container");
+              const jobFunctionArr = <%- JSON.stringify(jobFunctionArr) %>;
 
               function updateTags() {
                 tagContainer.innerHTML = ""; // Clear existing tags
@@ -530,7 +392,6 @@
                   tag.style =
                     "margin-right: 5px; padding: 5px; background-color: #3498db; color: white; border-radius: 5px; display: inline-block;";
 
-                  // Optional: Add a remove button on each tag
                   const removeBtn = document.createElement("span");
                   removeBtn.textContent = " x";
                   removeBtn.style = "cursor: pointer; padding-left: 5px;";
@@ -544,46 +405,225 @@
                 });
               }
 
-              jobFunctionSelect.addEventListener("change", updateTags); // Update tags on change
+              jobFunctionSelect.addEventListener("change", updateTags);
             });
-            document.addEventListener("DOMContentLoaded", function () {
-              const industrySelect = document.getElementById("industry");
-              const industryTagContainer = document.getElementById(
-                "industry-tag-container"
-              );
+                  document.addEventListener("DOMContentLoaded", function () {
+                    const logoutButton = document.getElementById("logoutButton");
 
-              function updateIndustryTags() {
-                industryTagContainer.innerHTML = ""; // Clear existing tags
-                const selectedOptions = Array.from(industrySelect.selectedOptions);
-                selectedOptions.forEach((option) => {
-                  const tag = document.createElement("span");
-                  tag.className = "tag";
-                  tag.textContent = option.text;
-                  tag.style =
-                    "margin-right: 5px; padding: 5px; background-color: #2980b9; color: white; border-radius: 5px; display: inline-block;";
+                    if (logoutButton) {
+                      logoutButton.addEventListener("click", function () {
+                        console.log("Logout button clicked");
+                        window.location.href = "/logout"; // Update this URL if needed
+                      });
+                    } else {
+                      console.log("Logout button not found");
+                    }
+                  });
+                  document.addEventListener("DOMContentLoaded", function () {
+                    const form = document.querySelector("form");
+                    const submitButton = document.getElementById("submitButton");
+                    const locationInput = document.getElementById("location");
+                    const errorMessage = document.getElementById("error-message");
+                    const jobTitleInput = document.getElementById("job_title");
+                    const jobFunctionSelect = document.getElementById("role_function");
+                    const industrySelect = document.getElementById("industry");
+                    const jobListedDateInput = document.getElementById("job_listed_date");
+                    const scrollButton = document.getElementById("scrollToBottomBtn");
+                    const parallaxContainer = document.querySelector(".parallax-container");
+                    const jobListedRangeSelect =
+                      document.getElementById("job_listed_range");
+                      const locationArr = <%- JSON.stringify(locationArr) %>;
 
-                  // Optional: Add a remove button on each tag
-                  const removeBtn = document.createElement("span");
-                  removeBtn.textContent = " x";
-                  removeBtn.style = "cursor: pointer; padding-left: 5px;";
-                  removeBtn.onclick = function () {
-                    option.selected = false;
-                    updateIndustryTags();
-                  };
-                  tag.appendChild(removeBtn);
+                    function suggestOptions(input, optionsArr) {
+                      const suggestions = optionsArr.filter((option) =>
+                        option.label.toLowerCase().startsWith(input.toLowerCase())
+                      );
+                      return suggestions.slice(0, 5); // Limit to 5 suggestions
+                    }
 
-                  industryTagContainer.appendChild(tag);
-                });
-              }
+                    function displaySuggestions(suggestions) {
+                      const datalist = document.getElementById("location-suggestions");
+                      datalist.innerHTML = "";
+                      suggestions.forEach((suggestion) => {
+                        const option = document.createElement("option");
+                        option.value = suggestion.label;
+                        option.dataset.value = JSON.stringify(suggestion);
+                        datalist.appendChild(option);
+                      });
+                    }
 
-              industrySelect.addEventListener("change", updateIndustryTags); // Update tags on change
-            });
-            document
-              .getElementById("dashboardButton")
-              .addEventListener("click", function () {
-                console.log("Dashboard button clicked");
-                window.location.href = "/dashboard";
-              });
+                    function updateHiddenField(input, optionsArr) {
+                      const matchedOption = optionsArr.find(
+                        (option) => option.label.toLowerCase() === input.value.toLowerCase()
+                      );
+                      if (matchedOption) {
+                        document.getElementById("location_hidden").value =
+                          matchedOption.value;
+                        errorMessage.style.display = "none";
+                      } else {
+                        document.getElementById("location_hidden").value = "";
+                        errorMessage.textContent = `Please select a valid ${input.id} from the list.`;
+                        errorMessage.style.display = "block";
+                      }
+                    }
+                    function handleInputChange(
+                      input,
+                      optionsArr,
+                      suggestionsId,
+                      hiddenFieldId
+                    ) {
+                      input.addEventListener("input", function () {
+                        const suggestions = suggestOptions(this.value, optionsArr);
+                        displaySuggestions(suggestions, suggestionsId);
+                        updateHiddenField(this, optionsArr, hiddenFieldId);
+                      });
+
+                      input.addEventListener("change", function () {
+                        updateHiddenField(this, optionsArr, hiddenFieldId);
+                      });
+                    }
+
+                    handleInputChange(
+                      locationInput,
+                      locationArr,
+                      "location-suggestions",
+                      "location_hidden"
+                    );
+
+                    // Add event listeners for job listed date and range
+                    jobListedDateInput.addEventListener("change", function () {
+                      if (this.value) {
+                        jobListedRangeSelect.disabled = true;
+                      } else {
+                        jobListedRangeSelect.disabled = false;
+                      }
+                    });
+
+                    jobListedRangeSelect.addEventListener("change", function () {
+                      if (this.value) {
+                        jobListedDateInput.disabled = true;
+                      } else {
+                        jobListedDateInput.disabled = false;
+                      }
+                    });
+                    form.addEventListener("submit", function (e) {
+                      let isValid = true;
+                      errorMessage.textContent = "";
+                      updateHiddenField(locationInput, locationArr);
+
+                      if (document.getElementById("location_hidden").value === "") {
+                        errorMessage.textContent +=
+                          "Please select a valid location from the list. ";
+                        isValid = false;
+                      }
+
+                      if (!isValid) {
+                        e.preventDefault();
+                        errorMessage.style.display = "block";
+                        return;
+                      }
+
+                      errorMessage.style.display = "none";
+                      submitButton.disabled = true;
+                      submitButton.textContent = "Searching...";
+                      setTimeout(function () {
+                        submitButton.disabled = false;
+                        submitButton.textContent = "Search Jobs";
+                      }, 20000);
+                    });
+                  });
+                  document.addEventListener("DOMContentLoaded", function () {
+                    const jobFunctionSelect = document.getElementById("job_function");
+                    const tagContainer = document.getElementById("tag-container");
+
+                    function updateTags() {
+                      tagContainer.innerHTML = ""; // Clear existing tags
+                      const selectedOptions = Array.from(jobFunctionSelect.selectedOptions);
+                      selectedOptions.forEach((option) => {
+                        const tag = document.createElement("span");
+                        tag.className = "tag";
+                        tag.textContent = option.text;
+                        tag.style =
+                          "margin-right: 5px; padding: 5px; background-color: #3498db; color: white; border-radius: 5px; display: inline-block;";
+
+                        // Optional: Add a remove button on each tag
+                        const removeBtn = document.createElement("span");
+                        removeBtn.textContent = " x";
+                        removeBtn.style = "cursor: pointer; padding-left: 5px;";
+                        removeBtn.onclick = function () {
+                          option.selected = false;
+                          updateTags();
+                        };
+                        tag.appendChild(removeBtn);
+
+                        tagContainer.appendChild(tag);
+                      });
+                    }
+
+                    jobFunctionSelect.addEventListener("change", updateTags); // Update tags on change
+                  });
+                  document.addEventListener("DOMContentLoaded", function () {
+                    const industrySelect = document.getElementById("industry");
+                    const industryTagContainer = document.getElementById(
+                      "industry-tag-container"
+                    );
+
+                    function updateIndustryTags() {
+                      industryTagContainer.innerHTML = ""; // Clear existing tags
+                      const selectedOptions = Array.from(industrySelect.selectedOptions);
+                      selectedOptions.forEach((option) => {
+                        const tag = document.createElement("span");
+                        tag.className = "tag";
+                        tag.textContent = option.text;
+                        tag.style =
+                          "margin-right: 5px; padding: 5px; background-color: #2980b9; color: white; border-radius: 5px; display: inline-block;";
+
+                        // Optional: Add a remove button on each tag
+                        const removeBtn = document.createElement("span");
+                        removeBtn.textContent = " x";
+                        removeBtn.style = "cursor: pointer; padding-left: 5px;";
+                        removeBtn.onclick = function () {
+                          option.selected = false;
+                          updateIndustryTags();
+                        };
+                        tag.appendChild(removeBtn);
+
+                        industryTagContainer.appendChild(tag);
+                      });
+                    }
+
+                    industrySelect.addEventListener("change", updateIndustryTags); // Update tags on change
+                  });
+                  document
+                    .getElementById("dashboardButton")
+                    .addEventListener("click", function () {
+                      console.log("Dashboard button clicked");
+                      window.location.href = "/dashboard";
+                    });
+                    document.addEventListener("DOMContentLoaded", function() {
+        const jobListedDateInput = document.getElementById("job_listed_date");
+        const jobListedRangeSelect = document.getElementById("job_listed_range");
+
+        // When the job listed date changes
+        jobListedDateInput.addEventListener("change", function() {
+          if (this.value) {
+            jobListedRangeSelect.value = ""; // Clear any selection
+            jobListedRangeSelect.disabled = true; // Disable the select
+          } else {
+            jobListedRangeSelect.disabled = false; // Enable the select
+          }
+        });
+
+
+        jobListedRangeSelect.addEventListener("change", function() {
+          if (this.value) {
+            jobListedDateInput.value = ""; // Clear any selection
+            jobListedDateInput.disabled = true; // Disable the input
+          } else {
+            jobListedDateInput.disabled = false; // Enable the input
+          }
+        });
+      });
     </script>
   </body>
 </html>

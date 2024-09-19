@@ -1,18 +1,27 @@
 const axios = require("axios");
 const LinkedinJobRepository = require("../repository/LinkedinJobRepository");
 const linkedinJobRepository = new LinkedinJobRepository();
+const RequestIdRepository = require("../repository/RequestIdRepository");
+const requestIdRepository = new RequestIdRepository();
+const { transformData } = require("../services/util");
 async function saveJobs(jobs) {
-  console.log("json jobs ===>", JSON.stringify(jobs));
   for (const job of jobs) {
     try {
-      const result = await linkedinJobRepository.create(job);
+      let convertedJob = transformData(job);
+      const result = await linkedinJobRepository.create(convertedJob);
       console.log("Job saved successfully:", result);
     } catch (error) {
       console.error("Error saving job:", error);
     }
   }
 }
-async function searchLinkedInJobs(query, maxPages, searchLocationId, sortBy) {
+async function searchLinkedInJobs(
+  query,
+  maxPages,
+  searchLocationId,
+  sortBy,
+  reqUUID
+) {
   console.log("query ---->", query);
 
   let keywords = [query];
@@ -41,8 +50,7 @@ async function searchLinkedInJobs(query, maxPages, searchLocationId, sortBy) {
 
   try {
     const combinedResults = [];
-
-    for (let page = 1; page <= maxPages; page++) {
+    for (let page = 1; page <= 1; page++) {
       console.log("page ====>", page);
       console.log("keywords", keywords);
       for (const keyword of keywords) {
@@ -66,18 +74,30 @@ async function searchLinkedInJobs(query, maxPages, searchLocationId, sortBy) {
             response.data.response &&
             Array.isArray(response.data.response.jobs)
           ) {
-            let i = 0;
             response.data.response.jobs.forEach((job) => {
+              // Extract jobId from jobPostingUrl
+              let jobId = null;
+              if (job.jobPostingUrl) {
+                const match = job.jobPostingUrl.match(/view\/(\d+)/);
+                if (match && match[1]) {
+                  jobId = match[1];
+                }
+              }
+
               if (
+                jobId &&
                 !combinedResults.some(
-                  (existingJob) => existingJob.jobId === job.jobId
+                  (existingJob) => existingJob.jobId === jobId
                 )
               ) {
-                console.log("i ======>", i);
-                i++;
-                combinedResults.push(job);
+                combinedResults.push({
+                  ...job,
+                  jobId: jobId,
+                });
               }
             });
+
+            console.log(`Added ${combinedResults.length} jobs so far.`);
           } else {
             console.log(
               "No jobs found or invalid response structure for keyword:",
@@ -89,13 +109,22 @@ async function searchLinkedInJobs(query, maxPages, searchLocationId, sortBy) {
         }
       }
     }
-
     if (combinedResults.length > 0) {
+      const allJobIds = combinedResults.map((job) => job.jobId);
+      console.log("all job ids =======>", allJobIds);
+      await requestIdRepository.updateOne(
+        { reqId: reqUUID },
+        { $addToSet: { jobIds: { $each: allJobIds } } },
+        { upsert: true }
+      );
       await saveJobs(combinedResults);
     } else {
       console.log("No jobs found to save.");
     }
-
+    await requestIdRepository.updateOne(
+      { reqId: reqUUID },
+      { $set: { jobProcessCompleted: true } }
+    );
     return combinedResults;
   } catch (error) {
     console.error("Error in searchLinkedInJobs:", error);
