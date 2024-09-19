@@ -124,7 +124,7 @@ async function searchLinkedInJobs(
       if (process.env.ENV == "production") {
         const mailOptions = {
           to: `vinay.prajapati@hirequotient.com,utkarsh@hirequotient.com`,
-          from: "EasySource <no-reply@hirequotient.com>",
+          from: "AI OutBound Tool <no-reply@hirequotient.com>",
           subject: `AI Outbound search Notification: Data from live search`,
           html: `Search performed on job title: ${query}<br>
           Total unique jobs found from live search: ${uniqueJobIdsCount}<br>
