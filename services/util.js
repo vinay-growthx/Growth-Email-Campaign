@@ -1204,6 +1204,21 @@ async function fetchAllJobs(
     query.jobFunctions = { $regex: jobRoleRegex };
   }
 
+  console.log({
+    job_title,
+    role_function,
+    num_jobs,
+    job_listed_date,
+    job_listed_range,
+    location_hidden,
+    industry_hidden,
+    industry,
+    location,
+    job_function,
+    reqUUID,
+    userEmail,
+  });
+
   // Add date range filter
   if (job_listed_range) {
     const startDate = new Date();
@@ -1227,13 +1242,12 @@ async function fetchAllJobs(
     }
 
     query.listedAt = {
-      $gte: endDate.toISOString().slice(0, 19), // Compare as string
-      $lte: startDate.toISOString().slice(0, 19), // Compare as string
+      $gte: endDate,
+      $lte: startDate,
     };
-  }
-  if (job_listed_date) {
+  } else if (job_listed_date) {
     query.listedAt = {
-      $gte: convertDateFormat(job_listed_date),
+      $gte: { $date: new Date(job_listed_date).toISOString() },
     };
   }
 
