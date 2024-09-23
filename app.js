@@ -1116,6 +1116,46 @@ app.get("/logout", (req, res) => {
     res.redirect("/login");
   });
 });
+async function enrichPersonaEmails(personas) {
+  const updatedData = [];
+
+  for (const item of personas) {
+    let newEmail;
+    if (!item.email || item.email === "email_not_unlocked@domain.com") {
+      newEmail = await getEmailByLinkedInUrl(item?.linkedin_url, item.id);
+      if (!newEmail) {
+        newEmail = await fetchEmailViaContactOut(item?.linkedin_url, item.id);
+      }
+      if (!newEmail) {
+        newEmail = await fetchWorkEmailFromRb2bapi(item?.linkedin_url, item.id);
+      }
+      if (newEmail || item.email !== "email_not_unlocked@domain.com") {
+        console.log("new email ====>", newEmail);
+        updatedData.push({ ...item, email: newEmail || item.email });
+      } else if (item.email) {
+        updatedData.push(item);
+      }
+    } else {
+      updatedData.push(item);
+    }
+  }
+
+  const personaValidData = updatedData.reduce((acc, item) => {
+    const newItem = { ...item };
+    if (!newItem.email) {
+      delete newItem.email;
+    }
+
+    const existingItem = acc.find((i) => i.email === newItem.email);
+    if (!existingItem) {
+      acc.push(newItem);
+    }
+
+    return acc;
+  }, []);
+
+  return personaValidData;
+}
 
 app.post("/enriched-data-process", authMiddleware, async (req, res) => {
   console.log("User email:", req.userEmail); // Access the email from the request
@@ -1123,9 +1163,10 @@ app.post("/enriched-data-process", authMiddleware, async (req, res) => {
     if (!req.session.isAuthenticated) {
       return res.redirect("/login");
     }
-    // console.log("req body", req.body);
+
     let selectedPeople = req.body.selectedPeople;
     const reqId = req.body.reqId;
+
     // If you need to ensure it's an array (for older Express versions)
     if (typeof selectedPeople === "string") {
       selectedPeople = selectedPeople.split(",").map((id) => id.trim());
@@ -1133,11 +1174,15 @@ app.post("/enriched-data-process", authMiddleware, async (req, res) => {
       // If it's neither a string nor an array, wrap it in an array
       selectedPeople = [selectedPeople];
     }
+
     const allPersonas = await apolloPersonaRepository.find(
       { id: { $in: selectedPeople } },
-      "id photo_url name title organization.name email"
+      "id photo_url name title organization.name email linkedin_url"
     );
-    res.render("enrichedData", { people: allPersonas, reqId });
+
+    const enrichedData = await enrichPersonaEmails(allPersonas);
+
+    res.render("sendEmail", { reqId, enrichedData });
   } catch (error) {
     console.log("Error creating persona:", error);
     res.status(500).json({ error: "Failed to create persona" });
