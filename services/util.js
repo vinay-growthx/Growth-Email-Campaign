@@ -1221,33 +1221,33 @@ async function fetchAllJobs(
 
   // Add date range filter
   if (job_listed_range) {
-    const startDate = new Date();
-    let endDate;
+    const currentDate = new Date();
+    let startDate;
 
     switch (job_listed_range) {
       case "24hours":
-        endDate = new Date(startDate.getTime() - 24 * 60 * 60 * 1000);
+        startDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
         break;
       case "48hours":
-        endDate = new Date(startDate.getTime() - 48 * 60 * 60 * 1000);
+        startDate = new Date(currentDate.getTime() - 48 * 60 * 60 * 1000);
         break;
       case "week":
-        endDate = new Date(startDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+        startDate = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
         break;
       case "month":
-        endDate = new Date(startDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+        startDate = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
         break;
       default:
-        throw new Error("Invalid job_listed_range");
+        console.log("Invalid job_listed_range");
     }
 
-    query.listedAt = {
-      $gte: endDate,
-      $lte: startDate,
+    query.$expr = {
+      $gte: [{ $toDate: "$listedAt" }, startDate],
     };
   } else if (job_listed_date) {
-    query.listedAt = {
-      $gte: { $date: new Date(job_listed_date).toISOString() },
+    const selectedDate = new Date(job_listed_date);
+    query.$expr = {
+      $gte: [{ $toDate: "$listedAt" }, selectedDate],
     };
   }
 
