@@ -1025,27 +1025,32 @@ app.post("/email-enrich-process", authMiddleware, async (req, res) => {
     res.status(500).json({ error: "Failed to process enriched data" });
   }
 });
-// app.get("/autopilot", authMiddleware, async (req, res) => {
-//   try {
-//     // Generate a dummy reqId
-//     const reqId = "dummy-req-id-" + Date.now();
+app.get("/autopilot", authMiddleware, async (req, res) => {
+  try {
+    // Generate a dummy reqId
+    const reqId = "dummy-req-id-" + Date.now();
 
-//     // Simulate a delay to mimic an asynchronous operation
-//     await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Simulate a delay to mimic an asynchronous operation
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-//     // Create a dummy data object
-//     const dummyData = {
-//       reqId,
-//       jobIds: ["dummy-job-1", "dummy-job-2", "dummy-job-3"],
-//       personaIds: ["dummy-persona-1", "dummy-persona-2", "dummy-persona-3"],
-//     };
+    // Create a dummy data object
+    const dummyData = {
+      reqId,
+      jobIds: ["dummy-job-1", "dummy-job-2", "dummy-job-3"],
+      personaIds: ["dummy-persona-1", "dummy-persona-2", "dummy-persona-3"],
+    };
 
-//     res.render("autopilot", { data: dummyData });
-//   } catch (error) {
-//     console.error("Error in autopilot process:", error);
-//     res.status(500).send("An error occurred. Please try again.");
-//   }
-// });
+    res.render("autopilot", {
+      data: dummyData,
+      jobFunctionArr,
+      industryArr,
+      locationArr,
+    });
+  } catch (error) {
+    console.error("Error in autopilot process:", error);
+    res.status(500).send("An error occurred. Please try again.");
+  }
+});
 // app.post("/autopilot", async (req, res) => {
 //   try {
 //     const { scheduleTime, jobTitle, searchLimit, designations } = req.body;

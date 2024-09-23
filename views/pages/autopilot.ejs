@@ -201,21 +201,98 @@
   </head>
   <body>
     <div class="container">
-      <h1>Autopilot Job Search and Persona Creation</h1>
+      <h1>Autopilot entire process</h1>
       <form id="autopilotForm">
         <div class="input-group">
-          <label for="scheduleTime">Schedule Time:</label>
-          <input
-            type="datetime-local"
-            id="scheduleTime"
-            name="scheduleTime"
-            required
-          />
-        </div>
-        <div class="input-group">
-          <label for="jobTitle">Job Title Search:</label>
-          <input type="text" id="jobTitle" name="jobTitle" required />
-        </div>
+          <div class="input-group">
+            <label for="scheduleTime">Schedule Time:</label>
+            <input
+              type="datetime-local"
+              id="scheduleTime"
+              name="scheduleTime"
+              required
+            />
+          </div>
+          <div class="input-group">
+            <label for="jobTitle">Job Title Search:</label>
+            <input type="text" id="jobTitle" name="jobTitle" required />
+          </div>
+          <div class="or-separator">OR</div>
+          <div class="input-group">
+            <label for="job_function">Job Function:</label>
+            <select id="job_function" name="job_function" multiple>
+              <option value="" selected>Select a job function</option>
+              <% jobFunctionArr.forEach(function(jobFunction) { %>
+              <option value="<%= jobFunction.value %>">
+                <%= jobFunction.label %>
+              </option>
+              <% }); %>
+            </select>
+            <div id="tag-container" class="tag-container"></div>
+          </div>
+          <div class="input-group">
+            <label for="location">Location:</label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              placeholder="Type a location"
+              list="location-suggestions"
+              data-value=""
+              required
+            />
+            <datalist id="location-suggestions"></datalist>
+            <input
+              type="hidden"
+              id="location_hidden"
+              name="location_hidden"
+              value=""
+            />
+          </div>
+          <div class="input-group">
+            <label for="num_jobs">Maximum number of Jobs:</label>
+            <input
+              type="number"
+              id="num_jobs"
+              name="num_jobs"
+              min="1"
+              max="100000"
+              value="10000"
+              required
+            />
+          </div>
+          <div class="input-group">
+            <label for="job_listed_date">Job Listed From:</label>
+            <input
+              type="datetime-local"
+              id="job_listed_date"
+              name="job_listed_date"
+              placeholder="Select date and time"
+              step="60"
+              max="<%= new Date().toISOString().slice(0, 16) %>"
+            />
+          </div>
+          <div class="or-separator">OR</div>
+          <div class="input-group">
+            <label for="job_listed_range">Job Listed Within:</label>
+            <select id="job_listed_range" name="job_listed_range">
+              <option value="" selected>Select a time range</option>
+              <option value="24hours">Past 24 hours</option>
+              <option value="48hours">Past 48 hours</option>
+              <option value="week">Past week</option>
+              <option value="month">Past month</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="industry">Industries:</label>
+            <select id="industry" name="industry" multiple>
+              <option value="" selected>Select an industry</option>
+              <% industryArr.forEach(function(industry) { %>
+              <option value="<%= industry %>"><%= industry %></option>
+              <% }); %>
+            </select>
+            <div id="industry-tag-container" class="tag-container"></div>
+          </div>
         <div class="input-group">
           <label for="searchLimit">Search Limit:</label>
           <input
@@ -357,6 +434,96 @@
       function updateProgress(percentage) {
         progressBar.style.width = `${percentage}%`;
       }
-    </script>
+  
+  
+  
+      document.addEventListener("DOMContentLoaded", function () {
+        const jobFunctionSelect = document.getElementById("job_function");
+        const tagContainer = document.getElementById("tag-container");
+
+        function updateTags() {
+          tagContainer.innerHTML = "";
+          const selectedOptions = Array.from(jobFunctionSelect.selectedOptions);
+          selectedOptions.forEach((option) => {
+            const tag = document.createElement("span");
+            tag.classList.add("tag");
+            tag.textContent = option.text;
+            const removeBtn = document.createElement("span");
+            removeBtn.textContent = " ×";
+            removeBtn.classList.add("remove");
+            removeBtn.onclick = function () {
+              option.selected = false;
+              updateTags();
+            };
+            tag.appendChild(removeBtn);
+            tagContainer.appendChild(tag);
+          });
+        }
+
+        jobFunctionSelect.addEventListener("change", updateTags);
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const industrySelect = document.getElementById("industry");
+        const industryTagContainer = document.getElementById("industry-tag-container");
+
+        function updateIndustryTags() {
+          industryTagContainer.innerHTML = "";
+          const selectedOptions = Array.from(industrySelect.selectedOptions);
+          selectedOptions.forEach((option) => {
+            const tag = document.createElement("span");
+            tag.classList.add("tag");
+            tag.textContent = option.text;
+            const removeBtn = document.createElement("span");
+            removeBtn.textContent = " ×";
+            removeBtn.classList.add("remove");
+            removeBtn.onclick = function () {
+              option.selected = false;
+              updateIndustryTags();
+            };
+            tag.appendChild(removeBtn);
+            industryTagContainer.appendChild(tag);
+          });
+        }
+
+        industrySelect.addEventListener("change", updateIndustryTags);
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const personaDesignationsInput = document.getElementById("personaDesignations");
+        const designationTagsContainer = document.getElementById("designationTags");
+
+        let designations = [];
+
+        personaDesignationsInput.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === ",") {
+            e.preventDefault();
+            addDesignation(this.value.trim());
+            this.value = "";
+          }
+        });
+
+        function addDesignation(designation) {
+          if (designation && !designations.includes(designation)) {
+            designations.push(designation);
+            renderDesignationTags();
+          }
+        }
+
+        function removeDesignation(designation) {
+          designations = designations.filter((d) => d !== designation);
+          renderDesignationTags();
+        }
+
+        function renderDesignationTags() {
+          designationTagsContainer.innerHTML = "";
+          designations.forEach((designation) => {
+            const tag = document.createElement("span");
+            tag.classList.add("tag");
+            tag.innerHTML = `${designation} <span class="remove" onclick="removeDesignation('${designation}')">&times;</span>`;
+            designationTagsContainer.appendChild(tag);
+          });
+        }
+      });</script>
   </body>
 </html>
