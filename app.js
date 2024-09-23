@@ -313,12 +313,17 @@ app.get("/persona-reachout/:reqId", authMiddleware, async (req, res) => {
   }
 });
 app.get("/send-email", authMiddleware, (req, res) => {
-  console.log("User email:", req.userEmail); // Access the email from the request
+  console.log("User email:", req.userEmail);
   console.log("req query data ====>", req.query);
 
   const enrichedData = JSON.parse(req.query.enrichedId);
-  console.log("enriched data --->", enrichedData);
-  res.render("sendEmail", { enrichedData });
+  // Filter out entries with undefined emails
+  const filteredData = enrichedData.filter(
+    (item) => item.email !== undefined && item.email !== "undefined"
+  );
+
+  console.log("filtered enriched data --->", filteredData);
+  res.render("sendEmail", { enrichedData: filteredData });
 });
 function findJobPostByEmployerName(arr, employerName) {
   console.log("arr --->", arr);

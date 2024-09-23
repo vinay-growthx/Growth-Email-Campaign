@@ -335,7 +335,7 @@
     <script>
                                      document.addEventListener('DOMContentLoaded', (event) => {
                                                 // Retrieve the emails from the server-side rendered data
-                                                const emails = <%- JSON.stringify(enrichedData) %>.filter(email => email.email !== 'undefined');
+                                                const emails = <%- JSON.stringify(enrichedData) %>.filter(email => email.email !== 'undefined' && email.email !== undefined);
                                                 const reqId = document.getElementById('reqIdInput').value;
 
                                                 const emailsContainer = document.getElementById('emailsContainer');
