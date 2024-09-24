@@ -197,6 +197,29 @@
           font-size: 1em;
         }
       }
+      .or-separator {
+  text-align: center;
+  margin: 20px 0;
+  position: relative;
+}
+
+.or-separator::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 45%;
+  border-top: 1px solid #ccc;
+}
+
+.or-separator::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 45%;
+  border-top: 1px solid #ccc;
+}
     </style>
   </head>
   <body>
@@ -324,206 +347,157 @@
         <span class="progress" id="progressBar"></span>
       </div>
     </div>
-
     <script>
-      const form = document.getElementById("autopilotForm");
-      const startButton = document.getElementById("startAutopilot");
-      const statusDiv = document.getElementById("status");
-      const progressBar = document.getElementById("progressBar");
-      const personaDesignationsInput = document.getElementById(
-        "personaDesignations"
-      );
-      const designationTagsContainer =
-        document.getElementById("designationTags");
-
-      let designations = [];
-
-      personaDesignationsInput.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" || e.key === ",") {
-          e.preventDefault();
-          addDesignation(this.value.trim());
-          this.value = "";
-        }
-      });
-
-      function addDesignation(designation) {
-        if (designation && !designations.includes(designation)) {
-          designations.push(designation);
-          renderDesignationTags();
-        }
-      }
-
-      function removeDesignation(designation) {
-        designations = designations.filter((d) => d !== designation);
-        renderDesignationTags();
-      }
-
-      function renderDesignationTags() {
-        designationTagsContainer.innerHTML = "";
-        designations.forEach((designation) => {
-          const tag = document.createElement("span");
-          tag.classList.add("designation-tag");
-          tag.innerHTML = `
-                    ${designation}
-                    <span class="remove" onclick="removeDesignation('${designation}')">&times;</span>
-                `;
-          designationTagsContainer.appendChild(tag);
-        });
-      }
-
-      form.addEventListener("submit", async function (e) {
-        e.preventDefault();
-        startButton.disabled = true;
-        updateStatus("Starting autopilot process...");
-        updateProgress(10);
-
-        const formData = new FormData(form);
-        formData.append("designations", JSON.stringify(designations));
-
-        try {
-          // Step 1: Initiate job search
-          const searchResponse = await fetch("/api/autopilot-search", {
-            method: "POST",
-            body: formData,
+      document.addEventListener('DOMContentLoaded', function() {
+          const form = document.getElementById('autopilotForm');
+          const startButton = document.getElementById('startAutopilot');
+          const statusDiv = document.getElementById('status');
+          const progressBar = document.getElementById('progressBar');
+          const personaDesignationsInput = document.getElementById('personaDesignations');
+          const designationTagsContainer = document.getElementById('designationTags');
+      
+          let designations = [];
+      
+          personaDesignationsInput.addEventListener('keydown', function(e) {
+              if (e.key === 'Enter' || e.key === ',') {
+                  e.preventDefault();
+                  addDesignation(this.value.trim());
+                  this.value = '';
+              }
           });
-          const searchResult = await searchResponse.json();
-          updateStatus("Job search completed. Creating personas...");
-          updateProgress(40);
-
-          // Step 2: Create personas
-          const personaResponse = await fetch("/api/create-personas", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              jobIds: searchResult.jobIds,
-              designations: designations,
-            }),
-          });
-          const personaResult = await personaResponse.json();
-          updateStatus("Personas created. Preparing emails...");
-          updateProgress(70);
-
-          // Step 3: Prepare emails
-          const emailResponse = await fetch("/api/prepare-emails", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ personaIds: personaResult.personaIds }),
-          });
-          const emailResult = await emailResponse.json();
-          updateStatus("Emails prepared. Process completed!");
-          updateProgress(100);
-
-          // Redirect to results page or display completion message
-          alert("Autopilot process completed successfully!");
-        } catch (error) {
-          console.error("Error during autopilot process:", error);
-          updateStatus("An error occurred. Please try again.");
-        } finally {
-          startButton.disabled = false;
-        }
-      });
-
-      function updateStatus(message) {
-        statusDiv.textContent = message;
-      }
-
-      function updateProgress(percentage) {
-        progressBar.style.width = `${percentage}%`;
-      }
-  
-  
-  
-      document.addEventListener("DOMContentLoaded", function () {
-        const jobFunctionSelect = document.getElementById("job_function");
-        const tagContainer = document.getElementById("tag-container");
-
-        function updateTags() {
-          tagContainer.innerHTML = "";
-          const selectedOptions = Array.from(jobFunctionSelect.selectedOptions);
-          selectedOptions.forEach((option) => {
-            const tag = document.createElement("span");
-            tag.classList.add("tag");
-            tag.textContent = option.text;
-            const removeBtn = document.createElement("span");
-            removeBtn.textContent = " ×";
-            removeBtn.classList.add("remove");
-            removeBtn.onclick = function () {
-              option.selected = false;
-              updateTags();
-            };
-            tag.appendChild(removeBtn);
-            tagContainer.appendChild(tag);
-          });
-        }
-
-        jobFunctionSelect.addEventListener("change", updateTags);
-      });
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const industrySelect = document.getElementById("industry");
-        const industryTagContainer = document.getElementById("industry-tag-container");
-
-        function updateIndustryTags() {
-          industryTagContainer.innerHTML = "";
-          const selectedOptions = Array.from(industrySelect.selectedOptions);
-          selectedOptions.forEach((option) => {
-            const tag = document.createElement("span");
-            tag.classList.add("tag");
-            tag.textContent = option.text;
-            const removeBtn = document.createElement("span");
-            removeBtn.textContent = " ×";
-            removeBtn.classList.add("remove");
-            removeBtn.onclick = function () {
-              option.selected = false;
-              updateIndustryTags();
-            };
-            tag.appendChild(removeBtn);
-            industryTagContainer.appendChild(tag);
-          });
-        }
-
-        industrySelect.addEventListener("change", updateIndustryTags);
-      });
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const personaDesignationsInput = document.getElementById("personaDesignations");
-        const designationTagsContainer = document.getElementById("designationTags");
-
-        let designations = [];
-
-        personaDesignationsInput.addEventListener("keydown", function (e) {
-          if (e.key === "Enter" || e.key === ",") {
-            e.preventDefault();
-            addDesignation(this.value.trim());
-            this.value = "";
+      
+          function addDesignation(designation) {
+              if (designation && !designations.includes(designation)) {
+                  designations.push(designation);
+                  renderDesignationTags();
+              }
           }
-        });
-
-        function addDesignation(designation) {
-          if (designation && !designations.includes(designation)) {
-            designations.push(designation);
-            renderDesignationTags();
+      
+          function removeDesignation(designation) {
+              designations = designations.filter(d => d !== designation);
+              renderDesignationTags();
           }
-        }
-
-        function removeDesignation(designation) {
-          designations = designations.filter((d) => d !== designation);
-          renderDesignationTags();
-        }
-
-        function renderDesignationTags() {
-          designationTagsContainer.innerHTML = "";
-          designations.forEach((designation) => {
-            const tag = document.createElement("span");
-            tag.classList.add("tag");
-            tag.innerHTML = `${designation} <span class="remove" onclick="removeDesignation('${designation}')">&times;</span>`;
-            designationTagsContainer.appendChild(tag);
+      
+          function renderDesignationTags() {
+              designationTagsContainer.innerHTML = '';
+              designations.forEach(designation => {
+                  const tag = document.createElement('span');
+                  tag.classList.add('designation-tag');
+                  tag.innerHTML = `
+                      ${designation}
+                      <span class="remove" onclick="removeDesignation('${designation}')">&times;</span>
+                  `;
+                  designationTagsContainer.appendChild(tag);
+              });
+          }
+      
+          form.addEventListener('submit', async function(e) {
+              e.preventDefault();
+              startButton.disabled = true;
+              updateStatus('Scheduling autopilot process...');
+              updateProgress(10);
+      
+              const formData = new FormData(form);
+              formData.append('personaDesignations', designations.join(','));
+      
+              try {
+                  const response = await fetch('/autopilot-search', {
+                      method: 'POST',
+                      body: formData
+                  });
+                  const result = await response.json();
+      
+                  if (result.success) {
+                      updateStatus(`Autopilot process scheduled successfully. Request ID: ${result.reqId}`);
+                      updateProgress(100);
+                      startPolling(result.reqId);
+                  } else {
+                      throw new Error(result.error || 'Unknown error occurred');
+                  }
+              } catch (error) {
+                  console.error('Error during autopilot process:', error);
+                  updateStatus(`An error occurred: ${error.message}`);
+                  startButton.disabled = false;
+              }
           });
-        }
-      });</script>
+      
+          function updateStatus(message) {
+              statusDiv.textContent = message;
+          }
+      
+          function updateProgress(percentage) {
+              progressBar.style.width = `${percentage}%`;
+          }
+      
+          function startPolling(reqId) {
+              let pollCount = 0;
+              const maxPolls = 60; // Poll for a maximum of 5 minutes (60 * 5 seconds)
+              const pollInterval = 5000; // Poll every 5 seconds
+      
+              const poll = async () => {
+                  try {
+                      const response = await fetch(`/api/check-status/${reqId}`);
+                      const result = await response.json();
+      
+                      if (result.completed) {
+                          updateStatus('Autopilot process completed successfully!');
+                          updateProgress(100);
+                          // Provide links to view results
+                          statusDiv.innerHTML += `<br><a href="/get-jobs/${reqId}">View Jobs</a> | <a href="/persona-reachout/${reqId}">View Personas</a>`;
+                      } else {
+                          updateStatus(`In progress... ${result.personaCount} personas created so far.`);
+                          updateProgress(result.progress);
+                          
+                          if (pollCount < maxPolls) {
+                              pollCount++;
+                              setTimeout(poll, pollInterval);
+                          } else {
+                              updateStatus('Polling timed out. The process may still be running in the background.');
+                          }
+                      }
+                  } catch (error) {
+                      console.error('Error checking status:', error);
+                      updateStatus('Error checking status. The process may still be running.');
+                  }
+              };
+      
+              poll();
+          }
+      
+          // Initialize multi-select dropdowns
+          const jobFunctionSelect = document.getElementById('job_function');
+          const industrySelect = document.getElementById('industry');
+      
+          if (jobFunctionSelect) initializeMultiSelect(jobFunctionSelect);
+          if (industrySelect) initializeMultiSelect(industrySelect);
+      
+          function initializeMultiSelect(selectElement) {
+              const tagContainer = document.createElement('div');
+              tagContainer.className = 'tag-container';
+              selectElement.parentNode.insertBefore(tagContainer, selectElement.nextSibling);
+      
+              selectElement.addEventListener('change', updateTags);
+      
+              function updateTags() {
+                  tagContainer.innerHTML = '';
+                  const selectedOptions = Array.from(selectElement.selectedOptions);
+                  selectedOptions.forEach(option => {
+                      const tag = document.createElement('span');
+                      tag.classList.add('tag');
+                      tag.textContent = option.text;
+                      const removeBtn = document.createElement('span');
+                      removeBtn.textContent = ' ×';
+                      removeBtn.classList.add('remove');
+                      removeBtn.onclick = function() {
+                          option.selected = false;
+                          updateTags();
+                      };
+                      tag.appendChild(removeBtn);
+                      tagContainer.appendChild(tag);
+                  });
+              }
+          }
+      });
+      </script>
   </body>
 </html>
