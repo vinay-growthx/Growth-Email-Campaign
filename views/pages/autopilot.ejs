@@ -197,7 +197,7 @@
           font-size: 1em;
         }
       }
-      .or-separator {
+.or-separator {
   text-align: center;
   margin: 20px 0;
   position: relative;
@@ -334,6 +334,35 @@
       
       .checkbox-group span {
         font-size: 1.1em;
+      }
+       .industry-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .industry-tag {
+        background-color: var(--primary-light);
+        color: var(--primary-dark);
+        padding: 8px 15px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        font-weight: 500;
+        transition: var(--transition);
+      }
+
+      .industry-tag:hover {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      .industry-tag .remove {
+        margin-left: 8px;
+        cursor: pointer;
+        font-weight: bold;
       }
     </style>
   </head>
@@ -499,8 +528,53 @@
           const designationTagsContainer = document.getElementById('designationTags');
       
           let designations = [];
-      
-          personaDesignationsInput.addEventListener('keydown', function(e) {
+          const industryInput = document.getElementById('industry');
+        const industryTagsContainer = document.getElementById('industryTags');
+        const jobFunctionInput = document.getElementById('job_function');
+        const jobFunctionTagsContainer = document.getElementById('jobFunctionTags');
+
+        let jobFunctions = [];
+
+        jobFunctionInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            addTag(this.value.trim(), jobFunctions, jobFunctionTagsContainer);
+            this.value = '';
+          }
+        });
+
+        function addTag(value, array, container) {
+          if (value && !array.includes(value)) {
+            array.push(value);
+            renderTags(array, container);
+          }
+        }
+
+        function removeTag(value, array, container) {
+          array = array.filter(item => item !== value);
+          renderTags(array, container);
+        }
+
+        function renderTags(array, container) {
+          container.innerHTML = '';
+          array.forEach(item => {
+            const tag = document.createElement('span');
+            tag.classList.add('designation-tag');
+            tag.innerHTML = `
+              ${item}
+              <span class="remove" data-value="${item}">&times;</span>
+            `;
+            container.appendChild(tag);
+          });
+
+          const removeButtons = container.querySelectorAll('.remove');
+          removeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+              const value = this.dataset.value;
+              removeTag(value, array, container);
+            });
+          });
+        }   personaDesignationsInput.addEventListener('keydown', function(e) {
               if (e.key === 'Enter' || e.key === ',') {
                   e.preventDefault();
                   addDesignation(this.value.trim());
@@ -516,23 +590,32 @@
           }
       
           function removeDesignation(designation) {
-              designations = designations.filter(d => d !== designation);
-              renderDesignationTags();
-          }
-      
-          function renderDesignationTags() {
-              designationTagsContainer.innerHTML = '';
-              designations.forEach(designation => {
-                  const tag = document.createElement('span');
-                  tag.classList.add('designation-tag');
-                  tag.innerHTML = `
-                      ${designation}
-                      <span class="remove" onclick="removeDesignation('${designation}')">&times;</span>
-                  `;
-                  designationTagsContainer.appendChild(tag);
-              });
-          }
-      
+    designations = designations.filter(d => d !== designation);
+    renderDesignationTags();
+}
+
+function renderDesignationTags() {
+    designationTagsContainer.innerHTML = '';
+    designations.forEach(designation => {
+        const tag = document.createElement('span');
+        tag.classList.add('designation-tag');
+        tag.innerHTML = `
+            ${designation}
+            <span class="remove" data-designation="${designation}">&times;</span>
+        `;
+        designationTagsContainer.appendChild(tag);
+    });
+
+    // Add event listener to remove buttons
+    const removeButtons = designationTagsContainer.querySelectorAll('.remove');
+    removeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const designation = this.dataset.designation;
+            removeDesignation(designation);
+        });
+    });
+}
+
           form.addEventListener('submit', async function(e) {
               e.preventDefault();
               startButton.disabled = true;
