@@ -11,7 +11,7 @@
     "HQ Sourcing",
     "Backend"
   ],
-  "author": "Pratik Kedia <pratikkedia44@gmail.com>",
+  "author": "Vinay Prajapati <vinay91098@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "@azure/openai": "^1.0.0-beta.10",
