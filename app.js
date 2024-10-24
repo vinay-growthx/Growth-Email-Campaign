@@ -1034,21 +1034,21 @@ app.post("/autopilot-search", async (req, res) => {
 
     console.log("total count ------>", totalCount);
     console.log("num jobs -->", num_jobs, "total count -->", totalCount);
-    if (num_jobs > 500 && totalCount < 500) {
-      await requestIdRepository.updateOne(
-        { reqId: reqUUID },
-        { $set: { jobProcessCompleted: false } }
-      );
-      let totalPages = Math.min(Math.ceil(num_jobs / 10), 40);
+    // if (num_jobs > 500 && totalCount < 500) {
+    //   await requestIdRepository.updateOne(
+    //     { reqId: reqUUID },
+    //     { $set: { jobProcessCompleted: false } }
+    //   );
+    //   let totalPages = Math.min(Math.ceil(num_jobs / 10), 40);
 
-      searchLinkedInJobs(
-        job_title,
-        totalPages,
-        location_hidden,
-        "mostRecent",
-        reqUUID
-      );
-    }
+    //   searchLinkedInJobs(
+    //     job_title,
+    //     totalPages,
+    //     location_hidden,
+    //     "mostRecent",
+    //     reqUUID
+    //   );
+    // }
 
     console.log("req body ----->", req.body);
     let seniorityLevel = req?.body?.seniorityLevel;
