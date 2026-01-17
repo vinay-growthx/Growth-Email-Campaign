@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const { ObjectId } = require("mongodb");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const admin = require("firebase-admin");
+// const admin = require("firebase-admin");
 const port = process.env.PORT || 4000;
 const { v4: uuidv4 } = require("uuid");
 const session = require("express-session");
@@ -24,7 +24,7 @@ const app = express();
 const { smtpTransport } = require("./services/ses");
 const { searchLinkedInJobs } = require("./services/searchLiJob");
 const { searchCompanyApollo } = require("./services/ApolloAPI/orgSearch");
-const { excludeEmail } = require("./excludeEmail");
+// const { excludeEmail } = require("./excludeEmail");
 const {
   saveJobData,
   findAllJobs,
@@ -85,6 +85,9 @@ app.set("view engine", "ejs");
 // Optional: Specify the directory for EJS templates, default is /views
 app.set("views", "./views/pages");
 
+// Serve static files from the public directory
+app.use(express.static("public"));
+
 mongoose.set("strictQuery", false);
 const database = process.env.DATABASE;
 
@@ -137,7 +140,7 @@ app.use((req, res, next) => {
   if (process.env.ENV === "production") {
     const transaction = Sentry.startTransaction({
       op: "Backend",
-      name: "HireQuotient BE",
+      name: "Growthx BE",
     });
     res.on("finish", () => {
       transaction.finish();
@@ -217,7 +220,7 @@ app.get("/get-jobs/:reqId", authMiddleware, async (req, res) => {
   try {
     const { jobData, totalCount } = await findAllJobs(reqId, page, limit);
     const totalPages = Math.ceil(totalCount / limit);
-    console.log(`Total Jobs: ${totalCount}`);
+    console.log(`Total Email Fetched: ${totalCount}`);
     console.log(`Total Pages: ${totalPages}`);
     console.log(`Current Page: ${page}`);
     // console.log("job data ===>", jobData);
@@ -419,9 +422,9 @@ app.post("/send-email", async (req, res) => {
           blockedEmails
             .map((e) => e.toLowerCase())
             .includes(email.email.toLowerCase()) ||
-          excludeEmail
-            .map((e) => e.toLowerCase())
-            .includes(email.email.toLowerCase()) ||
+          // excludeEmail
+          //   .map((e) => e.toLowerCase())
+          //   .includes(email.email.toLowerCase()) ||
           emailArray
             .map((e) => e.toLowerCase())
             .includes(email.email.toLowerCase())
@@ -461,8 +464,8 @@ app.post("/send-email", async (req, res) => {
 
           const mailOptions = {
             to: email.email,
-            // to: "vinay.prajapati@hirequotient.com",
-            bcc: "vinay.prajapati@hirequotient.com",
+            // to: "vinay.p@growthx.com",
+            bcc: "vinay.p@growthx.com",
             from: req.body.fromEmail,
             subject: removeDoubleQuotes(replacedSubject),
             html: body
@@ -520,7 +523,7 @@ function convertToStringArray(commaString) {
     .filter((item) => item !== "");
 }
 
-app.post("/sync-with-easygrowth", async (req, res) => {
+app.post("/sync-with-growthx", async (req, res) => {
   try {
     // Create JD Project
     const { people, reqId } = req.body;
@@ -529,7 +532,7 @@ app.post("/sync-with-easygrowth", async (req, res) => {
         reqId: reqId,
       },
       {
-        $set: { syncWithEasyGrowth: true },
+        $set: { syncWithGrowthx: true },
       }
     );
     console.log("req id data update ---->", reqIdDataUpdate);
@@ -539,7 +542,7 @@ app.post("/sync-with-easygrowth", async (req, res) => {
   } catch (error) {
     console.log("Error in sync process:", error);
 
-    res.status(500).json({ error: "Failed to sync with EasyGrowth" });
+    res.status(500).json({ error: "Failed to sync with Growthx" });
   }
 });
 app.post("/create-persona", async (req, res) => {
@@ -677,11 +680,11 @@ app.post("/create-persona", async (req, res) => {
     if (notifyCheck.notify) {
       const mailOptions = {
         to: notifyCheck.email,
-        from: "EasySource <no-reply@hirequotient.com>",
-        subject: "EasyGrowth Notification: All Personas fetched Successfully!",
+        from: "Growthx growth tool <no-reply@growthx.com>",
+        subject: "Growthx growth tool Notification: All Personas fetched Successfully!",
         html: `All personas for your job title search "${notifyCheck?.convertJobObject?.title}" have been successfully fetched. A total of ${notifyCheck?.personaIds?.length} personas were found. <br><br> 
-        You can view the personas by following this link: <a href="https://advanced-outbound-ai.hirequotient.co/persona-reachout/${reqUUID}">View Personas</a>. <br><br>
-        If you want to check jobs, you can follow this link: <a href="https://advanced-outbound-ai.hirequotient.co/get-jobs/${reqUUID}">View Jobs</a>.`,
+        You can view the personas by following this link: <a href="https://growth-tool.growthx.com/persona-reachout/${reqUUID}">View Personas</a>. <br><br>
+        If you want to check jobs, you can follow this link: <a href="https://growth-tool.growthx.com/get-jobs/${reqUUID}">View Jobs</a>.`,
       };
       console.log({ mailOptions });
       smtpTransport.sendMail(mailOptions);
@@ -691,13 +694,13 @@ app.post("/create-persona", async (req, res) => {
     const reqIdData = await requestIdRepository.findOne({
       reqId: reqUUID,
     });
-    if (reqIdData?.syncWithEasyGrowth) {
+    if (reqIdData?.syncWithGrowthx) {
       console.log("req id data --->", reqIdData);
       const projectData = await createJDProject(
         858,
         `Job Title:   ${
           reqIdData?.convertJobObject?.title || ""
-        } Automated Project Created by AI Outbound Tool`
+        } Automated Project Created by Growthx Tool`
       ); // You might want to generate this UUID dynamically
       const csvWriter = csv({
         path: "people_data.csv",
@@ -722,21 +725,21 @@ app.post("/create-persona", async (req, res) => {
       console.log("project data =-==>", projectData.data._id);
       const mailOptions = {
         to: req.userEmail,
-        // to: "vinay.prajapati@hirequotient.com",
-        bcc: "vinay.prajapati@hirequotient.com,utkarsh@hirequotient.com",
-        from: "EasySource <no-reply@hirequotient.com>",
-        subject: "Your new EasyGrowth project for job openings is live.",
-        html: `Click here to view project: <a href="https://easygrowth.hirequotient.com/projects/${projectData.data._id}">View Project</a>
-        Live AI outbound tool: <br>
-        Persona link: <a href="https://advanced-outbound-ai.hirequotient.co/persona-reachout/${reqUUID}">View Personas</a>.<br>
-        Job link: <a href="https://advanced-outbound-ai.hirequotient.co/get-jobs/${reqUUID}">View Jobs</a><br>
+        // to: "vinay.p@growthx.com",
+        bcc: "vinay.p@growthx.com",
+        from: "Growthx Newsletter <no-reply@growthx.com>",
+        subject: "Your new Growthx Newsletter campaign is live.",
+        html: `Click here to view project: <a href="https://growthx.growthx.com/projects/${projectData.data._id}">View Project</a>
+        Live Newsletter management tool: <br>
+        Subscriber link: <a href="https://growth-tool.growthx.com/persona-reachout/${reqUUID}">View Subscribers</a>.<br>
+        Email list link: <a href="https://growth-tool.growthx.com/get-jobs/${reqUUID}">View Email List</a><br>
         Please let us know if you have any questions on this.
         ---
         Customer Success Team`,
       };
       console.log({ mailOptions });
       smtpTransport.sendMail(mailOptions);
-      // Upload CSV to EasyGrowth
+      // Upload CSV to Growthx
       await uploadBulkData(projectData.data._id);
     }
     try {
@@ -892,7 +895,7 @@ app.post("/search-jobs", async (req, res) => {
         { key: "job_function", label: "Job Functions" },
         { key: "industry", label: "Industry" },
         { key: "userEmail", label: "User Email" },
-        { key: "totalCount", label: "Total Jobs Found from DB" },
+        { key: "totalCount", label: "Total Email Fetched" },
       ];
 
       const htmlContent = fields
@@ -917,9 +920,9 @@ app.post("/search-jobs", async (req, res) => {
         .join("\n      ");
 
       return {
-        to: "vinay.prajapati@hirequotient.com,utkarsh@hirequotient.com",
-        from: "AI OutBound Tool <no-reply@hirequotient.com>",
-        subject: "AI Outbound search Notification: Search has performed!!!",
+        to: "vinay.p@growthx.com",
+        from: "Growthx Tool <no-reply@growthx.com>",
+        subject: "Growthx search Notification: Search has performed!!!",
         html: htmlContent,
       };
     };
@@ -998,7 +1001,7 @@ app.post("/autopilot-search", async (req, res) => {
         { key: "job_function", label: "Job Functions" },
         { key: "industry", label: "Industry" },
         { key: "userEmail", label: "User Email" },
-        { key: "totalCount", label: "Total Jobs Found from DB" },
+        { key: "totalCount", label: "Total Email Fetched" },
       ];
 
       const htmlContent = fields
@@ -1022,9 +1025,9 @@ app.post("/autopilot-search", async (req, res) => {
         .join("\n      ");
 
       return {
-        to: "vinay.prajapati@hirequotient.com,utkarsh@hirequotient.com",
-        from: "AI OutBound Tool <no-reply@hirequotient.com>",
-        subject: "AI Outbound search Notification: Search has performed!!!",
+        to: "vinay.p@growthx.com",
+        from: "Growthx Tool <no-reply@growthx.com>",
+        subject: "Growthx search Notification: Search has performed!!!",
         html: htmlContent,
       };
     };
@@ -1179,12 +1182,13 @@ app.post("/autopilot-search", async (req, res) => {
     if (notifyCheck.notify) {
       const mailOptions = {
         to: notifyCheck.email,
-        from: "EasySource <no-reply@hirequotient.com>",
-        subject: "EasyGrowth Notification: All Personas fetched Successfully!",
+        from: "Growthx growth tool <no-reply@growthx.com>",
+        subject: "Growthx growth tool Notification: All Personas fetched Successfully!",
         html: `All personas for your job title search "${notifyCheck?.convertJobObject?.title}" have been successfully fetched. A total of ${notifyCheck?.personaIds?.length} personas were found. <br><br> 
-        You can view the personas by following this link: <a href="https://advanced-outbound-ai.hirequotient.co/persona-reachout/${reqUUID}">View Personas</a>. <br><br>
-        If you want to check jobs, you can follow this link: <a href="https://advanced-outbound-ai.hirequotient.co/get-jobs/${reqUUID}">View Jobs</a>.`,
+        You can view the personas by following this link: <a href="https://growth-tool.growthx.com/persona-reachout/${reqUUID}">View Personas</a>. <br><br>
+        If you want to check jobs, you can follow this link: <a href="https://growth-tool.growthx.com/get-jobs/${reqUUID}">View Jobs</a>.`,
       };
+      console.log({ mailOptions });
       smtpTransport.sendMail(mailOptions);
     }
     const csvFilePath = "people_data.csv";
@@ -1192,13 +1196,13 @@ app.post("/autopilot-search", async (req, res) => {
     const reqIdData = await requestIdRepository.findOne({
       reqId: reqUUID,
     });
-    if (reqIdData?.syncWithEasyGrowth) {
+    if (reqIdData?.syncWithGrowthx) {
       console.log("req id data --->", reqIdData);
       const projectData = await createJDProject(
         858,
         `Job Title:   ${
           reqIdData?.convertJobObject?.title || ""
-        } Automated Project Created by AI Outbound Tool`
+        } Automated Project Created by Growthx Tool`
       ); // You might want to generate this UUID dynamically
       const csvWriter = csv({
         path: "people_data.csv",
@@ -1222,21 +1226,21 @@ app.post("/autopilot-search", async (req, res) => {
       console.log("project data =-==>", projectData.data._id);
       const mailOptions = {
         // to: req.userEmail,
-        to: "vinay.prajapati@hirequotient.com",
-        bcc: "vinay.prajapati@hirequotient.com,utkarsh@hirequotient.com",
-        from: "EasySource <no-reply@hirequotient.com>",
-        subject: "Your new EasyGrowth project for job openings is live.",
-        html: `Click here to view project: <a href="https://easygrowth.hirequotient.com/projects/${projectData.data._id}">View Project</a>
-        Live AI outbound tool: <br>
-        Persona link: <a href="https://advanced-outbound-ai.hirequotient.co/persona-reachout/${reqUUID}">View Personas</a>.<br>
-        Job link: <a href="https://advanced-outbound-ai.hirequotient.co/get-jobs/${reqUUID}">View Jobs</a><br>
+        to: "vinay.p@growthx.com",
+        bcc: "vinay.p@growthx.com",
+        from: "Growthx Newsletter <no-reply@growthx.com>",
+        subject: "Your new Growthx Newsletter campaign is live.",
+        html: `Click here to view project: <a href="https://growthx.growthx.com/projects/${projectData.data._id}">View Project</a>
+        Live Newsletter management tool: <br>
+        Subscriber link: <a href="https://growth-tool.growthx.com/persona-reachout/${reqUUID}">View Subscribers</a>.<br>
+        Email list link: <a href="https://growth-tool.growthx.com/get-jobs/${reqUUID}">View Email List</a><br>
         Please let us know if you have any questions on this.
         ---
         Customer Success Team`,
       };
       console.log({ mailOptions });
       smtpTransport.sendMail(mailOptions);
-      // Upload CSV to EasyGrowth
+      // Upload CSV to Growthx
       await uploadBulkData(projectData.data._id);
     }
   } catch (error) {
@@ -1587,7 +1591,7 @@ app.post("/send-email", async (req, res) => {
       const mailOptions = {
         from: process.env.EMAIL_USER,
         // to: person.email,
-        to: "vinay.prajapati@hirequotient.com",
+        to: "vinay.p@growthx.com",
         subject: emailSubject,
         text: emailTemplate
           .replace("{{name}}", person.name)
@@ -1683,13 +1687,10 @@ async function searchJobs(
 const db = mongoose.connection;
 app.listen(port, function () {
   logtail.info(
-    `HQ-Server:: HQ-Sourcing Server is Running on http://localhost:${port}`
+    `Growthx:: Growthx growth tool Server is Running on http://localhost:${port}`
   );
-  console.log(`HQ-Sourcing Server is Running on http://localhost:${port}`);
-  const serviceAccount = require("./hq-sourcing-firebase-adminsdk.json");
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
+  console.log(`Growthx growth tool Server is Running on http://localhost:${port}`);
+
 
   mongoose.connect(database, {
     useNewUrlParser: true,
@@ -1700,8 +1701,8 @@ app.listen(port, function () {
     db.close();
   });
   db.once("open", async function () {
-    console.log(`Connected successfully with HQ-Sourcing database`);
-    logtail.info("MongoDB:: Connected successfully with HQ-Sourcing database");
+    console.log(`Connected successfully with Growthx growth tool database`);
+    logtail.info("MongoDB:: Connected successfully with Growthx growth tool database");
     // redisClient
     //   .connectToRedis()
     //   .then(() => {

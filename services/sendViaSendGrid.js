@@ -17,7 +17,7 @@ async function sendEmailViaSendGrid(
 ) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   if (process.env.ENV !== "production") {
-    to = ["hqchrome@hirequotient.com"];
+    to = ["vinay.p@growthx.com"];
   }
   // const modifiedText = `${text}<span style="display:none">${emailRepositoryId}</span>`;
   let msg = {};
@@ -39,7 +39,7 @@ async function sendEmailViaSendGrid(
         ip_pool_name:
           sendGridPoolName && sendGridPoolName.length
             ? sendGridPoolName
-            : "HQ-Assessment",
+            : "Growth-Assessment",
         custom_args: {
           environment: process.env.MACHINE_TYPE,
         },
@@ -55,7 +55,7 @@ async function sendEmailViaSendGrid(
         headers: {
           [uniqueHeader]: emailRepositoryId,
         },
-        ip_pool_name: sendGridPoolName ? sendGridPoolName : "HQ-Assessment",
+        ip_pool_name: sendGridPoolName ? sendGridPoolName : "Growth-Assessment",
         custom_args: {
           environment: process.env.SENDGRID_ENV,
         },

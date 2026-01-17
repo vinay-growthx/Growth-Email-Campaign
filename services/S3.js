@@ -15,7 +15,7 @@ const s3 = new AWS.S3();
 const uploadJD = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "easysource-jd",
+    bucket: "growthx-jd",
     // acl: "public-read",
     key: async function (req, file, cb) {
       const path = `JD_${Date.now().toString()}_${file.originalname}`;
@@ -27,7 +27,7 @@ const uploadJD = multer({
 const uploadCV = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "easysource-jd",
+    bucket: "growthx-jd",
     key: async function (req, file, cb) {
       const path = `CV_${Date.now().toString()}_${file.originalname}`;
       cb(null, path);
@@ -37,7 +37,7 @@ const uploadCV = multer({
 
 async function uploadFileToS3(filePath) {
   const fileStream = fs.createReadStream(filePath);
-  let bucketName = "easysource-jd";
+  let bucketName = "growthx-jd";
 
   const timestamp = Date.now().toString();
   const fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
@@ -58,7 +58,7 @@ async function uploadFileToS3(filePath) {
 }
 
 async function uploadStreamToS3(bufferStream, fileName) {
-  let bucketName = "easysource-jd";
+  let bucketName = "growthx-jd";
 
   const timestamp = Date.now().toString();
   const bufferData = Buffer.from(bufferStream, "binary");
@@ -92,7 +92,7 @@ async function uploadCandidateResumeToS3(
   contentType,
   source
 ) {
-  const bucketName = "easysource-jd";
+  const bucketName = "growthx-jd";
   const uploadParams = {
     Bucket: bucketName,
     Key: `${source}_${fileName}`,
@@ -113,7 +113,7 @@ async function uploadCandidateResumeToS3(
 const uploadCSVToS3 = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "easysource-jd",
+    bucket: "growthx-jd",
     key: async function (req, file, cb) {
       const { projectId } = req.body;
       const path = `UploadCSV_Project-${projectId}_${Date.now().toString()}_${
@@ -145,7 +145,7 @@ async function uploadBase64ToS3(key, base64String) {
   );
 
   const params = {
-    Bucket: "easysource-jd",
+    Bucket: "growthx-jd",
     Key: key,
     Body: base64Data,
     ContentEncoding: "base64",

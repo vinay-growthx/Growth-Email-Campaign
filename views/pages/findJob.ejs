@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Advanced job Search</title>
+    <title>People Search</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
       rel="stylesheet"
@@ -365,7 +365,7 @@
     <div class="parallax-container">
       <div class="parallax-layer parallax-background"></div>
       <div class="parallax-layer content">
-        <h1>Advanced Job Search</h1>
+        <h1>People Search</h1>
         <div id="error-message" style="color: red; display: none"></div>
         <form action="/search-jobs" method="POST">
           <div class="form-group" style="animation-delay: 0.5s">
@@ -421,6 +421,17 @@
               placeholder="Enter a number between 1 and 100,000"
             />
           </div>
+          <div class="form-group" style="animation-delay: 0.35s">
+            <label for="years_of_experience">Years of Experience (optional):</label>
+            <input
+              type="number"
+              id="years_of_experience"
+              name="years_of_experience"
+              min="0"
+              max="70"
+              placeholder="Enter years of experience"
+            />
+          </div>
           <div class="form-group" style="animation-delay: 0.6s">
             <label for="job_listed_date">Job Listed From:</label>
             <input
@@ -455,7 +466,7 @@
             <div id="industry-tag-container" style="padding-top: 10px"></div>
             <!-- Industry tag container -->
           </div>
-          <button type="submit" id="submitButton">Search Jobs</button>
+          <button type="submit" id="submitButton">Search People</button>
           <button type="button" id="dashboardButton">Go to Dashboard</button>
 
           <!-- <button
@@ -625,7 +636,7 @@
                       submitButton.textContent = "Searching...";
                       setTimeout(function () {
                         submitButton.disabled = false;
-                        submitButton.textContent = "Search Jobs";
+                        submitButton.textContent = "Search People";
                       }, 20000);
                     });
                   });

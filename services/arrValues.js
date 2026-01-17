@@ -119,6 +119,7 @@ const jobFunctionArr = [
   { value: "edu", label: "Education" },
   { value: "eng", label: "Engineering" },
   { value: "fin", label: "Finance" },
+  { value: "fndr", label: "Founder" },
   { value: "genb", label: "General Business" },
   { value: "hcpr", label: "HealthCare Provider" },
   { value: "hr", label: "Human Resources" },

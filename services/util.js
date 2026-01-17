@@ -263,9 +263,26 @@ async function findAllPersonas(reqId, page, limit) {
       return { people: [], totalCount };
     }
 
+    // Add fake data for pagination testing - create 5 additional fake personas for each page
+    const fakePersonas = [];
+    for (let i = 0; i < 5; i++) {
+      fakePersonas.push({
+        id: `fake_${page}_${i}`,
+        first_name: `John`,
+        last_name: `Doe_${page}_${i}`,
+        email: `john.doe.${page}.${i}@example.com`,
+        title: `Software Engineer - Fake Data ${page}`,
+        company: `Tech Company ${page}`,
+        linkedin_url: `https://linkedin.com/in/johndoe${page}${i}`,
+        phone: `+1-555-000-${String(page).padStart(2, '0')}${String(i).padStart(2, '0')}`,
+      });
+    }
+
+    const allPeople = [...jobData, ...fakePersonas];
+
     return {
-      people: jobData,
-      totalCount,
+      people: allPeople,
+      totalCount: totalCount + fakePersonas.length, // Include fake data in total count
       personaProcessCompleted: personaIds.personaProcessCompleted,
     };
   } catch (error) {
@@ -1311,7 +1328,7 @@ function convertDateFormat(dateString) {
 
 async function createJDProject(uuid, name) {
   const url =
-    "https://easygrowth.hirequotient.com/api/v2/project/create-jd-project";
+    "https://growthx.growthx.com/api/v2/project/create-jd-project";
   const projectData = {
     name: name,
     bdrRegions: "AMER",
@@ -1341,7 +1358,7 @@ async function createJDProject(uuid, name) {
   }
 }
 async function uploadBulkData(projectId) {
-  const url = "https://easygrowth.hirequotient.com/api/v2/project/bulk-upload";
+  const url = "https://growthx.growthx.com/api/v2/project/bulk-upload";
 
   const formData = new FormData();
 
@@ -1355,7 +1372,7 @@ async function uploadBulkData(projectId) {
   formData.append("emailScrape", "false");
   formData.append("isSalesNav", "false");
   formData.append("cvSource[label]", "Other");
-  formData.append("cvSource[value]", "AI Outbound Tool");
+  formData.append("cvSource[value]", "Growthx Tool");
 
   try {
     const response = await axios.post(url, formData, {

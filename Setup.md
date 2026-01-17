@@ -58,13 +58,13 @@ Git is a version control system.
 2. Clone your repository using:
 
    ```bash
-   git clone https://github.com/HireQuotient/hq-sourcing-backend.git
+   git clone https://github.com/Growthx/growthx-internal-tool-backend.git
    ```
 
 3. Navigate into the cloned repository:
 
    ```bash
-   cd hq-sourcing-backend
+   cd growthx-internal-tool-backend
    ```
 
 ### 5. Update the Local .env File

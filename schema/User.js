@@ -448,7 +448,7 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    easyGrowthId: {
+    growthxId: {
       type: String,
     },
   },

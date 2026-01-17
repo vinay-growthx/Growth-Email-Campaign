@@ -823,7 +823,7 @@
       <div class="parallax-layer content">
         <h1>Persona Reachout</h1>
         <div id="total-count" class="total-count">
-          Total Personas: <%= totalCount %> (Showing <%= people.length %> per
+          Total LinkedIn URL Fetched: <%= totalCount %> (Showing <%= people.length %> per
           page)
         </div>
 
@@ -856,9 +856,9 @@
           <button
             class="sync-btn"
             class="sync-btn"
-            onclick="syncWithEasyGrowth()"
+            onclick="syncWithGrowthx()"
           >
-            Sync with EasyGrowth
+            Sync with Growthx
           </button>
           <div
             style="
@@ -1176,7 +1176,7 @@
           const visiblePersonas = document.querySelectorAll(
             ".person-card:not([style*='display: none'])"
           ).length;
-          totalCountElement.textContent = `Total Personas: ${visiblePersonas}`;
+          totalCountElement.textContent = `Total LinkedIn URL Fetched: ${visiblePersonas}`;
 
           const selectedCount = document.querySelectorAll(
             'input[name="selectedPeople"]:checked'
@@ -1254,7 +1254,7 @@
           const visiblePersonas = document.querySelectorAll(
             ".person-card:not([style*='display: none'])"
           ).length;
-          totalCountElement.textContent = `Total Personas: ${visiblePersonas}`;
+          totalCountElement.textContent = `Total LinkedIn URL Fetched: ${visiblePersonas}`;
 
           const selectedCount = document.querySelectorAll(
             'input[name="selectedPeople"]:checked'
@@ -1464,7 +1464,7 @@
         });
       });
 
-      function syncWithEasyGrowth() {
+      function syncWithGrowthx() {
         const syncButton = document.querySelector(".sync-btn");
         syncButton.disabled = true;
         syncButton.textContent = "Generating an automated sync system...";
@@ -1497,12 +1497,12 @@
         if (selectedPeopleData.length === 0) {
           alert("Please select at least one person to sync.");
           syncButton.disabled = false;
-          syncButton.textContent = "Sync with EasyGrowth";
+          syncButton.textContent = "Sync with Growthx";
           return;
         }
 
         // Send the data to the server
-        fetch("/sync-with-easygrowth", {
+        fetch("/sync-with-Growthx", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -1516,15 +1516,15 @@
           .then((data) => {
             console.log("Sync successful:", data);
             alert(
-              "You will be notified over email of EasyGrowth sync completion when all personas have been added"
+              "You will be notified over email of Growthx sync completion when all personas have been added"
             );
             syncButton.textContent = "Will be synced automatically";
           })
           .catch((error) => {
-            console.error("Error syncing with EasyGrowth:", error);
+            console.error("Error syncing with Growthx:", error);
             alert("Failed to synchronize. Please try again.");
             syncButton.disabled = false;
-            syncButton.textContent = "Sync with EasyGrowth";
+            syncButton.textContent = "Sync with Growthx";
           });
       }
       window.addEventListener("resize", adjustTagLayout);

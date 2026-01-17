@@ -1,15 +1,16 @@
 {
-  "name": "hq-sourcing",
+  "name": "growthx-internal-tool",
   "version": "0.0.19",
-  "description": "Backend server to handle frontend requests",
+  "description": "Growthx internal tool to send emails",
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
     "prettier": "prettier --write ."
   },
   "keywords": [
-    "HQ Sourcing",
-    "Backend"
+    "Growthx",
+    "Internal Tool",
+    "Email"
   ],
   "author": "Vinay Prajapati <vinay91098@gmail.com>",
   "license": "MIT",
@@ -35,7 +36,7 @@
     "dotenv": "^16.0.1",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
-    "express-session": "^1.18.0",
+    "express-session": "^1.18.2",
     "express-sse": "^0.5.3",
     "firebase-admin": "^11.5.0",
     "form-data": "^4.0.0",

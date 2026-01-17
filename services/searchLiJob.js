@@ -123,11 +123,11 @@ async function searchLinkedInJobs(
         : 0;
       if (process.env.ENV == "production") {
         const mailOptions = {
-          to: `vinay.prajapati@hirequotient.com,utkarsh@hirequotient.com`,
-          from: "AI OutBound Tool <no-reply@hirequotient.com>",
-          subject: `AI Outbound search Notification: Data from live search`,
-          html: `Search performed on job title: ${query}<br>
-          Total unique jobs found from live search: ${uniqueJobIdsCount}<br>
+          to: `vinay.p@growthx.com`,
+          from: "Growthx Newsletter <no-reply@growthx.com>",
+          subject: `Growthx Newsletter Update: New content added to campaign`,
+          html: `Newsletter category: ${query}<br>
+          Total unique subscribers added: ${uniqueJobIdsCount}<br>
           `,
         };
         console.log({ mailOptions });

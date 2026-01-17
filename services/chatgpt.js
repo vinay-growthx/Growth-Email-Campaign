@@ -38,7 +38,7 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
 
 const azureopenai = new OpenAIClient(
-  "https://easysource2.openai.azure.com/",
+  "https://growthx2.openai.azure.com/",
   new AzureKeyCredential("d609434c01c34a8cb323628127cd5d8d")
 );
 async function chatGPTPromptResult(options) {

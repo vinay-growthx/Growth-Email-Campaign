@@ -1853,7 +1853,7 @@
           <button onclick="location.href='/dashboard'" class="dashboard-btn">Go to Dashboard</button>
         </div>
         <div id="total-count" class="total-count">
-          Total jobs: <%= totalCount %>
+          Total email fetched: <%= totalCount %>
         </div>
         <div class="results-header">
           <div class="select-all-container">
@@ -2545,7 +2545,7 @@ selectAllPagesCheckbox.addEventListener("change", function() {
   updatePagination();
 }
 function updateCounts(visibleJobCount) {
-  totalCountElement.textContent = `Visible jobs: ${visibleJobCount} / Total jobs: <%= totalCount %>`;
+  totalCountElement.textContent = `Visible jobs: ${visibleJobCount} / Total email fetched: <%= totalCount %>`;
   updateSelectedCount();
 }
         function updatePagination() {

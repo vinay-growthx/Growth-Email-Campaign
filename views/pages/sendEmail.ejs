@@ -3,542 +3,922 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Send Email</title>
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.css"
-    />
+    <title>Advanced Email Campaign Builder</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   </head>
   <body>
-    <div class="content">
-      <h1>Send Email</h1>
-      <div id="emailsContainer" class="emails-list">
-        <style>
-          :root {
-            --primary-color: #2196f3;
-            --primary-light: #bbdefb;
-            --primary-dark: #1976d2;
-            --secondary-color: #ffc107;
-            --text-color: #333333;
-            --background-color: #f5f7fa;
-            --card-background: #ffffff;
-            --success-color: #4caf50;
-            --error-color: #f44336;
-            --border-radius: 12px;
-            --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-          }
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <h1><i class="fas fa-envelope-open-text"></i> Email Campaign Builder</h1>
+          <p>Create stunning HTML emails with live preview</p>
+        </div>
+      </header>
 
-          body,
-          html {
-            font-family: "Poppins", Arial, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-          }
+      <!-- Main Content -->
+      <div class="main-wrapper">
+        <!-- Left Panel: Recipients & Tools -->
+        <aside class="sidebar">
+          <div class="sidebar-section">
+            <h3><i class="fas fa-users"></i> Recipients</h3>
+            <div id="emailsContainer" class="emails-list">
+              <p class="recipients-count" id="recipientCount">Loading recipients...</p>
+            </div>
+          </div>
 
-          .parallax-container {
-            perspective: 1px;
-            height: 100vh;
-            overflow-x: hidden;
-            overflow-y: auto;
-          }
+          <div class="sidebar-section">
+            <h3><i class="fas fa-wand-magic-sparkles"></i> Quick Tools</h3>
+            <div class="quick-tools">
+              <button class="tool-btn" onclick="insertTemplate('greeting')">
+                <i class="fas fa-feather"></i> Greeting
+              </button>
+              <button class="tool-btn" onclick="insertTemplate('cta')">
+                <i class="fas fa-hand-pointer"></i> CTA
+              </button>
+              <button class="tool-btn" onclick="insertTemplate('footer')">
+                <i class="fas fa-layer-group"></i> Footer
+              </button>
+            </div>
+          </div>
+        </aside>
 
-          .content {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-          }
+        <!-- Center Panel: Email Editor -->
+        <main class="editor-container">
+          <form id="emailForm" action="/send-email" method="POST">
+            <input type="hidden" id="reqIdInput" name="reqId" value="<%= reqId %>" />
+            
+            <!-- Tab Navigation -->
+            <div class="tabs">
+              <button type="button" class="tab-btn active" onclick="switchTab('compose')">
+                <i class="fas fa-compose"></i> Compose
+              </button>
+              <button type="button" class="tab-btn" onclick="switchTab('preview')">
+                <i class="fas fa-eye"></i> Preview
+              </button>
+              <button type="button" class="tab-btn" onclick="switchTab('html')">
+                <i class="fas fa-code"></i> HTML
+              </button>
+            </div>
 
-          h1 {
-            font-size: 3em;
-            text-align: center;
-            color: var(--primary-dark);
-            margin-bottom: 40px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            position: relative;
-            padding-bottom: 15px;
-          }
+            <!-- Compose Tab -->
+            <div id="compose-tab" class="tab-content active">
+              <!-- Email Subject -->
+              <div class="form-group">
+                <label for="emailSubject">
+                  <i class="fas fa-heading"></i> Subject Line
+                </label>
+                <input type="text" id="emailSubject" name="subject" placeholder="Enter email subject..." class="input-field" />
+                <small class="char-count">0/100 characters</small>
+              </div>
 
-          h1::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background-color: var(--secondary-color);
-          }
+              <!-- From Email -->
+              <div class="form-group">
+                <label for="fromEmail">
+                  <i class="fas fa-envelope"></i> From Email
+                </label>
+                <input type="email" id="fromEmail" name="fromEmail" placeholder="Enter sender's email address" class="input-field" required />
+                <small>Note: Must be verified in Amazon SES</small>
+              </div>
 
-          .form-group {
-            margin-bottom: 20px;
-            width: 100%;
-          }
+              <!-- Personalization & Variables -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="variableDropdown">
+                    <i class="fas fa-handshake"></i> Personalize
+                  </label>
+                  <select id="variableDropdown" class="custom-dropdown">
+                    <option value="">Select variable to insert</option>
+                    <optgroup label="📋 Recipient Info">
+                      <option value="{name}">Full Name</option>
+                      <option value="{firstName}">First Name</option>
+                      <option value="{currentRole}">Current Role</option>
+                      <option value="{companyName}">Company Name</option>
+                    </optgroup>
+                    <optgroup label="📰 Newsletter Info">
+                      <option value="{hiringJobTitle}">Newsletter Topic</option>
+                      <option value="{dateOfJobPost}">Newsletter Date</option>
+                      <option value="{hiringJobLocation}">Newsletter Category</option>
+                    </optgroup>
+                    <optgroup label="✍️ Custom">
+                      <option value="{yourName}">Your Name</option>
+                    </optgroup>
+                  </select>
+                </div>
 
-          .form-group label {
-            display: block;
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            color: var(--primary-dark);
-            font-weight: 500;
-          }
+                <div class="form-group">
+                  <label for="templateDropdown">
+                    <i class="fas fa-rectangle-list"></i> Templates
+                  </label>
+                  <select id="templateDropdown" class="custom-dropdown">
+                    <option value="">Choose template</option>
+                    <option value="rapidTalentConnect">Newsletter Engagement Boost</option>
+                    <option value="smartHireSpotlight">Subscriber Spotlight</option>
+                    <option value="talentTransformationTech">Newsletter Growth Strategy</option>
+                    <option value="efficiencyBoostPitch">Content Delivery Optimization</option>
+                    <option value="insightDrivenRecruitment">Insight-Driven Newsletter Strategy</option>
+                  </select>
+                </div>
+              </div>
 
-          .form-group input,
-          .form-group textarea,
-          trix-editor,
-          .custom-dropdown {
-            width: 100%;
-            padding: 12px;
-            font-size: 1em;
-            border-radius: var(--border-radius);
-            border: 2px solid var(--primary-light);
-            background-color: var(--card-background);
-            transition: var(--transition);
-            box-sizing: border-box;
-          }
+              <!-- Rich Text Editor -->
+              <div class="form-group">
+                <label for="emailBody">
+                  <i class="fas fa-pen-fancy"></i> Email Body (HTML Supported)
+                </label>
+                <div class="editor-wrapper">
+                  <input id="emailBody" name="body" type="hidden" />
+                  <trix-editor input="emailBody"></trix-editor>
+                </div>
+              </div>
+            </div>
 
-          .form-group input:focus,
-          .form-group textarea:focus,
-          trix-editor:focus,
-          .custom-dropdown:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 10px rgba(33, 150, 243, 0.3);
-          }
+            <!-- Preview Tab -->
+            <div id="preview-tab" class="tab-content">
+              <div class="preview-header">
+                <div class="preview-info">
+                  <p><strong>From:</strong> <span id="previewFrom">-</span></p>
+                  <p><strong>Subject:</strong> <span id="previewSubject">-</span></p>
+                </div>
+                <button type="button" class="refresh-btn" onclick="updatePreview()">
+                  <i class="fas fa-sync"></i> Refresh
+                </button>
+              </div>
+              <div class="email-preview" id="emailPreview">
+                <p style="text-align: center; color: #999;">Email preview will appear here</p>
+              </div>
+            </div>
 
-          trix-editor {
-            min-height: 200px;
-            max-height: 400px;
-            overflow-y: auto;
-          }
-          trix-toolbar {
-            width: 100%;
-            overflow-x: auto;
-          }
-          .trix-button-group {
-            flex-wrap: wrap;
-          }
+            <!-- HTML Tab -->
+            <div id="html-tab" class="tab-content">
+              <div class="html-toolbar">
+                <button type="button" class="btn-small" onclick="copyHTMLCode()">
+                  <i class="fas fa-copy"></i> Copy Code
+                </button>
+                <button type="button" class="btn-small" onclick="downloadHTML()">
+                  <i class="fas fa-download"></i> Download
+                </button>
+              </div>
+              <textarea id="htmlCode" class="html-textarea" readonly></textarea>
+            </div>
 
-          .submit-btn {
-            display: inline-block;
-            padding: 12px 25px;
-            background: linear-gradient(
-              45deg,
-              var(--primary-color),
-              var(--primary-dark)
-            );
-            color: white;
-            text-decoration: none;
-            border-radius: 30px;
-            transition: var(--transition);
-            text-align: center;
-            font-size: 1.1em;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin: 10px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            width: 100%;
-          }
+            <!-- Send Button -->
+            <div class="form-actions">
+              <button type="submit" class="submit-btn">
+                <i class="fas fa-paper-plane"></i> Send Campaign
+              </button>
+              <button type="button" class="btn-secondary" onclick="saveDraft()">
+                <i class="fas fa-save"></i> Save Draft
+              </button>
+            </div>
+          </form>
+        </main>
 
-          .submit-btn:hover {
-            background: linear-gradient(
-              45deg,
-              var(--primary-dark),
-              var(--primary-color)
-            );
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-          }
+        <!-- Right Panel: Info & Stats -->
+        <aside class="info-panel">
+          <div class="info-card">
+            <h4><i class="fas fa-info-circle"></i> Email Stats</h4>
+            <div class="stat-item">
+              <label>Subject Length:</label>
+              <span id="subjectLength">0</span>/100
+            </div>
+            <div class="stat-item">
+              <label>Body Length:</label>
+              <span id="bodyLength">0</span> chars
+            </div>
+            <div class="stat-item">
+              <label>Recipients:</label>
+              <span id="recipientStats">0</span>
+            </div>
+          </div>
 
-          .emails-list {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: var(--primary-light);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-          }
-
-          .emails-list span {
-            display: block;
-            color: var(--primary-dark);
-            margin-bottom: 5px;
-            font-size: 0.9em;
-          }
-
-          .custom-dropdown {
-            padding: 12px;
-            font-size: 1em;
-            border: 2px solid var(--primary-light);
-            border-radius: var(--border-radius);
-            background-color: var(--card-background);
-            margin-bottom: 10px;
-            width: 100%;
-            cursor: pointer;
-            transition: var(--transition);
-          }
-
-          .custom-dropdown:hover,
-          .custom-dropdown:focus {
-            border-color: var(--primary-color);
-          }
-
-          @media screen and (max-width: 768px) {
-            .content {
-              padding: 20px 10px;
-            }
-            trix-toolbar {
-              flex-wrap: wrap;
-            }
-
-            .trix-button-group {
-              margin-bottom: 5px;
-            }
-            h1 {
-              font-size: 2.2em;
-            }
-
-            .form-group label {
-              font-size: 1.1em;
-            }
-
-            .submit-btn {
-              padding: 10px 20px;
-              font-size: 1em;
-            }
-          }
-
-          @keyframes fadeIn {
-            from {
-              opacity: 0;
-            }
-            to {
-              opacity: 1;
-            }
-          }
-
-          .form-group {
-            animation: fadeIn 0.5s ease-out forwards;
-          }
-        </style>
+          <div class="info-card">
+            <h4><i class="fas fa-lightbulb"></i> Tips</h4>
+            <ul class="tips-list">
+              <li>Keep subject under 50 chars</li>
+              <li>Use variables for personalization</li>
+              <li>Preview before sending</li>
+              <li>Test with HTML preview</li>
+              <li>Use clear CTA buttons</li>
+            </ul>
+          </div>
+        </aside>
       </div>
-      <form id="emailForm" action="/send-email" method="POST">
-        <input
-          type="hidden"
-          id="reqIdInput"
-          name="reqId"
-          value="<%= reqId %>"
-        />
-        <div class="form-group">
-          <label for="variableDropdown">Personalize:</label>
-          <select id="variableDropdown" class="custom-dropdown">
-            <option value="">Select an option</option>
-            <optgroup label="Persona Related">
-              <option value="{name}">Name</option>
-              <option value="{firstName}">First Name</option>
-              <option value="{currentRole}">Current Role</option>
-              <option value="{companyName}">Company Name</option>
-            </optgroup>
-            <optgroup label="Job Related">
-              <option value="{hiringJobTitle}">Job Post Title</option>
-              <option value="{dateOfJobPost}">Date of Job Post</option>
-              <option value="{hiringJobLocation}">Job Post Location</option>
-            </optgroup>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="templateDropdown">AI Recommended Templates:</label>
-          <select id="templateDropdown" class="custom-dropdown">
-            <option value="">Select a template</option>
-            <option value="rapidTalentConnect">Rapid Talent Connect</option>
-            <option disabled>
-              Quick, AI-powered hiring for immediate impact.
-            </option>
-            <option value="smartHireSpotlight">Smart Hire Spotlight</option>
-            <option disabled>
-              Showcase your top candidates with AI precision.
-            </option>
-            <option value="talentTransformationTech">
-              Talent Transformation Tech
-            </option>
-            <option disabled>
-              Revolutionize hiring with cutting-edge AI tools.
-            </option>
-            <option value="efficiencyBoostPitch">Efficiency Boost Pitch</option>
-            <option disabled>
-              Streamline recruitment with AI for faster results.
-            </option>
-            <option value="insightDrivenRecruitment">
-              Insight-Driven Recruitment
-            </option>
-            <option disabled>
-              Leverage data for smarter hiring decisions.
-            </option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="fromEmail">From Email:</label>
-          <input
-            type="email"
-            id="fromEmail"
-            name="fromEmail"
-            placeholder="Enter sender's email address"
-            required
-          />
-          <small class="form-text text-muted"
-            >Note: The sender's email must be verified in Amazon SES.</small
-          >
-        </div>
-        <div class="form-group">
-          <label for="yourName">Your Name:</label>
-          <input
-            type="text"
-            id="yourName"
-            name="yourName"
-            placeholder="Enter your name"
-            required
-          />
-          <small class="form-text text-muted"
-            >This name will replace {yourName} at the end of the email.</small
-          >
-        </div>
-        <div class="form-group">
-          <label for="emailSubject">Subject:</label>
-          <input
-            type="text"
-            id="emailSubject"
-            name="subject"
-            placeholder="Enter the email subject"
-            required
-          />
-        </div>
-        <div class="form-group">
-          <label for="emailBody">Email Body:</label>
-          <input id="emailBody" name="body" type="hidden" />
-          <trix-editor input="emailBody"></trix-editor>
-        </div>
-        <button type="submit" class="submit-btn">Send Email</button>
-      </form>
     </div>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #2196f3;
+        --primary-dark: #1565c0;
+        --primary-light: #e3f2fd;
+        --secondary: #ff6f00;
+        --success: #4caf50;
+        --danger: #f44336;
+        --gray-50: #fafafa;
+        --gray-100: #f5f5f5;
+        --gray-200: #eeeeee;
+        --gray-300: #e0e0e0;
+        --gray-500: #9e9e9e;
+        --gray-700: #424242;
+        --gray-900: #212121;
+        --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      html, body {
+        height: 100%;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--gray-100);
+        color: var(--gray-900);
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* Header */
+      .header {
+        background: var(--bg);
+        color: #ffffff;
+        padding: 40px 20px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      }
+
+      .header-content h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        font-weight: 700;
+        color: #ffffff;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      }
+
+      .header-content p {
+        font-size: 1.1em;
+        opacity: 1;
+        color: #ffffff;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      }
+
+      /* Main Layout */
+      .main-wrapper {
+        display: grid;
+        grid-template-columns: 280px 1fr 300px;
+        gap: 20px;
+        padding: 30px 20px;
+        flex: 1;
+        max-width: 1600px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 20px;
+        height: fit-content;
+        position: sticky;
+        top: 30px;
+      }
+
+      .sidebar-section {
+        margin-bottom: 30px;
+      }
+
+      .sidebar-section h3 {
+        font-size: 1em;
+        color: var(--primary-dark);
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .emails-list {
+        background: var(--primary-light);
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 0.9em;
+      }
+
+      .recipients-count {
+        color: var(--primary-dark);
+        font-weight: 500;
+      }
+
+      .quick-tools {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .tool-btn {
+        padding: 10px 12px;
+        border: 2px solid var(--gray-300);
+        background: white;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tool-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: var(--primary-light);
+      }
+
+      /* Editor Container */
+      .editor-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 30px;
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        gap: 10px;
+        border-bottom: 2px solid var(--gray-200);
+        margin-bottom: 25px;
+      }
+
+      .tab-btn {
+        padding: 12px 20px;
+        background: none;
+        border: none;
+        color: var(--gray-500);
+        font-weight: 500;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tab-btn:hover {
+        color: var(--primary);
+      }
+
+      .tab-btn.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      /* Form Groups */
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 8px;
+        font-size: 0.95em;
+      }
+
+      .form-group small {
+        display: block;
+        color: var(--gray-500);
+        font-size: 0.85em;
+        margin-top: 4px;
+      }
+
+      .input-field,
+      .custom-dropdown {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid var(--gray-300);
+        border-radius: 8px;
+        font-size: 1em;
+        transition: all 0.3s;
+        font-family: inherit;
+      }
+
+      .input-field:focus,
+      .custom-dropdown:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+      }
+
+      .char-count {
+        display: inline-block;
+        margin-top: 4px;
+        color: var(--gray-500);
+        font-size: 0.85em;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+
+      /* Editor Wrapper */
+      .editor-wrapper {
+        border: 2px solid var(--gray-300);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      trix-editor {
+        min-height: 250px;
+        max-height: 400px;
+        overflow-y: auto;
+        border: none;
+      }
+
+      trix-toolbar {
+        background: var(--gray-100);
+        border-bottom: 1px solid var(--gray-300);
+      }
+
+      /* Preview Styles */
+      .preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: var(--gray-100);
+        border-radius: 8px;
+      }
+
+      .preview-info p {
+        margin: 5px 0;
+        font-size: 0.9em;
+      }
+
+      .refresh-btn {
+        padding: 8px 16px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9em;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.3s;
+      }
+
+      .refresh-btn:hover {
+        background: var(--primary-dark);
+      }
+
+      .email-preview {
+        border: 1px solid var(--gray-300);
+        border-radius: 8px;
+        padding: 30px;
+        background: white;
+        min-height: 500px;
+        overflow-y: auto;
+      }
+
+      /* HTML Code */
+      .html-toolbar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .btn-small {
+        padding: 10px 16px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9em;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.3s;
+      }
+
+      .btn-small:hover {
+        background: var(--primary-dark);
+      }
+
+      .html-textarea {
+        width: 100%;
+        min-height: 500px;
+        padding: 15px;
+        border: 2px solid var(--gray-300);
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9em;
+        resize: vertical;
+      }
+
+      /* Form Actions */
+      .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 2px solid var(--gray-200);
+      }
+
+      .submit-btn {
+        flex: 1;
+        padding: 14px 28px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(33, 150, 243, 0.3);
+      }
+
+      .btn-secondary {
+        flex: 1;
+        padding: 14px 28px;
+        background: var(--gray-200);
+        color: var(--gray-900);
+        border: 2px solid var(--gray-300);
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-secondary:hover {
+        background: var(--gray-300);
+        border-color: var(--gray-400);
+      }
+
+      /* Info Panel */
+      .info-panel {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 20px;
+        height: fit-content;
+        position: sticky;
+        top: 30px;
+      }
+
+      .info-card {
+        margin-bottom: 25px;
+      }
+
+      .info-card:last-child {
+        margin-bottom: 0;
+      }
+
+      .info-card h4 {
+        color: var(--primary-dark);
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95em;
+      }
+
+      .stat-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--gray-200);
+        font-size: 0.9em;
+      }
+
+      .stat-item label {
+        color: var(--gray-600);
+        font-weight: 500;
+      }
+
+      .stat-item span {
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .tips-list {
+        list-style: none;
+      }
+
+      .tips-list li {
+        padding: 10px 0;
+        padding-left: 25px;
+        position: relative;
+        font-size: 0.9em;
+        color: var(--gray-700);
+        border-bottom: 1px solid var(--gray-200);
+      }
+
+      .tips-list li:last-child {
+        border-bottom: none;
+      }
+
+      .tips-list li:before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--success);
+        font-weight: bold;
+      }
+
+      /* Responsive */
+      @media (max-width: 1200px) {
+        .main-wrapper {
+          grid-template-columns: 1fr;
+        }
+        
+        .sidebar, .info-panel {
+          position: relative;
+          top: 0;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+        
+        .header-content h1 {
+          font-size: 1.8em;
+        }
+      }
+    </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.js"></script>
     <script>
-                                     document.addEventListener('DOMContentLoaded', (event) => {
-                                                // Retrieve the emails from the server-side rendered data
-                                                const emails = <%- JSON.stringify(enrichedData) %>.filter(email => email.email !== 'undefined' && email.email !== undefined);
-                                                const reqId = document.getElementById('reqIdInput').value;
+      // Template Data
+      const templates = {
+        rapidTalentConnect: {
+          subject: "Discover Premium Content in {hiringJobTitle}",
+          body: `<p>Dear {name},</p>\n<p>I hope this email finds you well. I'm reaching out to introduce our latest newsletter content focused on {hiringJobTitle} from {companyName}.</p>\n<p>Our curated content delivers the insights you need to stay ahead.</p>`
+        },
+        smartHireSpotlight: {
+          subject: "Featured Story: {hiringJobTitle}",
+          body: `<p>Hi {name},</p>\n<p>I'm {yourName}, editor of [Your Newsletter Name]. This month's spotlight features exclusive stories on {hiringJobTitle}.</p>`
+        }
+      };
 
-                                                const emailsContainer = document.getElementById('emailsContainer');
+      // Character counter for subject
+      document.getElementById('emailSubject').addEventListener('input', function() {
+        const length = this.value.length;
+        document.getElementById('subjectLength').textContent = length;
+        document.querySelector('.char-count').textContent = length + '/100 characters';
+        if (length > 80) {
+          document.querySelector('.char-count').style.color = '#ff6f00';
+        } else {
+          document.querySelector('.char-count').style.color = '#9e9e9e';
+        }
+      });
 
-                                                if (emails.length > 0) {
-                                                  const displayCount = Math.min(emails.length, 5);
-                                                  for (let i = 0; i < displayCount; i++) {
-                                                    const emailSpan = document.createElement('span');
-                                                    emailSpan.textContent = `${emails[i].name} (${emails[i].email})`;
-                                                    emailsContainer.appendChild(emailSpan);
-                                                  }
+      // Update body length
+      document.addEventListener('trix-change', function() {
+        const editor = document.querySelector('trix-editor').editor;
+        const text = editor.getDocument().toString();
+        document.getElementById('bodyLength').textContent = text.length;
+        updateHTMLCode();
+      });
 
-                                                  if (emails.length > 5) {
-                                                    const remainingCount = emails.length - 5;
-                                                    const countSpan = document.createElement('span');
-                                                    countSpan.textContent = `and ${remainingCount} more...`;
-                                                    countSpan.style.fontWeight = 'bold';
-                                                    emailsContainer.appendChild(countSpan);
-                                                  }
+      // Count recipients
+      function updateRecipientCount() {
+        const container = document.getElementById('emailsContainer');
+        const emails = container.querySelectorAll('span');
+        const count = emails.length;
+        document.getElementById('recipientCount').textContent = count + ' recipient(s)';
+        document.getElementById('recipientStats').textContent = count;
+      }
 
-                                                  const totalCountSpan = document.createElement('span');
-                                                  totalCountSpan.textContent = `Total Emails found: ${emails.length}`;
-                                                  totalCountSpan.style.display = 'block';
-                                                  totalCountSpan.style.marginTop = '10px';
-                                                  totalCountSpan.style.fontWeight = 'bold';
-                                                  emailsContainer.appendChild(totalCountSpan);
-                                                } else {
-                                                  emailsContainer.textContent = 'No valid emails found from selection. Please go back and select again.';
-                                                }
+      // Tab switching
+      function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(tab => {
+          tab.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
 
+        document.getElementById(tabName + '-tab').classList.add('active');
+        event.target.classList.add('active');
 
-                                                localStorage.setItem('selectedEmails', JSON.stringify(emails));
-                                                localStorage.setItem('reqId', reqId);
-                                              });                 document.getElementById("emailForm").onsubmit = function (event) {
-                                                                              event.preventDefault();
+        if (tabName === 'preview') {
+          updatePreview();
+        } else if (tabName === 'html') {
+          updateHTMLCode();
+        }
+      }
 
-                                                                              const fromEmail = document.getElementById("fromEmail").value;
-                                                                              const yourName = document.getElementById("yourName").value;
-                                                                              const subject = document.getElementById("emailSubject").value;
-                                                                              let body = document.querySelector("trix-editor").innerHTML;
-                                                                              body = body.replace(/{yourName}/g, yourName);
+      // Update email preview
+      function updatePreview() {
+        const subject = document.getElementById('emailSubject').value || '(No subject)';
+        const fromEmail = document.getElementById('fromEmail').value || 'noreply@example.com';
+        const editor = document.querySelector('trix-editor').editor;
+        const body = editor.getDocument().toString();
 
-                                                                              const emails = JSON.parse(localStorage.getItem('selectedEmails')).filter(email => email.email !== 'undefined');                                                                              const reqId = localStorage.getItem('reqId');
-                                                                              if (!fromEmail || !yourName  || !subject || !body || emails.length === 0) {
-                                                                                alert("Please fill in all fields and ensure emails are selected.");
-                                                                                return;
-                                                                              }
-                                                                              if (!reqId) {
-                                            console.log("reqId is missing");
-                                            alert("Please try again or contact support. Job Post and Person Data Mismatched");
-                                            return;
-                                          }
+        document.getElementById('previewFrom').textContent = fromEmail;
+        document.getElementById('previewSubject').textContent = subject;
+        document.getElementById('emailPreview').innerHTML = body || '<p style="color: #999;">Email body is empty</p>';
+      }
 
-                                                                              console.log('just before sending req id',reqId);
-                                                                              fetch("/send-email", {
-                                                                                method: "POST",
-                                                                                headers: {
-                                                                                  "Content-Type": "application/json",
-                                                                                },
-                                                                                body: JSON.stringify({fromEmail: fromEmail, subject: subject, body: body, emails: emails,reqId: reqId }),
-                                                                              })
-                                                                                .then((response) => response.json())
-                                                                                .then((data) => {
-                                                                                  alert("Email sent successfully!");
-                                                                                  console.log(data);
-                                                                                })
-                                                                                .catch((error) => {
-                                                                                  console.error("Error during email sending:", error);
-                                                                                  alert("Failed to send email: " + error.message);
-                                                                                });
-                                                                            };
+      // Update HTML code view
+      function updateHTMLCode() {
+        const subject = document.getElementById('emailSubject').value;
+        const body = document.querySelector('trix-editor').editor.getDocument().toString();
+        
+        const htmlTemplate = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .email-container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    h1, h2, h3 { color: #2196f3; }
+    a { color: #2196f3; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .cta-button { display: inline-block; background: #2196f3; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; margin: 20px 0; }
+    .footer { border-top: 1px solid #ddd; padding-top: 20px; font-size: 0.9em; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <h1>${subject}</h1>
+    ${body}
+    <div class="footer">
+      <p>&copy; 2024 Your Company. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>`;
 
-                                                                            document.getElementById("templateDropdown").addEventListener("change", function (event) {
-                                                                  const selectedTemplate = event.target.value;
-                                                                  if (selectedTemplate) {
-                                                                    const editor = document.querySelector("trix-editor").editor;
-                                                                    let templateContent = "";
-                                                                    let subject = "";
+        document.getElementById('htmlCode').value = htmlTemplate;
+      }
 
-                                                                    switch (selectedTemplate) {
-                                        case "rapidTalentConnect":
-                                            subject = "Accelerate Your Hiring for {hiringJobTitle} with AI";
-                                            templateContent = `<p>Dear {name},</p>
+      // Copy HTML code
+      function copyHTMLCode() {
+        const htmlCode = document.getElementById('htmlCode');
+        htmlCode.select();
+        document.execCommand('copy');
+        alert('HTML code copied to clipboard!');
+      }
 
-                              <p>I hope this email finds you well. I'm reaching out to introduce our Rapid Talent Connect service, which uses AI to quickly identify top candidates for your {hiringJobTitle} position at {companyName}.</p>
+      // Download HTML
+      function downloadHTML() {
+        const htmlCode = document.getElementById('htmlCode').value;
+        const subject = document.getElementById('emailSubject').value || 'email';
+        const blob = new Blob([htmlCode], { type: 'text/html' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = subject.replace(/\s+/g, '_') + '.html';
+        a.click();
+      }
 
-                              <p>Our AI-powered system can process applications rapidly, ensuring you don't miss out on high-potential candidates in this competitive market. Here's how we can help:</p>
+      // Insert quick templates
+      function insertTemplate(type) {
+        const editor = document.querySelector('trix-editor').editor;
+        let content = '';
+        
+        switch(type) {
+          case 'greeting':
+            content = 'Hello {name},\n\n';
+            break;
+          case 'cta':
+            content = '<a href="#" style="background: #2196f3; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">Click Here</a>\n\n';
+            break;
+          case 'footer':
+            content = '\n\nBest regards,\n{yourName}\n---\n© 2024 Our Company';
+            break;
+        }
+        
+        editor.insertString(content);
+      }
 
-                              <ul>
-                                <li>Swift Candidate Matching: Our AI analyzes applicants in real-time, presenting you with the best matches instantly.</li>
-                                <li>Reduced Time-to-Hire: Cut your hiring process time by up to 50% without sacrificing quality.</li>
-                                <li>Customized Screening: Our AI adapts to your specific requirements, ensuring a perfect fit for your team.</li>
-                              </ul>
+      // Save draft
+      function saveDraft() {
+        const subject = document.getElementById('emailSubject').value;
+        const fromEmail = document.getElementById('fromEmail').value;
+        const body = document.querySelector('trix-editor').editor.getDocument().toString();
+        
+        const draft = {
+          subject,
+          fromEmail,
+          body,
+          savedAt: new Date().toLocaleString()
+        };
+        
+        localStorage.setItem('emailDraft', JSON.stringify(draft));
+        alert('Draft saved successfully!');
+      }
 
-                              <p>We'd love to show you how we can streamline your hiring process and connect you with ideal candidates faster than ever.</p>
+      // Template selection
+      document.getElementById('templateDropdown').addEventListener('change', function(e) {
+        const templateName = e.target.value;
+        if (templateName && templates[templateName]) {
+          const template = templates[templateName];
+          document.getElementById('emailSubject').value = template.subject;
+          document.querySelector('trix-editor').editor.loadHTML(template.body);
+          document.getElementById('emailSubject').dispatchEvent(new Event('input'));
+        }
+      });
 
-                              <p>Would you be available for a quick 15-minute demo this week? I'm confident you'll see the immediate value we can bring to your recruitment efforts.</p>
+      // Variable insertion
+      document.getElementById('variableDropdown').addEventListener('change', function(e) {
+        const variable = e.target.value;
+        if (variable) {
+          const editor = document.querySelector('trix-editor').editor;
+          editor.insertString(variable);
+          this.value = '';
+        }
+      });
 
-                              <p>Best regards,<br>{yourName}</p>`;
-                                            break;
+      // Form submission
+      document.getElementById('emailForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const subject = document.getElementById('emailSubject').value;
+        const fromEmail = document.getElementById('fromEmail').value;
+        const body = document.querySelector('trix-editor').editor.getDocument().toString();
+        
+        if (!subject || !fromEmail || !body) {
+          alert('Please fill in all required fields');
+          return;
+        }
 
-                                        case "smartHireSpotlight":
-                                            subject = "Spotlight Top Talent for {hiringJobTitle} with AI";
-                                            templateContent = `<p>Hi {name},</p>
+        const enrichedData = <%= JSON.stringify(enrichedData) %>;
+        
+        const formData = new FormData();
+        formData.append('enrichedData', JSON.stringify(enrichedData));
+        formData.append('emailTemplate', body);
+        formData.append('emailSubject', subject);
+        formData.append('fromEmail', fromEmail);
 
-                        <p>I'm John Doe, founder of [Your Company Name]. We specialize in AI-driven hiring solutions that help companies like {companyName} identify and attract top talent.</p>
+        fetch('/send-email', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert('Email campaign sent successfully!');
+          console.log(data);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Failed to send email: ' + error.message);
+        });
+      });
 
-                        <p><strong>Why Choose Us?</strong></p>
-                        <ul>
-                          <li>Precision: Our AI highlights the best candidates for {hiringJobTitle}.</li>
-                          <li>Efficiency: Save time by focusing on the most qualified applicants.</li>
-                          <li>Integration: Easy to implement with your existing HR systems.</li>
-                        </ul>
-
-                        <p>Navigating through 150+ applicants for [Marketing Manager] can be overwhelming. Our AI ensures you see only the top-tier candidates, making your job easier.</p>
-
-                        <p>Can we discuss how we can enhance your hiring process for [Marketing Manager]? Are you available for a quick call this week?</p>
-
-                        <p>Best,<br>{yourName}</p>`;
-                                            break;
-
-                                        case "talentTransformationTech":
-                                            subject = "Revolutionize Your Hiring Process for {hiringJobTitle} with AI";
-                                            templateContent = `<p>Dear {name},</p>
-
-                  <p>I hope this message finds you well. I'm reaching out to introduce our Talent Transformation Tech, a revolutionary AI-driven hiring solution that I believe could transform your recruitment process for the {hiringJobTitle} role at {companyName}.</p>
-
-                  <p>Our cutting-edge AI tools go beyond traditional hiring methods, offering:</p>
-
-                  <ol>
-                    <li>Predictive Success Modeling: Identify candidates most likely to excel in your specific work environment.</li>
-                    <li>Skill Gap Analysis: Understand how candidates can complement your existing team's strengths.</li>
-                    <li>Bias Mitigation: Ensure a fair and diverse hiring process with our advanced algorithms.</li>
-                    <li>Dynamic Interview Guides: AI-generated, role-specific questions to dig deeper into each candidate's potential.</li>
-                  </ol>
-
-                  <p>We're not just filling a position – we're helping you build the future of your company.</p>
-
-                  <p>I'd be thrilled to offer you a personalized demo of our technology. When would be a convenient time to showcase how we can revolutionize your hiring process?</p>
-
-                  <p>Looking forward to potentially transforming your talent acquisition strategy.</p>
-
-                  <p>Best regards,<br>{yourName}</p>`;
-                                            break;
-
-                                        case "efficiencyBoostPitch":
-                                            subject = "Streamline Your Hiring for {hiringJobTitle}";
-                                            templateContent = `<p>Hi {name},</p>
-
-            <p>I'm John Doe, founder of [Your Company Name]. We offer AI-driven hiring solutions designed to streamline your recruitment process and deliver faster results.</p>
-
-            <p><strong>Why Choose Us?</strong></p>
-            <ul>
-              <li>Speed: Quickly sort through 300+ applicants for [Data Analyst].</li>
-              <li>Efficiency: Our AI identifies the most qualified candidates swiftly.</li>
-              <li>Simplicity: Seamlessly integrates with your current HR tools.</li>
-            </ul>
-
-            <p>Handling 300+ applicants for [Data Analyst] is a daunting task. Our AI simplifies this, ensuring you focus on the best candidates and reduce time-to-hire.</p>
-
-            <p>Let's explore how we can speed up your hiring process for [Data Analyst]. Are you free for a short call this week?</p>
-
-            <p>Best,<br>{yourName}</p>`;
-                                            break;
-
-                                        case "insightDrivenRecruitment":
-                                            subject = "Elevate Your Hiring Decisions for {hiringJobTitle} with AI-Powered Insights";
-                                            templateContent = `<p>Dear {name},</p>
-
-      <p>I trust this email finds you well. I'm reaching out to introduce our Insight-Driven Recruitment service, which I believe could add significant value to your hiring process for the {hiringJobTitle} role at {companyName}.</p>
-
-      <p>Our AI-powered analytics provide deep insights into your candidate pool, helping you make data-driven decisions:</p>
-
-      <ol>
-        <li>Predictive Success Modeling: Forecast a candidate's potential performance and longevity in your organization.</li>
-        <li>Team Dynamics Analysis: Understand how a new hire might impact your existing team's productivity and culture.</li>
-        <li>Skill Gap Identification: Pinpoint areas where candidates can bring unique value to your organization.</li>
-        <li>Customized Interview Strategies: AI-generated, candidate-specific questions to uncover key traits and abilities.</li>
-      </ol>
-
-      <p>I'd love to share a sample insights report we've prepared for a similar role. This report demonstrates how our AI can uncover hidden potential and flag potential concerns that traditional hiring methods might miss.</p>
-
-      <p>When would be a good time to walk you through how these insights can enhance your hiring decisions for the {hiringJobTitle} position?</p>
-
-      <p>Looking forward to potentially revolutionizing your recruitment process with data-driven insights.</p>
-
-      <p>Best regards,<br>{yourName}</p>`;
-                                            break;
-                                    }
-                                                                    editor.loadHTML(templateContent.split('\n').map(line => `<div>${line}</div>`).join(''));
-                                                                    // Set the email subject
-                                                                    document.getElementById("emailSubject").value = subject;
-                                                                  }
-                                                                });
-                                                                            document.getElementById("variableDropdown").addEventListener("change", function (event) {
-                                                                              const selectedVariable = event.target.value;
-                                                                              if (selectedVariable) {
-                                                                                const editor = document.querySelector("trix-editor").editor;
-                                                                                const currentPosition = editor.getSelectedRange()[0];
-                                                                                editor.insertString(selectedVariable);
-                                                                                editor.setSelectedRange([currentPosition + selectedVariable.length, currentPosition + selectedVariable.length]);
-                                                                              }
-                                                                            });
+      // Initialize
+      document.addEventListener('DOMContentLoaded', function() {
+        updateRecipientCount();
+        document.querySelector('.tab-btn').classList.add('active');
+        document.getElementById('compose-tab').classList.add('active');
+      });
     </script>
   </body>
 </html>
