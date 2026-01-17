@@ -878,7 +878,7 @@ function renderDesignationTags() {
                           updateStatus('Autopilot process completed successfully!');
                           updateProgress(100);
                           // Provide links to view results
-                          statusDiv.innerHTML += `<br><a href="/get-jobs/${reqId}">View Jobs</a> | <a href="/persona-reachout/${reqId}">View Personas</a>`;
+                          statusDiv.innerHTML += `<br><a href="/get-jobs/${reqId}">View Jobs</a> | <a href="/send-newsletter/${reqId}">Send Newsletter</a>`;
                       } else {
                           updateStatus(`In progress... ${result.personaCount} personas created so far.`);
                           updateProgress(result.progress);

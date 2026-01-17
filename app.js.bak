@@ -683,7 +683,7 @@ app.post("/create-persona", async (req, res) => {
         from: "Growthx growth tool <no-reply@growthx.com>",
         subject: "Growthx growth tool Notification: All Personas fetched Successfully!",
         html: `All personas for your job title search "${notifyCheck?.convertJobObject?.title}" have been successfully fetched. A total of ${notifyCheck?.personaIds?.length} personas were found. <br><br> 
-        You can view the personas by following this link: <a href="https://growth-tool.growthx.com/send-newsletter/${reqUUID}">View Personas</a>. <br><br>
+        You can view the personas by following this link: <a href="https://growth-tool.growthx.com/persona-reachout/${reqUUID}">View Personas</a>. <br><br>
         If you want to check jobs, you can follow this link: <a href="https://growth-tool.growthx.com/get-jobs/${reqUUID}">View Jobs</a>.`,
       };
       console.log({ mailOptions });
@@ -731,7 +731,7 @@ app.post("/create-persona", async (req, res) => {
         subject: "Your new Growthx Newsletter campaign is live.",
         html: `Click here to view project: <a href="https://growthx.growthx.com/projects/${projectData.data._id}">View Project</a>
         Live Newsletter management tool: <br>
-        Subscriber link: <a href="https://growth-tool.growthx.com/send-newsletter/${reqUUID}">View Subscribers</a>.<br>
+        Subscriber link: <a href="https://growth-tool.growthx.com/persona-reachout/${reqUUID}">View Subscribers</a>.<br>
         Email list link: <a href="https://growth-tool.growthx.com/get-jobs/${reqUUID}">View Email List</a><br>
         Please let us know if you have any questions on this.
         ---
@@ -1132,7 +1132,7 @@ app.post("/autopilot-search", async (req, res) => {
           if (personaLen > 2) {
             if (!flag) {
               flag = true;
-              res.redirect(`/send-newsletter/${reqUUID}`);
+              res.redirect(`/persona-reachout/${reqUUID}`);
             }
             console.log("continue persona getting");
           }
@@ -1185,7 +1185,7 @@ app.post("/autopilot-search", async (req, res) => {
         from: "Growthx growth tool <no-reply@growthx.com>",
         subject: "Growthx growth tool Notification: All Personas fetched Successfully!",
         html: `All personas for your job title search "${notifyCheck?.convertJobObject?.title}" have been successfully fetched. A total of ${notifyCheck?.personaIds?.length} personas were found. <br><br> 
-        You can view the personas by following this link: <a href="https://growth-tool.growthx.com/send-newsletter/${reqUUID}">View Personas</a>. <br><br>
+        You can view the personas by following this link: <a href="https://growth-tool.growthx.com/persona-reachout/${reqUUID}">View Personas</a>. <br><br>
         If you want to check jobs, you can follow this link: <a href="https://growth-tool.growthx.com/get-jobs/${reqUUID}">View Jobs</a>.`,
       };
       console.log({ mailOptions });
