@@ -328,6 +328,39 @@ app.get("/send-email", authMiddleware, (req, res) => {
   console.log("filtered enriched data --->", filteredData);
   res.render("sendEmail", { enrichedData: filteredData });
 });
+
+app.get("/send-newsletter", authMiddleware, async (req, res) => {
+  try {
+    const reqId = req.query.reqId;
+    const selectedPeopleIds = JSON.parse(req.query.selectedPeopleIds || '[]');
+
+    if (!selectedPeopleIds || selectedPeopleIds.length === 0) {
+      return res.status(400).send("No people selected");
+    }
+
+    // Fetch selected people from the database
+    const ApolloPersona = require("./schema/ApolloPersona");
+    const selectedPeople = await ApolloPersona.find({ _id: { $in: selectedPeopleIds } });
+
+    // Prepare enriched data for email sending
+    const enrichedData = selectedPeople.map(person => ({
+      _id: person._id,
+      name: person.name,
+      email: person.email,
+      firstName: person.firstName,
+      currentRole: person.currentRole,
+      companyName: person.companyName,
+    }));
+
+    res.render("sendEmail", { 
+      enrichedData: enrichedData,
+      reqId: reqId 
+    });
+  } catch (error) {
+    console.log("Error sending newsletter:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 function findJobPostByEmployerName(arr, employerName) {
   console.log("arr --->", arr);
   console.log("employer name", employerName);
@@ -683,8 +716,8 @@ app.post("/create-persona", async (req, res) => {
         from: "Growthx growth tool <no-reply@growthx.com>",
         subject: "Growthx growth tool Notification: All Personas fetched Successfully!",
         html: `All personas for your job title search "${notifyCheck?.convertJobObject?.title}" have been successfully fetched. A total of ${notifyCheck?.personaIds?.length} personas were found. <br><br> 
-        You can view the personas by following this link: <a href="https://growth-tool.growthx.com/send-newsletter/${reqUUID}">View Personas</a>. <br><br>
-        If you want to check jobs, you can follow this link: <a href="https://growth-tool.growthx.com/get-jobs/${reqUUID}">View Jobs</a>.`,
+        You can view the personas by following this link: <a href="https://growth-tool.growthx.com/send-newsletter/${reqUUID}">View People Profiles</a>. <br><br>
+        If you want to check jobs, you can follow this link: <a href="https://growth-tool.growthx.com/get-jobs/${reqUUID}">View Job Functions</a>.`,
       };
       console.log({ mailOptions });
       smtpTransport.sendMail(mailOptions);
@@ -757,7 +790,7 @@ app.post("/create-persona", async (req, res) => {
     }
     console.log("Error creating persona:", error);
 
-    res.status(500).json({ error: "Failed to create persona" });
+    res.status(500).json({ error: "Failed to find people profile" });
   }
 });
 app.get("/dashboard", authMiddleware, async (req, res) => {
@@ -1185,8 +1218,8 @@ app.post("/autopilot-search", async (req, res) => {
         from: "Growthx growth tool <no-reply@growthx.com>",
         subject: "Growthx growth tool Notification: All Personas fetched Successfully!",
         html: `All personas for your job title search "${notifyCheck?.convertJobObject?.title}" have been successfully fetched. A total of ${notifyCheck?.personaIds?.length} personas were found. <br><br> 
-        You can view the personas by following this link: <a href="https://growth-tool.growthx.com/send-newsletter/${reqUUID}">View Personas</a>. <br><br>
-        If you want to check jobs, you can follow this link: <a href="https://growth-tool.growthx.com/get-jobs/${reqUUID}">View Jobs</a>.`,
+        You can view the personas by following this link: <a href="https://growth-tool.growthx.com/send-newsletter/${reqUUID}">View People Profiles</a>. <br><br>
+        If you want to check jobs, you can follow this link: <a href="https://growth-tool.growthx.com/get-jobs/${reqUUID}">View Job Functions</a>.`,
       };
       console.log({ mailOptions });
       smtpTransport.sendMail(mailOptions);
@@ -1351,7 +1384,7 @@ app.get("/autopilot", authMiddleware, async (req, res) => {
 //     const { scheduleTime, jobTitle, searchLimit, designations } = req.body;
 
 //     // Implement your autopilot logic here
-//     // This should include job search, persona creation, and email preparation
+//     // This should include job function search, persona creation, and email preparation
 
 //     // Generate a unique reqId for this autopilot process
 //     const reqId = generateUniqueId();
@@ -1490,7 +1523,7 @@ app.post("/enriched-data-process", authMiddleware, async (req, res) => {
     res.render("sendEmail", { reqId, enrichedData });
   } catch (error) {
     console.log("Error creating persona:", error);
-    res.status(500).json({ error: "Failed to create persona" });
+    res.status(500).json({ error: "Failed to find people profile" });
   }
 });
 app.post("/email-enrich", async (req, res) => {

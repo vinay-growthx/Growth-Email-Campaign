@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Send Newsletter</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+      }
+      .filters {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .filter-group {
+        display: inline-block;
+      }
+      label {
+        font-weight: bold;
+        margin-right: 10px;
+      }
+      input, select {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+      .checkbox-control {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .people-list {
+        margin-top: 20px;
+      }
+      .person-card {
+        background-color: #f9f9f9;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-left: 4px solid #007bff;
+        border-radius: 4px;
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      .person-card input[type="checkbox"] {
+        margin-top: 8px;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+      .person-info {
+        flex: 1;
+      }
+      .person-card h3 {
+        margin: 0 0 10px 0;
+        color: #333;
+      }
+      .person-details {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 10px;
+      }
+      .pagination {
+        margin-top: 20px;
+        text-align: center;
+      }
+      .pagination a, .pagination span {
+        padding: 8px 12px;
+        margin: 0 2px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-decoration: none;
+        color: #007bff;
+      }
+      .pagination a:hover {
+        background-color: #007bff;
+        color: white;
+      }
+      .pagination .current {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+      }
+      .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Send Newsletter</h1>
+      <div class="filters">
+        <div class="filter-group">
+          <label>Total People: <%= totalCount %></label>
+        </div>
+        <div class="checkbox-control">
+          <input type="checkbox" id="selectAll" />
+          <label for="selectAll">Select All</label>
+        </div>
+      </div>
+
+      <div class="people-list">
+        <% if (people.length > 0) { %>
+          <% people.forEach((person, index) => { %>
+            <div class="person-card">
+              <input type="checkbox" class="person-checkbox" value="<%= person._id || index %>" />
+              <div class="person-info">
+                <h3><%= person.name || 'N/A' %></h3>
+                <div class="person-details">
+                  <% if (person.email) { %>
+                    <p>Email: <%= person.email %></p>
+                  <% } %>
+                  <% if (person.company) { %>
+                    <p>Company: <%= person.company %></p>
+                  <% } %>
+                  <% if (person.title) { %>
+                    <p>Title: <%= person.title %></p>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <p>No people found.</p>
+        <% } %>
+      </div>
+
+      <form id="newsletterForm">
+        <input type="hidden" name="reqId" value="<%= reqId %>">
+        <div class="action-buttons">
+          <button type="button" id="nextPageBtn" disabled>Next Page</button>
+          <button type="button" id="sendNewsletterBtn" disabled>Send Newsletter to Selected</button>
+        </div>
+      </form>
+
+      <div class="pagination">
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <% if (i === currentPage) { %>
+            <span class="current"><%= i %></span>
+          <% } else { %>
+            <a href="?page=<%= i %>"><%= i %></a>
+          <% } %>
+        <% } %>
+      </div>
+    </div>
+
+    <script>
+      const selectAllCheckbox = document.getElementById('selectAll');
+      const personCheckboxes = document.querySelectorAll('.person-checkbox');
+      const nextPageBtn = document.getElementById('nextPageBtn');
+      const sendNewsletterBtn = document.getElementById('sendNewsletterBtn');
+      const currentPage = <%= currentPage %>;
+      const totalPages = <%= totalPages %>;
+
+      // Select all functionality
+      selectAllCheckbox.addEventListener('change', function() {
+        personCheckboxes.forEach(checkbox => {
+          checkbox.checked = this.checked;
+        });
+        updateButtonState();
+      });
+
+      // Individual checkbox change
+      personCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          // Update select all checkbox state
+          const allChecked = Array.from(personCheckboxes).every(cb => cb.checked);
+          const someChecked = Array.from(personCheckboxes).some(cb => cb.checked);
+          
+          selectAllCheckbox.checked = allChecked;
+          selectAllCheckbox.indeterminate = someChecked && !allChecked;
+          
+          updateButtonState();
+        });
+      });
+
+      // Update next page button state
+      function updateButtonState() {
+        const anyChecked = Array.from(personCheckboxes).some(cb => cb.checked);
+        nextPageBtn.disabled = !anyChecked;
+        sendNewsletterBtn.disabled = !anyChecked;
+      }
+
+      // Next page button click
+      nextPageBtn.addEventListener('click', function() {
+        if (currentPage < totalPages) {
+          window.location.href = '?page=' + (currentPage + 1);
+        }
+      });
+
+      // Send Newsletter button click
+      sendNewsletterBtn.addEventListener('click', function() {
+        const selectedIds = Array.from(personCheckboxes)
+          .filter(cb => cb.checked)
+          .map(cb => cb.value);
+        
+        if (selectedIds.length > 0) {
+          // Store selected IDs and redirect to email composer
+          const form = document.getElementById('newsletterForm');
+          const hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = 'selectedPeopleIds';
+          hiddenInput.value = JSON.stringify(selectedIds);
+          form.appendChild(hiddenInput);
+          
+          // Redirect to send-newsletter endpoint
+          window.location.href = '/send-newsletter?reqId=<%= reqId %>&selectedPeopleIds=' + encodeURIComponent(JSON.stringify(selectedIds));
+        }
+      });
+
+      // Initialize button state
+      updateButtonState();
+    </script>
+  </body>
+</html>

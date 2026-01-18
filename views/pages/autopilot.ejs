@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Autopilot Job Search and Persona Creation</title>
+    <title>Autopilot Job Function Search and Persona Creation</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
       rel="stylesheet"
@@ -698,7 +698,7 @@
           <div class="checkbox-group">
             <label>
               <input type="checkbox" name="jobSearch" checked />
-              <span>Job Search</span>
+              <span>Job Function Search</span>
             </label>
           </div>
           <div class="checkbox-group">
@@ -878,7 +878,7 @@ function renderDesignationTags() {
                           updateStatus('Autopilot process completed successfully!');
                           updateProgress(100);
                           // Provide links to view results
-                          statusDiv.innerHTML += `<br><a href="/get-jobs/${reqId}">View Jobs</a> | <a href="/send-newsletter/${reqId}">Send Newsletter</a>`;
+                          statusDiv.innerHTML += `<br><a href="/get-jobs/${reqId}">View Job Functions</a> | <a href="/send-newsletter/${reqId}">Send Newsletter</a>`;
                       } else {
                           updateStatus(`In progress... ${result.personaCount} personas created so far.`);
                           updateProgress(result.progress);

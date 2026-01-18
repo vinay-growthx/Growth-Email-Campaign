@@ -80,7 +80,7 @@ function convertCommaSeparatedStringToArray(inputString) {
 //     }
 //   }
 
-//   console.log(`Job search completed. All results obtained.`);
+//   console.log(`Job function search completed. All results obtained.`);
 //   return allJobs; // Returns the array containing all job data
 // }
 
