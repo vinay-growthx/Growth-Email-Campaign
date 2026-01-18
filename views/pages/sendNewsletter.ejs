@@ -135,9 +135,9 @@
         <% if (people.length > 0) { %>
           <% people.forEach((person, index) => { %>
             <div class="person-card">
-              <input type="checkbox" class="person-checkbox" value="<%= person._id || index %>" />
+              <input type="checkbox" class="person-checkbox" value="<%= person.id || person._id || index %>" data-email="<%= person.email %>" />
               <div class="person-info">
-                <h3><%= person.name || 'N/A' %></h3>
+                <h3><%= person.name || person.first_name + ' ' + person.last_name || 'N/A' %></h3>
                 <div class="person-details">
                   <% if (person.email) { %>
                     <p>Email: <%= person.email %></p>

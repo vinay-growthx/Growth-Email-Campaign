@@ -338,18 +338,19 @@ app.get("/send-newsletter", authMiddleware, async (req, res) => {
       return res.status(400).send("No people selected");
     }
 
-    // Fetch selected people from the database
+    // Fetch selected people from the database using the id field
     const ApolloPersona = require("./schema/ApolloPersona");
-    const selectedPeople = await ApolloPersona.find({ _id: { $in: selectedPeopleIds } });
+    const selectedPeople = await ApolloPersona.find({ id: { $in: selectedPeopleIds } });
 
     // Prepare enriched data for email sending
     const enrichedData = selectedPeople.map(person => ({
       _id: person._id,
-      name: person.name,
+      id: person.id,
+      name: person.name || (person.first_name + ' ' + person.last_name),
       email: person.email,
-      firstName: person.firstName,
-      currentRole: person.currentRole,
-      companyName: person.companyName,
+      firstName: person.first_name || person.firstName,
+      currentRole: person.title || person.currentRole,
+      companyName: person.company || person.companyName,
     }));
 
     res.render("sendEmail", { 
